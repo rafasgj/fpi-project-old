@@ -1,0 +1,14 @@
+# Project files not still added.
+/docs/
+/platform/
+
+# OS specific files.
+.DS_Store
+
+# temporary files
+*.swp
+
+# Python specific
+__pycache__/
+*.pyc
+*.pyo
