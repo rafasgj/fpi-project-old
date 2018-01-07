@@ -1,8 +1,4 @@
-# Project files not still added.
-/docs/
-/platform/
-
-# OS specific files.
+# macOS specific files.
 .DS_Store
 
 # temporary files
