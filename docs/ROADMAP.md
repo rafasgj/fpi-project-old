@@ -3,20 +3,26 @@ f/π Roadmap
 
 ## Version α-1
 
+### Catalog
+
+fpi catalog --new catalog_name
+
+> Creates a new empty catalog.
+
 ### Ingestion
 
-fpi ingest file_list | directory<br/>
-fpi ingest --add file_list | directory
+fpi catalog_path ingest file_list | directory<br/>
+fpi catalog_path ingest --add file_list | directory
 
 > Add files from the file list or the given directory into the system.
   The files are kept in their original location.
 
-fpi ingest --copy target_dir file_list | directory
+fpi catalog_path ingest --copy target_dir file_list | directory
 
 > Add files from the file list or the given directory into the system.
   The files are copyed into the given target location.
 
-fpi ingest --move target_dir file_list | directory
+fpi catalog_path ingest --move target_dir file_list | directory
     
 > Add files from the file list or the given directory into the system.
   The files are moved to the given target location.
@@ -45,20 +51,20 @@ fpi ingest --move target_dir file_list | directory
 
 ### List files
 
-fpi list
+fpi catalog_path list
 
 > List all the files ingested into the system, and their asset id.
 
 ### List sessions
 
-fpi session
+fpi catalog_path session catalog_name
 
 > List all the sessions stored in the system. Every ingestion is a
   session, and sessions can be named. (See ingestion option --session.)
 
 ### Retrieve information
 
-fpi info file | asset | session
+fpi catalog_path info (file | asset | session)
 
 > List all information available for the file or asset, or list all the
   files/assets ingested in the given session.
@@ -79,21 +85,21 @@ fpi info file | asset | session
 
 ### Set asset atttributes
 
-fpi label <br/>
-fpi label list
+fpi catalog_path label <br/>
+fpi catalog_path label list
 
 > List all available labels.
 
-fpi label add label_name
+fpi catalog_path label add label_name
 
 > Add a new label to the system.
 
-fpi label remove label_name
+fpi catalog_path label remove label_name
 
 > Remove a label from the system and from all the assets that were
   marked with this label.
 
-fpi attrib asset ttribute:value ...
+fpi catalog_path attrib asset attribute:value ...
 
 > Set the value of an attribute of an asset ingested in the system.
   |  Attribute  | Valid values                                        |
@@ -102,7 +108,7 @@ fpi attrib asset ttribute:value ...
   |  label (l)  | String: a valid label                               | 
   |  flag (f)   | String: One of pick (p), unpick (u) or rejected (x) |
 
-fpi search criteria
+fpi catalog_path search criteria
 
 > Search for assets that matches the given criteria.
   | Attribute Type |    Operators                   | 
@@ -140,7 +146,7 @@ Both 'info' and 'search' commands might be affected by this change.
 
 ### Presets
 
-fpi preset add preset_type preset_name preset_file
+fpi catalog_path preset add preset_type preset_name preset_file
 
 
 > Type: ingest<br/>
@@ -185,7 +191,7 @@ and an UI to filter assets based on Rating (stars), Labels and Flags.
 
 ### Set attribute value
 
-fpi label add label name \[color name\]
+fpi catalog_path label add label name \[color name\]
 
 > Add a new label to the system and optionally attribute a color to it.
   The available colors are:
