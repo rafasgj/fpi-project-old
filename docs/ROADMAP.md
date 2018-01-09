@@ -23,7 +23,7 @@ fpi catalog_path ingest --copy target_dir file_list | directory
   The files are copyed into the given target location.
 
 fpi catalog_path ingest --move target_dir file_list | directory
-    
+
 > Add files from the file list or the given directory into the system.
   The files are moved to the given target location.
 
@@ -83,6 +83,12 @@ fpi catalog_path info (file | asset | session)
 
 ## Version α-2
 
+### Database
+
+This version (and most future ones) will involve changes in the
+application database, so there must be a migration tool/command that
+will update the database when needed (i.e. opening an old database).
+
 ### Set asset atttributes
 
 fpi catalog_path label <br/>
@@ -105,18 +111,18 @@ fpi catalog_path attrib asset attribute:value ...
   |  Attribute  | Valid values                                        |
   | :---------: | :-------------------------------------------------- |
   |  rating (r) | Numerical: 0-5.                                     |
-  |  label (l)  | String: a valid label                               | 
+  |  label (l)  | String: a valid label                               |
   |  flag (f)   | String: One of pick (p), unpick (u) or rejected (x) |
 
 fpi catalog_path search criteria
 
 > Search for assets that matches the given criteria.
-  | Attribute Type |    Operators                   | 
+  | Attribute Type |    Operators                   |
   | :------------- | :----------------------------: |
   | Numerical      | =, <, <=, >, >=                |
   | String         | =, <>                          |
   | Date           | =, <, before, <=, >, after, >= |
-    
+
 > Multiple expressions may be associated with operators 'and',
   meaning logical AND, and operator 'or', meaning logical 'or'.
 
@@ -204,4 +210,3 @@ fpi catalog_path label add label name \[color name\]
 >* orange
 >* cyan
 >* white
-
