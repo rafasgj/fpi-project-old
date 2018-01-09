@@ -1,0 +1,18 @@
+#
+# Use this file to add Python dependencies.
+#
+# Install dependencies with:
+#    pip3 install -r requirements.txt
+# Update with:
+#    pip3 install -U -r requirement.txt
+#
+
+behave
+
+sqlalchemy
+sqlalchemy-utils
+
+flake8
+flake8-docstrings
+
+# migrate
