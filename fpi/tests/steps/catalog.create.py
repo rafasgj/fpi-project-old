@@ -36,11 +36,17 @@ def step_execute_catalog_creation(context):
         context.exception = e
 
 
-@then('an empty catalog is created with the given name.')
+@then('an empty catalog is created with the given name')
 def step_check_catalog_is_empty_after_creation(context):
     """Create a catalog that is empty, and have the given name."""
     assert context.exception is None
     assert check_catalog_exists(context) is True
+
+
+@then('there is no Asset in the catalog.')
+def step_check_asset_count(context):
+    """Check if there are any Asset in the catalog."""
+    raise NotImplementedError('there is no asset in the catalog')
 
 
 @given('the catalog exists')
