@@ -2,15 +2,9 @@
 
 from behave import given, when, then
 
+from tests.common.util import check_catalog_exists
+
 import catalog
-
-
-def check_catalog_exists(context):
-    """Assert that the context catalog file exists."""
-    import sqlalchemy_utils as utils
-    catalog_file = "%s.fpicat" % (context.catalog)
-    catalogdb = "sqlite:///%s" % (catalog_file)
-    return utils.database_exists(catalogdb)
 
 
 @given('the option to create a new catalog')
