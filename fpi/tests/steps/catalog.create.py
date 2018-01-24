@@ -13,10 +13,15 @@ def check_catalog_exists(context):
     return utils.database_exists(catalogdb)
 
 
+@given('the command to manage a catalog')
+def step_command_catalog_mgmt(context):
+    """Set command to catalog management."""
+    context.command = "catalog"
+
+
 @given('the option to create a new catalog')
 def step_opt_catalog_create(context):
-    """Prepare context for creating a new catalog."""
-    context.command = 'catalog'
+    """Set option to create a catalog."""
     context.option = 'new'
 
 
@@ -49,7 +54,7 @@ def step_check_asset_count(context):
     raise NotImplementedError('there is no asset in the catalog')
 
 
-@given('the catalog exists')
+@given('that a catalog with the same name exists')
 def step_test_when_catalog_exists(context):
     """Ensure a catalog is already created before testing."""
     if not check_catalog_exists(context):
