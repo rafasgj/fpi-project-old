@@ -4,7 +4,7 @@ from behave import given, when, then
 
 from common.util import check_catalog_exists, get_sqlite_init_string
 
-import catalog
+from catalog import Catalog
 from dao import Asset
 
 
@@ -21,7 +21,7 @@ def step_opt_catalog_create(context):
 
 
 @given('a catalog named "{name}"')
-def step_arg_catalog_name(context, name):
+def given_catalog_name(context, name):
     """Set the new catalog name."""
     context.catalog = name
 
@@ -30,7 +30,7 @@ def step_arg_catalog_name(context, name):
 def step_execute_catalog_creation(context):
     """Execute catalog creation."""
     try:
-        catalog.init(context.catalog)
+        Catalog(context.catalog)
         context.exception = None
     except Exception as e:
         context.exception = e
@@ -58,7 +58,7 @@ def step_test_when_catalog_exists(context):
     """Ensure a catalog is already created before testing."""
     if not check_catalog_exists(context):
         try:
-            catalog.init(context.catalog)
+            Catalog(context.catalog)
         except Exception:
             pass
 

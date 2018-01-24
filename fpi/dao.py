@@ -1,9 +1,9 @@
 """Define the data objects used on the system."""
 
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, String, Integer
+# from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Column, String, Integer, DateTime
 
-from dbutil import Base
+from catalog import Base
 
 
 class Asset(Base):
@@ -14,3 +14,4 @@ class Asset(Base):
     filename = Column(String)
     disk_label = Column(String)
     path = Column(String)
+    import_date = Column(DateTime)
