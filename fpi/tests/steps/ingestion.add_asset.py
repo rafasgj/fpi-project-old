@@ -2,18 +2,34 @@
 
 from behave import given, when, then
 
+import catalog
 
-@given('the path to an image file in its final location')
-def step_configure_path_to_image_file(context):
+
+@given('the command to ingest assets')
+def step_command_ingest(context):
+    """Set command to ingest assets into a catalog."""
+    context.command = 'ingest'
+
+
+@given('the option to add a new file at its position')
+def step_option_add(context):
+    """Prepare context for creating a new catalog."""
+    context.option = 'add'
+
+
+@given('an image file at its destination location of "{imagefile}"')
+def step_path_to_image_file(context, imagefile):
     """Prepare context for ingesting an image."""
-    e = 'the path to an image file in its final location'
-    raise NotImplementedError(e)
+    context.filepath = imagefile
 
 
-@given('the path to a f/π catalog')
-def step_configure_path_to_catalog(context):
-    """Prepare context with catalog for ingestion."""
-    raise NotImplementedError('STEP: Given the path to a f/π catalog')
+@given('a catalog file named "{filename}"')
+def step_ensure_catalog_exists(context, filename):
+    """Ensure the catalog with the given filename does exist."""
+    if filename.endswith('.fpicat'):
+        filename = filename[:-7]
+    context.catalog_file = filename
+    catalog.init(context.catalog)
 
 
 @when('ingesting assets into the catalog and keep its location')
