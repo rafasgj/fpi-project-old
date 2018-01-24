@@ -39,6 +39,13 @@ f/π will have support for:
   selection attributes.
 - Multiple operating systems, such as Linux, macOS and Windows.
 
+## Contributing to the project
+
+Yes, money is accepted. ;-)
+
+But we are much more in need of code, and testing, and documentation. So
+if you think you can contribute to the project (only using is a valid
+contribution), check out [Contributing](docs/Contributing.md).
+
 ----
 See also the [ROADMAP](docs/ROADMAP.md)
-

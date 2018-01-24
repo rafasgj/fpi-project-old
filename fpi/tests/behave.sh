@@ -1,3 +1,3 @@
 #!/bin/sh
 
-PYTHONPATH="$PYTHONPATH:.." behave-3
+PYTHONPATH="$PYTHONPATH:.." behave-3 "$*"

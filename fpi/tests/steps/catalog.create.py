@@ -2,15 +2,21 @@
 
 from behave import given, when, then
 
-from tests.common.util import check_catalog_exists
+from common.util import check_catalog_exists, get_sqlite_init_string
 
 import catalog
+from dao import Asset
+
+
+@given('the command to manage a catalog')
+def step_command_catalog_mgmt(context):
+    """Set command to catalog management."""
+    context.command = "catalog"
 
 
 @given('the option to create a new catalog')
 def step_opt_catalog_create(context):
-    """Prepare context for creating a new catalog."""
-    context.command = 'catalog'
+    """Set option to create a catalog."""
     context.option = 'new'
 
 
@@ -30,14 +36,24 @@ def step_execute_catalog_creation(context):
         context.exception = e
 
 
-@then('an empty catalog is created with the given name.')
+@then('an empty catalog is created with the given name')
 def step_check_catalog_is_empty_after_creation(context):
     """Create a catalog that is empty, and have the given name."""
     assert context.exception is None
     assert check_catalog_exists(context) is True
 
 
-@given('the catalog exists')
+@then('there is no Asset in the catalog.')
+def step_check_asset_count(context):
+    """Check if there are any Asset in the catalog."""
+    from sqlalchemy import create_engine
+    from sqlalchemy.orm import sessionmaker
+    engine = create_engine(get_sqlite_init_string(context))
+    session = sessionmaker(bind=engine)()
+    assert session.query(Asset).count() is 0
+
+
+@given('that a catalog with the same name exists')
 def step_test_when_catalog_exists(context):
     """Ensure a catalog is already created before testing."""
     if not check_catalog_exists(context):
