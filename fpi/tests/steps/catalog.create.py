@@ -46,11 +46,11 @@ def step_check_catalog_is_empty_after_creation(context):
 @then('there is no Asset in the catalog.')
 def step_check_asset_count(context):
     """Check if there are any Asset in the catalog."""
-    from sqlalchemy import create_engine, func
+    from sqlalchemy import create_engine
     from sqlalchemy.orm import sessionmaker
     engine = create_engine(get_sqlite_init_string(context))
     session = sessionmaker(bind=engine)()
-    assert session.query(func.count(Asset.id)).scalar() is 0
+    assert session.query(Asset).count() is 0
 
 
 @given('that a catalog with the same name exists')
