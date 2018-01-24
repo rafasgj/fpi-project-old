@@ -1,15 +1,16 @@
 """Functions used to manage catalogs."""
 
-from sqlalchemy import create_engine
-from sqlalchemy_utils import create_database, database_exists
+import dbutil
+
+from sqlalchemy_utils import database_exists, create_database
 
 
 def init(catalog_name):
     """Initialize a new catalog."""
-    catalog_file = "%s.fpicat" % (catalog_name)
-    dbfile = "sqlite:///%s" % (catalog_file)
-    engine = create_engine(dbfile)
+    dbutil.init(catalog_name)
+    dbfile = dbutil.get_catalog_init_string(catalog_name)
     if not database_exists(dbfile):
-        create_database(engine.url)
+        create_database(dbfile)
+        dbutil.Base.metadata.create_all(dbutil.engine)
     else:
         raise Exception("Refusing to overwrite catalog.")
