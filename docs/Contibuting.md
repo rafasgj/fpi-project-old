@@ -19,8 +19,8 @@ To contribute to f/π's development, you'll need:
 
 * Python 3.5 (or later)
 
-The project uses some Python modules that are not usually found on
-standard Python setups, so you will need to install the modules:
+And, as the project uses some Python modules that are not usually found
+on standard Python setups, so you will need to install the modules:
 
 * behave
 * flake8

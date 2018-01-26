@@ -11,18 +11,18 @@ fpi catalog --new catalog_name
 
 ### Ingestion
 
-fpi catalog_path ingest file_list | directory<br/>
-fpi catalog_path ingest --add file_list | directory
+fpi ingest catalog_path [options] (file_list | directory)<br/>
+fpi ingest catalog_path [options] --add (file_list | directory)
 
 > Add files from the file list or the given directory into the system.
   The files are kept in their original location.
 
-fpi catalog_path ingest --copy target_dir file_list | directory
+fpi ingest catalog_path [options] --copy target_dir (file_list|directory)
 
 > Add files from the file list or the given directory into the system.
   The files are copyed into the given target location.
 
-fpi catalog_path ingest --move target_dir file_list | directory
+fpi ingest catalog_path [options] --move target_dir (file_list|directory)
 
 > Add files from the file list or the given directory into the system.
   The files are moved to the given target location.
@@ -32,17 +32,18 @@ fpi catalog_path ingest --move target_dir file_list | directory
 --rename-rule
 
 > This rule uses photo metadata to rename the files, using any of the
-  filename generation rules.
+  filename generation rules. Only valid with --copy or --move.
 
 --directory-rule
 
 > This rule uses photo metadata to create a directory structure inside
   _target\_dir_ to store the files ingested. The directory structure is
-  created using the filename generation rules.
+  created using the filename generation rules. Only valid with --copy or
+  --move.
 
 --session
 
-> Set the session name for the photo session.
+> Set the session name for the ingest session.
 
 --recurse
 
@@ -51,35 +52,35 @@ fpi catalog_path ingest --move target_dir file_list | directory
 
 ### List files
 
-fpi catalog_path list
+fpi list catalog_path
 
 > List all the files ingested into the system, and their asset id.
 
 ### List sessions
 
-fpi catalog_path session catalog_name
+fpi session catalog_path
 
 > List all the sessions stored in the system. Every ingestion is a
   session, and sessions can be named. (See ingestion option --session.)
 
 ### Retrieve information
 
-fpi catalog_path info (file | asset | session)
+fpi info catalog_path (--file | --asset | --session) _id_
 
 > List all information available for the file or asset, or list all the
   files/assets ingested in the given session.
 
 ### Filename Generation rules.
 
- |   Code         | Description.                                          |
- | :------------- | :---------------------------------------------------- |
- | %Y/yyyy        | Four digit year.                                      |
- | %y/yy          | Two digit year.                                       |
- | %m/mm          | Two digit month.                                      |
- | %d/dd          | Two digit day.                                        |
- | %M/mmm         | Three letter month abreviation.                       |
- | %s/sss         | Session name (set with --session)                     |
- | %[N.X]c\|c\*.X | A number sequence, with N (or c) digits starting at N |
+|   Code         | Description.                                          |
+| :------------- | :---------------------------------------------------- |
+| %Y/yyyy        | Four digit year.                                      |
+| %y/yy          | Two digit year.                                       |
+| %m/mm          | Two digit month.                                      |
+| %d/dd          | Two digit day.                                        |
+| %M/mmm         | Three letter month abreviation.                       |
+| %s/sss         | Session name (set with --session)                     |
+| %[N.X]c\|c\*.X | A number sequence, with N (or c) digits starting at N |
 
 ## Version α-2
 
@@ -91,21 +92,21 @@ will update the database when needed (i.e. opening an old database).
 
 ### Set asset atttributes
 
-fpi catalog_path label <br/>
-fpi catalog_path label list
+fpi label catalog_path <br/>
+fpi label catalog_path --list
 
 > List all available labels.
 
-fpi catalog_path label add label_name
+fpi label catalog_path --add label_name
 
 > Add a new label to the system.
 
-fpi catalog_path label remove label_name
+fpi label catalog_path --remove label_name
 
 > Remove a label from the system and from all the assets that were
   marked with this label.
 
-fpi catalog_path attrib asset attribute:value ...
+fpi attrib catalog_path asset_id attribute:value ...
 
 > Set the value of an attribute of an asset ingested in the system.
   |  Attribute  | Valid values                                        |
@@ -114,7 +115,7 @@ fpi catalog_path attrib asset attribute:value ...
   |  label (l)  | String: a valid label                               |
   |  flag (f)   | String: One of pick (p), unpick (u) or rejected (x) |
 
-fpi catalog_path search criteria
+fpi list catalog_path criteria
 
 > Search for assets that matches the given criteria.
   | Attribute Type |    Operators                   |
@@ -152,7 +153,7 @@ Both 'info' and 'search' commands might be affected by this change.
 
 ### Presets
 
-fpi catalog_path preset add preset_type preset_name preset_file
+fpi preset catalog_path --add preset_type preset_name preset_file
 
 
 > Type: ingest<br/>
@@ -197,7 +198,7 @@ and an UI to filter assets based on Rating (stars), Labels and Flags.
 
 ### Set attribute value
 
-fpi catalog_path label add label name \[color name\]
+fpi label catalog_path --add label name \[color name\]
 
 > Add a new label to the system and optionally attribute a color to it.
   The available colors are:
