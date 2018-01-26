@@ -3,7 +3,7 @@
 
 def get_catalog_file(context):
     """Generate a catalog file name for a context."""
-    return "%s.fpicat" % (context.catalog)
+    return "%s.fpicat" % (context.catalog_name)
 
 
 def get_sqlite_init_string(context):

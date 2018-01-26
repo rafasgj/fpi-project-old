@@ -23,14 +23,14 @@ def step_opt_catalog_create(context):
 @given('a catalog named "{name}"')
 def given_catalog_name(context, name):
     """Set the new catalog name."""
-    context.catalog = name
+    context.catalog_name = name
 
 
 @when('creating a new catalog')
 def step_execute_catalog_creation(context):
     """Execute catalog creation."""
     try:
-        Catalog(context.catalog)
+        Catalog(context.catalog_name).create()
         context.exception = None
     except Exception as e:
         context.exception = e
@@ -58,7 +58,7 @@ def step_test_when_catalog_exists(context):
     """Ensure a catalog is already created before testing."""
     if not check_catalog_exists(context):
         try:
-            Catalog(context.catalog)
+            Catalog(context.catalog_name).create()
         except Exception:
             pass
 

@@ -13,21 +13,28 @@ Base = declarative_base()
 class Catalog(object):
     """Implements the abstraction of a DAM Catalog."""
 
+    @classmethod
     def __get_catalog_filename(self, catalog):
         """Given a catalog name or filename, return the catalog filename."""
-        if catalog.endswith('.fipcat'):
+        if catalog.endswith('.fpicat'):
             return catalog
         return "%s.fpicat" % (catalog)
 
-    def __get_catalog_init_string(self, catalog):
+    def __get_catalog_init_string(self):
         """Given a catalog name or filename, return its init string."""
-        return "sqlite:///%s" % (self.__get_catalog_filename(catalog))
+        filename = Catalog.__get_catalog_filename(self.catalog_name)
+        return "sqlite:///%s" % (filename)
 
     def __init__(self, catalog_name):
         """Initialize a new catalog."""
-        init_string = self.__get_catalog_init_string(catalog_name)
+        self.catalog_name = catalog_name
+        init_string = self.__get_catalog_init_string()
         self.engine = create_engine(init_string)
         self.Session = sessionmaker(bind=self.engine)
+
+    def create(self):
+        """Create a new catalog."""
+        init_string = self.__get_catalog_init_string()
         if not database_exists(init_string):
             create_database(init_string)
             Base.metadata.create_all(self.engine)
