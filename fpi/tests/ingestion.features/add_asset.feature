@@ -5,15 +5,21 @@ Feature: Ingest files into the catalog.
 
 Scenario: Add a file at its original location, as a default option.
     Given the command to ingest assets
-        And an image file at its destination location of "a/b/c/a.jpg"
-        And a catalog file named "test_catalog.fpicat"
-    When ingesting assets into the catalog and keep its location
-    Then the file metadata is found in the catalog.
-
-Scenario: Add a file at its original location.
-    Given the command to ingest assets
         And the option to add a new file at its position
-        And an image file at its destination location of "a/b/c/a.jpg"
-        And a catalog file named "test_catalog.fpicat"
-    When ingesting assets into the catalog and keep its location
-    Then the file metadata is found in the catalog.
+        And an empty catalog file named "test_catalog.fpicat"
+        And an image file at "data/samples/DCIM/100FPIAM/FPI_0001.JPG"
+    When ingesting assets into the catalog
+    Then one asset is in the catalog with its attributes
+        And the original file attributes are stored within the asset
+            | device_id   | inode | filename     | path          | size    |
+            |     1794    |  142  | FPI_0001.JPG | DCIM/100FPIAM | 4342771 |
+        And the destination file attributes are stored within the asset
+            | device_id   | filename     | path          |
+            |     1794    | FPI_0001.JPG | DCIM/100FPIAM |
+        And the asset id is the MD5 hash "95afa056b2f53769933ff5027865258b".
+        # The MD5 hash is obtained from the concatenation of:
+        # - original device id as a 16-bit hexadecimal value. ("0000")
+        # - inode as a 64-bit hexadecimal value. ("0000000000000000")
+        # - original path whithout separators ("DCIM100FPIAM")
+        # - original filename ("FPI_0001.JPG")
+        # - original filesize as a 64-bit hexadecimal value.
