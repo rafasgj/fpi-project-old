@@ -2,12 +2,12 @@
 
 from sqlalchemy_utils import database_exists, create_database
 
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
 
+from base import Base
 
-Base = declarative_base()
+import dao
 
 
 class Catalog(object):
@@ -40,3 +40,12 @@ class Catalog(object):
             Base.metadata.create_all(self.engine)
         else:
             raise Exception("Refusing to overwrite catalog.")
+
+    def ingest(self, method, filelist):
+        """Ingest the files in filelist using the provided method."""
+        session = self.Session()
+        if method == 'add':
+            for file in filelist:
+                asset = dao.Asset(file)
+                session.add(asset)
+        session.commit()
