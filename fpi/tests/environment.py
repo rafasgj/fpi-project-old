@@ -12,11 +12,11 @@ def remove_catalog(context):
         os.unlink(catalog_file)
 
 
-def before_all(context):
+def before_feature(context, feature):
     """Execute before_all all tests have been executed."""
     remove_catalog(context)
 
 
-def after_all(context):
+def after_feature(context, feature):
     """Execute after all tests have been executed."""
     remove_catalog(context)
