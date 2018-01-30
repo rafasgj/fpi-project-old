@@ -7,6 +7,8 @@ from common.util import get_sqlite_init_string
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
+import os.path
+
 from dao import Asset
 import catalog
 
@@ -35,6 +37,13 @@ def given_option_add(context):
     context.option = 'add'
 
 
+@given('a device mounted at "{mountpoint}"')
+def given_mount_point(context, mountpoint):
+    """Ensure provided mount point is correct."""
+    assert os.path.ismount(mountpoint) is True
+    context.mountpoint = mountpoint
+
+
 @given('an image file at "{imagefile}"')
 def given_path_to_image_file(context, imagefile):
     """Prepare context for ingesting an image."""
@@ -44,7 +53,7 @@ def given_path_to_image_file(context, imagefile):
 @when('ingesting assets into the catalog')
 def when_ingest_by_add(context):
     """Ingest a file into the catalog and keep it where it is."""
-    context.catalog.ingest([context.filepath], context.option)
+    context.catalog.ingest(context.option, [context.filepath])
 
 
 @then('one asset is in the catalog with its attributes')
@@ -56,28 +65,28 @@ def check_if_asset_is_in_the_catalog(context):
 @then('the original file attributes are stored within the asset')
 def asset_original_file_attributes(context):
     """Verify original file attributes stored within the asset."""
-    expected = context.table.row[1]
+    device_id, inode, filename, path, size = context.table.rows[0]
     asset = context.session.query(Asset).one()
-    assert asset.original_device_id is expected['device_id']
-    assert asset.original_inode is expected['inode']
-    assert asset.original_filename is expected['filename']
-    assert asset.original_path is expected['path']
-    assert asset.original_size is expected['size']
+    assert asset.original_device_id == int(device_id.strip())
+    assert asset.original_inode == int(inode.strip())
+    assert asset.original_filename == filename.strip()
+    assert asset.original_path == path.strip()
+    assert asset.original_size == int(size.strip())
 
 
 @then('the destination file attributes are stored within the asset')
 def asset_destination_file_attributes(context):
     """Check if the destination file attributes were correctly saved."""
-    expected = context.table.row[1]
+    device_id, filename, path = context.table.rows[0]
     asset = context.session.query(Asset).one()
-    assert asset.device_id == expected['device_id']
-    assert asset.device_label == expected['device_id']
-    assert asset.filename == expected['filename']
-    assert asset.path == expected['path']
+    assert asset.device_id == int(device_id.strip())
+    # assert asset.device_label == device_id
+    assert asset.filename == filename.strip()
+    assert asset.path == path.strip()
 
 
-@then('the asset id is the MD5 hash "{md5_hash}".')
-def asset_id_is_correctly_computed(context, md5_hash):
+@then('the asset id is the MD5 hash "{hashvalue}"')
+def step_impl(context, hashvalue):
     """Check if th asset id was correctly obtained."""
     asset = context.session.query(Asset).one()
-    assert asset.device_id == md5_hash
+    assert asset.id == hashvalue.strip()
