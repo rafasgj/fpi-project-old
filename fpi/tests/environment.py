@@ -12,8 +12,8 @@ def remove_catalog(context):
         os.unlink(catalog_file)
 
 
-def before_feature(context, feature):
-    """Execute before_all all tests have been executed."""
+def before_scenario(context, scenario):
+    """Execute before each scenario."""
     remove_catalog(context)
 
 
