@@ -34,6 +34,7 @@ standard Python setups, so you will need to install the modules:
 * behave
 * flake8
 * flake8-docstrings
+* pygobject
 * migrate
 * sqlalchemy
 * sqlalchemy-utils
