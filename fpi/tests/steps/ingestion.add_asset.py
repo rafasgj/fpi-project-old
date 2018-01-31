@@ -47,46 +47,71 @@ def given_mount_point(context, mountpoint):
 @given('an image file at "{imagefile}"')
 def given_path_to_image_file(context, imagefile):
     """Prepare context for ingesting an image."""
-    context.filepath = imagefile
+    context.files = [imagefile]
 
 
 @when('ingesting assets into the catalog')
 def when_ingest_by_add(context):
     """Ingest a file into the catalog and keep it where it is."""
-    context.catalog.ingest(context.option, [context.filepath])
+    context.catalog.ingest(context.option, context.files)
 
 
 @then('one asset is in the catalog with its attributes')
-def check_if_asset_is_in_the_catalog(context):
+def then_one_asset_is_in_the_catalog(context):
     """Check if the asset was correctly stored in the catalog."""
     assert context.session.query(Asset).count() is 1
 
 
 @then('the original file attributes are stored within the asset')
-def asset_original_file_attributes(context):
+def then_asset_original_file_attributes_are_stored(context):
     """Verify original file attributes stored within the asset."""
-    device_id, inode, filename, path, size = context.table.rows[0]
-    asset = context.session.query(Asset).one()
-    assert asset.original_device_id == int(device_id.strip())
-    assert asset.original_inode == int(inode.strip())
-    assert asset.original_filename == filename.strip()
-    assert asset.original_path == path.strip()
-    assert asset.original_size == int(size.strip())
+    for device_id, inode, filename, path, size in context.table:
+        filename = filename.strip()
+        query = context.session.query(Asset)
+        asset = query.filter(Asset.filename == filename).one()
+        assert asset.original_device_id == int(device_id.strip())
+        assert asset.original_inode == int(inode.strip())
+        assert asset.original_filename == filename
+        assert asset.original_path == path.strip()
+        assert asset.original_size == int(size.strip())
 
 
 @then('the destination file attributes are stored within the asset')
-def asset_destination_file_attributes(context):
+def then_asset_destination_file_attributes_are_stored(context):
     """Check if the destination file attributes were correctly saved."""
-    device_id, filename, path = context.table.rows[0]
-    asset = context.session.query(Asset).one()
-    assert asset.device_id == int(device_id.strip())
-    # assert asset.device_label == device_id
-    assert asset.filename == filename.strip()
-    assert asset.path == path.strip()
+    for device_id, filename, path in context.table:
+        filename = filename.strip()
+        query = context.session.query(Asset)
+        asset = query.filter(Asset.filename == filename).one()
+        assert asset.device_id == int(device_id.strip())
+        # assert asset.device_label == device_id
+        assert asset.filename == filename
+        assert asset.path == path.strip()
 
 
 @then('the asset id is the MD5 hash "{hashvalue}"')
-def step_impl(context, hashvalue):
+def then_asset_id_is_md5_hash(context, hashvalue):
     """Check if th asset id was correctly obtained."""
     asset = context.session.query(Asset).one()
     assert asset.id == hashvalue.strip()
+
+
+@given('a list of files')
+def given_list_of_files(context):
+    """Set list of files to be ingested."""
+    context.files = [row['filename'] for row in context.table]
+
+
+@then('there are {some} assets is the catalog, with its attributes')
+def then_some_assets_are_stored(context, some):
+    """Check if the right number of assets were added to the catalog."""
+    assert context.session.query(Asset).count() is int(some)
+
+
+@then('the assets id is a MD5 hash')
+def then_check_assets_id_hash(context):
+    """Check if th assets id was correctly obtained."""
+    for filename, md5 in context.table:
+        query = context.session.query(Asset)
+        asset = query.filter(Asset.filename == filename.strip()).one()
+        assert asset.id == md5.strip()
