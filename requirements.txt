@@ -2,17 +2,22 @@
 # Use this file to add Python dependencies.
 #
 # Install dependencies with:
-#    pip3 install -r requirements.txt
-# Update with:
-#    pip3 install -U -r requirement.txt
+#    python3 -m pip install -r requirements.txt
+# Update them with:
+#    python3 -m pip install -U -r requirement.txt
 #
 
-behave
+# GObject
+pygobject == 3.27.1
 
-sqlalchemy
-sqlalchemy-utils
-
-flake8
-flake8-docstrings
-
+# SQLAlchemy ORM
+sqlalchemy == 1.2.2
+sqlalchemy-utils == 0.32.21
 # migrate
+
+# BDD / Tests
+behave >= 1.2.5
+
+# Coding standards
+flake8 >= 3.5.0
+flake8-docstrings >= 1.3.0
