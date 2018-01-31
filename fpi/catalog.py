@@ -5,6 +5,8 @@ from sqlalchemy_utils import database_exists, create_database
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
 
+import datetime
+
 from base import Base
 
 import dao
@@ -41,11 +43,14 @@ class Catalog(object):
         else:
             raise Exception("Refusing to overwrite catalog.")
 
-    def ingest(self, method, filelist):
+    def ingest(self, method, filelist, session_name=None):
         """Ingest the files in filelist using the provided method."""
+        if session_name is None:
+            now = datetime.datetime.utcnow()
+            session_name = now.strftime("%Y-%m-%dT%H:%M:%S.%f%z")
         session = self.Session()
         if method == 'add':
             for file in filelist:
-                asset = dao.Asset(file)
+                asset = dao.Asset(file, session_name)
                 session.add(asset)
         session.commit()

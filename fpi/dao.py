@@ -1,12 +1,12 @@
 """Define the data objects used on the system."""
 
-from sqlalchemy import Column, String, Integer
+from sqlalchemy import Column, String, Integer, DateTime
 
-import os
-import os.path
+import os, os.path
 import hashlib
+import datetime
 
-import gobject_import
+import gobject_import   # noqa: F401
 from gi.repository import GExiv2
 
 from base import Base
@@ -17,14 +17,11 @@ class Asset(Base):
 
     __tablename__ = "assets"
     id = Column(String, primary_key=True)
-    original_device_id = Column(Integer)
-    original_inode = Column(Integer)
-    original_path = Column(String)
-    original_filename = Column(String)
-    original_size = Column(Integer)
     device_id = Column(Integer)
     path = Column(String)
     filename = Column(String)
+    import_time = Column(DateTime)
+    import_session = Column(String)
 
     def __get_mount_point(self, dirname):
         while dirname != "/":
@@ -33,7 +30,7 @@ class Asset(Base):
             dirname = os.path.dirname(dirname)
         return dirname
 
-    def __init__(self, filepath):
+    def __init__(self, filepath, session_name):
         """Initialize an asset given a path to it."""
         # asset attributes
         dirname, basename = os.path.split(filepath)
@@ -48,3 +45,6 @@ class Asset(Base):
         md5hash = hashlib.md5()
         md5hash.update(thumbnail)
         self.id = md5hash.hexdigest()
+        # import data
+        self.import_time = datetime.datetime.now()
+        self.import_session = session_name

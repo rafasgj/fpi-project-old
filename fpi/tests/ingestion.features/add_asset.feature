@@ -15,6 +15,8 @@ Scenario: Add a file at its original location.
             | device_id | filename     | path           |
             |    1794   | FPI_0001.JPG | /DCIM/100FPIAM |
         And the asset id is the MD5 hash "4613ad3fd0c246dd5bb96b33b09c2996"
+        And its import time is within 2 seconds from the current time
+        And the import session title is the UTC time when the scenario started
 
 Scenario: Add several files at their original location.
     Given the command to ingest assets
@@ -50,3 +52,14 @@ Scenario: Add several files at their original location.
         | FPI_0005.JPG | 8dde366bfc65efd9fabcc74728061740 |
         | FPI_0006.JPG | d41d8cd98f00b204e9800998ecf8427e |
         | FPI_0007.JPG | c8b07cb389edaaf736b2486361b5e593 |
+
+Scenario: Add a file at its original location, for a named session.
+    Given the command to ingest assets
+        And the option to add a new file at its position
+        And a session name of "import session"
+        And an empty catalog file named "test_catalog.fpicat"
+        And a device mounted at "data/samples"
+        And an image file at "data/samples/DCIM/100FPIAM/FPI_0001.JPG"
+    When ingesting assets into the catalog
+    Then one asset is in the catalog with its attributes
+        And the import session title is "import session"

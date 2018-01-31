@@ -8,6 +8,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 import os.path
+import datetime
 
 from dao import Asset
 import catalog
@@ -17,6 +18,8 @@ import catalog
 def given_command_ingest(context):
     """Set command to ingest assets into a catalog."""
     context.command = 'ingest'
+    now = datetime.datetime.utcnow()
+    context.session_name = now.strftime("%Y-%m-%dT%H:%M:%S.%f%z")
 
 
 @given('an empty catalog file named "{filename}"')
@@ -53,7 +56,7 @@ def given_path_to_image_file(context, imagefile):
 @when('ingesting assets into the catalog')
 def when_ingest_by_add(context):
     """Ingest a file into the catalog and keep it where it is."""
-    context.catalog.ingest(context.option, context.files)
+    context.catalog.ingest(context.option, context.files, context.session_name)
 
 
 @then('one asset is in the catalog with its attributes')
@@ -101,3 +104,38 @@ def then_check_assets_id_hash(context):
         query = context.session.query(Asset)
         asset = query.filter(Asset.filename == filename.strip()).one()
         assert asset.id == md5.strip()
+
+
+@then('its import time is within {some} seconds from the current time')
+def then_check_import_time(context, some):
+    """Check if the import procedure was efficent enough."""
+    query = context.session.query(Asset)
+    basename = os.path.basename(context.files[0])
+    asset = query.filter(Asset.filename == basename).one()
+    now = datetime.datetime.now()
+    assert asset.import_time <= now
+    assert (now - asset.import_time).total_seconds() < int(some.strip())
+
+
+@then('the import session title is the UTC time when the scenario started')
+def then_check_import_session_default(context):
+    """Check if the import session name matches the default session name."""
+    query = context.session.query(Asset)
+    basename = os.path.basename(context.files[0])
+    asset = query.filter(Asset.filename == basename).one()
+    assert asset.import_session == context.session_name
+
+
+@given('a session name of "{session_name}"')
+def given_session_name(context, session_name):
+    """Set the name of the current import session."""
+    context.session_name = session_name
+
+
+@then('the import session title is "{session_name}"')
+def then_check_session_name(context, session_name):
+    """Verify if the session name was correctly configured."""
+    query = context.session.query(Asset)
+    basename = os.path.basename(context.files[0])
+    asset = query.filter(Asset.filename == basename).one()
+    assert asset.import_session == context.session_name
