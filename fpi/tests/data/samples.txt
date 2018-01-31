@@ -1,0 +1,14 @@
+Original samples source:
+
+FPI_0001:
+    A JPEG version of the ISO 12233 chart by Stephen H. Westin.
+    © 2004 Cornell University Program of Computer Graphics.
+
+FPI_0002:
+    https://res.cloudinary.com/demo/image/upload/a_exif/exif_sample.jpg
+
+FPI_0003, FPI_0004, FPI_0005, FPI_0006:
+    https://iptc.org/std/photometadata/examples
+
+FPI_0007:
+    https://iptc.org/std/photometadata/examples/more
