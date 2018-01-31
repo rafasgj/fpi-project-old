@@ -62,20 +62,6 @@ def then_one_asset_is_in_the_catalog(context):
     assert context.session.query(Asset).count() is 1
 
 
-@then('the original file attributes are stored within the asset')
-def then_asset_original_file_attributes_are_stored(context):
-    """Verify original file attributes stored within the asset."""
-    for device_id, inode, filename, path, size in context.table:
-        filename = filename.strip()
-        query = context.session.query(Asset)
-        asset = query.filter(Asset.filename == filename).one()
-        assert asset.original_device_id == int(device_id.strip())
-        assert asset.original_inode == int(inode.strip())
-        assert asset.original_filename == filename
-        assert asset.original_path == path.strip()
-        assert asset.original_size == int(size.strip())
-
-
 @then('the destination file attributes are stored within the asset')
 def then_asset_destination_file_attributes_are_stored(context):
     """Check if the destination file attributes were correctly saved."""

@@ -6,6 +6,9 @@ import os
 import os.path
 import hashlib
 
+import gobject_import
+from gi.repository import GExiv2
+
 from base import Base
 
 
@@ -23,30 +26,25 @@ class Asset(Base):
     path = Column(String)
     filename = Column(String)
 
+    def __get_mount_point(self, dirname):
+        while dirname != "/":
+            if os.path.ismount(dirname):
+                break
+            dirname = os.path.dirname(dirname)
+        return dirname
+
     def __init__(self, filepath):
         """Initialize an asset given a path to it."""
-        # original file attributes
-        st = os.stat(filepath)
-        self.original_device_id = st.st_dev
-        self.original_inode = st.st_ino
-        self.original_size = st.st_size
-        dirname, basename = os.path.split(filepath)
-        mount = dirname
-        while mount != "/":
-            if os.path.ismount(mount):
-                break
-            mount = os.path.dirname(mount)
-        self.original_filename = basename
-        self.original_path = dirname[len(mount):]
         # asset attributes
-        self.device_id = self.original_device_id
-        self.path = self.original_path
-        self.filename = self.original_filename
-        data = '{:04x}'.format(self.original_device_id)
-        data += '{:016x}'.format(self.original_inode)
-        data += self.original_path.replace('/', '')
-        data += self.original_filename
-        data += '{:016x}'.format(self.original_size)
+        dirname, basename = os.path.split(filepath)
+        st = os.stat(filepath)
+        self.device_id = st.st_dev
+        self.filename = basename
+        mount = self.__get_mount_point(dirname)
+        self.path = dirname[len(mount):]
+        # asset id
+        exif = GExiv2.Metadata(filepath)
+        thumbnail = exif.get_exif_thumbnail()
         md5hash = hashlib.md5()
-        md5hash.update(data.encode('utf-8'))
+        md5hash.update(thumbnail)
         self.id = md5hash.hexdigest()
