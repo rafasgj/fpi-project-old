@@ -1,3 +1,7 @@
+# testing data
+/fpi/tests/data/samples/
+*.fpicat
+
 # macOS specific files.
 .DS_Store
 
