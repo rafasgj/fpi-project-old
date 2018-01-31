@@ -18,9 +18,18 @@ invaluable contribution, any help you can provide is of great value.
 To contribute to f/π's development, you'll need:
 
 * Python 3.5 (or later)
+* Git-lfs
 
-And, as the project uses some Python modules that are not usually found
-on standard Python setups, so you will need to install the modules:
+Python 3.5 is supported by all major Linux distributions. Under macOS
+follow the instructions on [Python.org](https://python.org).
+
+[Git-lfs](https://git-lfs.github.com) makes the support for large binary
+files under Git much more efficient, and is easily installed on any
+current Linux distro. Under macOS, it is available through
+[Homebrew](https://brew.sh).
+
+As the project uses some Python modules that are not usually found on
+standard Python setups, so you will need to install the modules:
 
 * behave
 * flake8
