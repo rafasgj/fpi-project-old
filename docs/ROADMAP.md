@@ -58,7 +58,8 @@ fpi list catalog_path
 
 ### List sessions
 
-fpi session catalog_path
+fpi session catalog_path <br/>
+fpi session catalog_path --list
 
 > List all the sessions stored in the system. Every ingestion is a
   session, and sessions can be named. (See ingestion option --session.)
