@@ -1,6 +1,7 @@
 """Define the data objects used on the system."""
 
 from sqlalchemy import Column, String, Integer, DateTime
+from sqlalchemy.ext.hybrid import hybrid_property
 
 import os, os.path
 import hashlib
@@ -23,7 +24,7 @@ class Asset(Base):
     import_time = Column(DateTime)
     import_session = Column(String)
 
-    @property
+    @hybrid_property
     def fullpath(self):
         """Obtain the full path of an asset."""
         return os.path.join(self.path, self.filename)
