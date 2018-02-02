@@ -75,3 +75,10 @@ class Catalog(object):
         """Search for assets in the catalog."""
         session = self.Session()
         return session.query(dao.Asset).all()
+
+    def sessions(self):
+        """Search for assets in the catalog."""
+        session = self.Session()
+        field = dao.Asset.import_session
+        query = session.query(field).group_by(field)
+        return [s.import_session for s in query.all()]
