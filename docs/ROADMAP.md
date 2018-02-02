@@ -81,7 +81,7 @@ fpi info catalog_path (--file | --asset | --session) _id_
 | %d         | Two digit day.                                        |
 | %M         | Three letter month abreviation.                       |
 | %s         | Session name (set with --session)                     |
-| %[N[].X]]c | A number sequence, with N (or 1) digits starting at N |
+| %[N[.X]]c  | A number sequence, with N (or 1) digits starting at X |
 
 ## Version α-2
 
