@@ -73,15 +73,15 @@ fpi info catalog_path (--file | --asset | --session) _id_
 
 ### Filename Generation rules.
 
-|   Code         | Description.                                          |
-| :------------- | :---------------------------------------------------- |
-| %Y/yyyy        | Four digit year.                                      |
-| %y/yy          | Two digit year.                                       |
-| %m/mm          | Two digit month.                                      |
-| %d/dd          | Two digit day.                                        |
-| %M/mmm         | Three letter month abreviation.                       |
-| %s/sss         | Session name (set with --session)                     |
-| %[N.X]c\|c\*.X | A number sequence, with N (or c) digits starting at N |
+|    Code    | Description.                                          |
+| :--------- | :---------------------------------------------------- |
+| %Y         | Four digit year.                                      |
+| %y         | Two digit year.                                       |
+| %m         | Two digit month.                                      |
+| %d         | Two digit day.                                        |
+| %M         | Three letter month abreviation.                       |
+| %s         | Session name (set with --session)                     |
+| %[N[].X]]c | A number sequence, with N (or 1) digits starting at N |
 
 ## Version α-2
 
@@ -110,6 +110,7 @@ fpi label catalog_path --remove label_name
 fpi attrib catalog_path asset_id attribute:value ...
 
 > Set the value of an attribute of an asset ingested in the system.
+
   |  Attribute  | Valid values                                        |
   | :---------: | :-------------------------------------------------- |
   |  rating (r) | Numerical: 0-5.                                     |
@@ -119,6 +120,7 @@ fpi attrib catalog_path asset_id attribute:value ...
 fpi list catalog_path criteria
 
 > Search for assets that matches the given criteria.
+
   | Attribute Type |    Operators                   |
   | :------------- | :----------------------------: |
   | Numerical      | =, <, <=, >, >=                |
@@ -160,6 +162,7 @@ fpi preset catalog_path --add preset_type preset_name preset_file
 > Type: ingest<br/>
   Add a new ingestion preset to the system. The preset file can have
   any of the following:
+
   | Option     | Type    | Description                                 |
   | :--------- | :------ | :------------------------------------------ |
   | renameRule | String  | The rename rule to use.                     |
