@@ -1,7 +1,7 @@
 Feature: List assets in a catalog.
     As a User,
     I want the list the assets stored in a catalog.
-    So that I can decide if I need to add another asset.
+    So that I can view information about the asset.
 
 Scenario: List assets in the catalog.
     Given the command to list assets in the catalog
