@@ -23,6 +23,11 @@ class Asset(Base):
     import_time = Column(DateTime)
     import_session = Column(String)
 
+    @property
+    def fullpath(self):
+        """Obtain the full path of an asset."""
+        return os.path.join(self.path, self.filename)
+
     def __get_mount_point(self, dirname):
         while dirname != "/":
             if os.path.ismount(dirname):

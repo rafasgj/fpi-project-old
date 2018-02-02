@@ -70,3 +70,8 @@ class Catalog(object):
     def __ingest_file(self, session, session_name, filename):
         asset = dao.Asset(filename, session_name)
         session.add(asset)
+
+    def search(self):
+        """Search for assets in the catalog."""
+        session = self.Session()
+        return session.query(dao.Asset).all()
