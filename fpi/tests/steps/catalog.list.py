@@ -1,4 +1,4 @@
-"""Test de Asset data object."""
+"""Steps for the list command."""
 
 from behave import given, when, then
 
@@ -12,7 +12,7 @@ def given_command_list(context):
 
 
 @given('a catalog file named as "{catalog_file}"')
-def givent_c(context, catalog_file):
+def given_catalog_file(context, catalog_file):
     """Set the filename of the catalog."""
     context.catalog_file = catalog_file
     context.catalog = Catalog(context.catalog_file)
