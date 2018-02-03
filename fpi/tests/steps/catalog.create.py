@@ -1,4 +1,4 @@
-"""Tests the creation of new f/π catalogs."""
+"""Tests for the creation of new f/π catalogs."""
 
 from behave import given, when, then
 
