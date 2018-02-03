@@ -7,6 +7,7 @@ from sqlalchemy import create_engine
 
 import datetime
 import os
+from collections import namedtuple
 
 from base import Base
 import dao
@@ -82,3 +83,22 @@ class Catalog(object):
         field = dao.Asset.import_session
         query = session.query(field).group_by(field)
         return [s.import_session for s in query.all()]
+
+    def info(self, object, id):
+        """Get information about an object, given its identifier."""
+        if object is "session":
+            return self.__info_session(id)
+        else:
+            raise Exception("Invalid object.")
+
+    def __info_session(self, session_id):
+        SI = namedtuple('SessionInfo',
+                        'session_name creation_time assets')
+        RS = namedtuple('SessionAsset', 'id fullpath')
+        session = self.Session()
+        query = session.query(dao.Asset).order_by(dao.Asset.import_time)
+        items = query.filter(dao.Asset.import_session == session_id).all()
+        time = items[0].import_time
+        assets = [RS(id=a.id, fullpath=a.fullpath) for a in items]
+        return SI(session_name=session_id, creation_time=time,
+                  assets=assets)
