@@ -53,57 +53,46 @@ class Catalog(object):
             session_name = now.strftime("%Y-%m-%dT%H:%M:%S.%f%z")
         session = self.Session()
         if method == 'add':
-            for f in filelist:
-                if os.path.isfile(f):
-                    self.__ingest_file(session, session_name, f)
-                else:
-                    self.__ingest_dir(session, session_name, f, recurse)
+            target_dir = None
         elif method == "copy":
             target_dir = kwargs['target_dir']
             if not os.path.exists(target_dir):
                 os.makedirs(target_dir)
-            for f in filelist:
-                if os.path.isfile(f):
-                    fname = os.path.join(target_dir, os.path.basename(f))
-                    self.__ingest_copy_file(session, session_name,
-                                            f, fname)
-                else:
-                    self.__ingest_copy_dir(session, session_name,
-                                           f, target_dir, recurse)
         else:
             raise Exception("Invalid ingestion method.")
+
+        for f in filelist:
+            if os.path.isfile(f):
+                self.__ingest_file(session, session_name, f, target_dir)
+            else:
+                self.__ingest_dir(session, session_name,
+                                  f, target_dir, recurse)
         session.commit()
 
-    def __ingest_copy_file(self, session, session_name, src, dest):
-        shutil.copy2(src, dest)
-        self.__ingest_file(session, session_name, dest)
-
-    def __ingest_copy_dir(self, session, session_name, dirname, tgt, recurse):
-        for entry in os.scandir(dirname):
-            if entry.is_file():
-                raise Exception("Copy file")
-                fname = os.path.join(tgt, os.path.basename(entry.path))
-                self.__ingest_copy_file(session, session_name,
-                                        entry.path, fname)
-            else:
-                if recurse:
-                    raise Exception("Into recursion")
-                    self.__ingest_copy_dir(session, session_name,
-                                           entry.path, tgt, True)
-
-    def __ingest_dir(self, session, session_name, dirname, recurse):
-        for entry in os.scandir(dirname):
-            if entry.is_file():
-                self.__ingest_file(session, session_name, entry.path)
-            else:
-                if recurse:
-                    self.__ingest_dir(session, session_name, entry.path, True)
-
-    def __ingest_file(self, session, session_name, filename):
-        asset = dao.Asset(filename, session_name)
+    def __ingest_file(self, session, session_name, src, target_dir=None):
+        if target_dir is None:
+            fname = src
+        else:
+            fname = os.path.join(target_dir, os.path.basename(src))
+            shutil.copy2(src, fname)
+        asset = dao.Asset(fname, session_name)
         session.add(asset)
-        image = dao.Image(asset, filename)
+        image = dao.Image(asset, fname)
         session.add(image)
+
+    def __ingest_dir(self, session, session_name, dirname, tgt, recurse):
+        for entry in os.scandir(dirname):
+            if entry.is_file():
+                if tgt is None:
+                    fname = None
+                else:
+                    fname = os.path.join(tgt, os.path.basename(entry.path))
+                self.__ingest_file(session, session_name,
+                                   entry.path, fname)
+            else:
+                if recurse:
+                    self.__ingest_dir(session, session_name,
+                                      entry.path, tgt, True)
 
     def search(self):
         """Search for assets in the catalog."""
