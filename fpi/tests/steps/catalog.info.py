@@ -18,24 +18,24 @@ def given_option_session(context):
 @given('the name of a session as "{session_name}"')
 def given_session_name(context, session_name):
     """Given the session name."""
-    context.session_name = session_name
+    context.parameter = session_name
 
 
 @when('requesting information about an item in the catalog')
 def when_request_info(context):
     """Request info about an item in the catalog."""
     context.result = context.catalog.info(context.option,
-                                          context.session_name)
+                                          context.parameter)
 
 
 @then('I expect to see the session name')
 def then_session_name_is_correct(context):
     """Check if the session name was correctly retrieved."""
-    assert context.result.session_name == context.session_name
+    assert context.result.session_name == context.parameter
 
 
 @then('I expect to see the fullpath of the files and the asset id')
-def then_check_asset_fullpath_and_id(context):
+def then_check_session_asset_fullpath_and_id(context):
     """Check asset fullpath and id."""
     assets = [(r['id'], r['fullpath']) for r in context.table]
     assert len(context.result.assets) == len(assets)
@@ -47,3 +47,42 @@ def then_check_asset_fullpath_and_id(context):
         else:
             msg = "Asset not validated: (%s,%s)" % asset
             raise Exception(msg)
+
+
+@given('the option to obtain information abount as Asset')
+def given_option_asset(context):
+    """Set option to Asset."""
+    context.option = "asset"
+
+
+@given('the asset id "{asset_id}"')
+def given_asset_id(context, asset_id):
+    """Set the query parameter to the given asset id."""
+    context.parameter = asset_id
+
+
+@then('I expect to see the asset fullpath and id')
+def then_check_asset_fullpath_and_id(context):
+    """Check if the fullpath and id are correct."""
+    row = context.table[0]
+    assert context.result.id == row['id']
+    assert context.result.fullpath == row['fullpath']
+
+
+@then('the asset image information for Width, Height and Capture Date/Time')
+def then_check_asset_image_information(context):
+    """Check if the asset image attributes are correct."""
+    row = context.table[0]
+    assert len(context.result.virtual_copies) == 1
+    img = context.result.virtual_copies[0]
+    assert img.width == int(row['Width'].strip())
+    assert img.height == int(row['Height'].strip())
+    dt = img.capture_datetime.strftime("%Y-%m-%d %H:%M:%S")
+    # 2011-10-28 12:00:00
+    assert dt.startswith("2011-")
+    assert dt.startswith("2011-10")
+    assert dt.startswith("2011-10-28")
+    assert dt.endswith(":00")
+    assert dt.endswith(":00:00")
+    assert dt.endswith(" 12:00:00")
+    assert dt == row['Capture Date Time'].strip()
