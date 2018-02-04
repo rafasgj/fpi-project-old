@@ -7,6 +7,7 @@ from sqlalchemy import create_engine
 
 import datetime
 import os
+import shutil
 from collections import namedtuple
 
 from base import Base
@@ -44,9 +45,9 @@ class Catalog(object):
         else:
             raise Exception("Refusing to overwrite catalog.")
 
-    def ingest(self, method, filelist, session_name=None, options=None):
+    def ingest(self, method, filelist, session_name=None, *args, **kwargs):
         """Ingest the files in filelist using the provided method."""
-        recurse = 'recurse' in options if options is not None else False
+        recurse = kwargs.get('recurse', False)
         if session_name is None:
             now = datetime.datetime.utcnow()
             session_name = now.strftime("%Y-%m-%dT%H:%M:%S.%f%z")
@@ -57,8 +58,38 @@ class Catalog(object):
                     self.__ingest_file(session, session_name, f)
                 else:
                     self.__ingest_dir(session, session_name, f, recurse)
-
+        elif method == "copy":
+            target_dir = kwargs['target_dir']
+            if not os.path.exists(target_dir):
+                os.makedirs(target_dir)
+            for f in filelist:
+                if os.path.isfile(f):
+                    fname = os.path.join(target_dir, os.path.basename(f))
+                    self.__ingest_copy_file(session, session_name,
+                                            f, fname)
+                else:
+                    self.__ingest_copy_dir(session, session_name,
+                                           f, target_dir, recurse)
+        else:
+            raise Exception("Invalid ingestion method.")
         session.commit()
+
+    def __ingest_copy_file(self, session, session_name, src, dest):
+        shutil.copy2(src, dest)
+        self.__ingest_file(session, session_name, dest)
+
+    def __ingest_copy_dir(self, session, session_name, dirname, tgt, recurse):
+        for entry in os.scandir(dirname):
+            if entry.is_file():
+                raise Exception("Copy file")
+                fname = os.path.join(tgt, os.path.basename(entry.path))
+                self.__ingest_copy_file(session, session_name,
+                                        entry.path, fname)
+            else:
+                if recurse:
+                    raise Exception("Into recursion")
+                    self.__ingest_copy_dir(session, session_name,
+                                           entry.path, tgt, True)
 
     def __ingest_dir(self, session, session_name, dirname, recurse):
         for entry in os.scandir(dirname):

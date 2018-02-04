@@ -33,21 +33,23 @@ class Asset(Base):
         """Obtain the full path of an asset."""
         return os.path.join(self.path, self.filename)
 
-    def __get_mount_point(self, dirname):
-        while dirname != "/":
-            if os.path.ismount(dirname):
-                break
-            dirname = os.path.dirname(dirname)
-        return dirname
+    @staticmethod
+    def __get_mount_point(filepath):
+        while len(filepath) > 0:
+            if os.path.ismount(filepath):
+                return filepath
+            filepath = os.path.dirname(filepath)
+        return ""
 
     def __init__(self, filepath, session_name):
         """Initialize an asset given a path to it."""
         # asset attributes
         dirname, basename = os.path.split(filepath)
+        dirname = os.path.realpath(dirname)
         st = os.stat(filepath)
         self.device_id = st.st_dev
         self.filename = basename
-        mount = self.__get_mount_point(dirname)
+        mount = Asset.__get_mount_point(dirname)
         self.path = dirname[len(mount):]
         # asset id
         exif = GExiv2.Metadata(filepath)
