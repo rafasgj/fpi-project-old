@@ -71,6 +71,8 @@ class Catalog(object):
     def __ingest_file(self, session, session_name, filename):
         asset = dao.Asset(filename, session_name)
         session.add(asset)
+        image = dao.Image(asset, filename)
+        session.add(image)
 
     def search(self):
         """Search for assets in the catalog."""
@@ -84,10 +86,12 @@ class Catalog(object):
         query = session.query(field).group_by(field)
         return [s.import_session for s in query.all()]
 
-    def info(self, object, id):
+    def info(self, object, parameter):
         """Get information about an object, given its identifier."""
         if object is "session":
-            return self.__info_session(id)
+            return self.__info_session(parameter)
+        if object is "asset":
+            return self.__info_asset(parameter)
         else:
             raise Exception("Invalid object.")
 
@@ -102,3 +106,8 @@ class Catalog(object):
         assets = [RS(id=a.id, fullpath=a.fullpath) for a in items]
         return SI(session_name=session_id, creation_time=time,
                   assets=assets)
+
+    def __info_asset(self, asset_id):
+        session = self.Session()
+        result = session.query(dao.Asset).filter(dao.Asset.id == asset_id)
+        return result.one()
