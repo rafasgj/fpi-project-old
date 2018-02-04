@@ -5,7 +5,7 @@ Feature: Ingest files into the catalog, by copying them.
     So that the files are not stored in memory cards, and I have
         multiple copies of them.
 
-Scenario: Add a file by copying them to another location.
+Scenario: Add a file to the catalog by copying it to another location.
     Given the command to ingest assets
         And the option to copy the file to directory "data/catalog/pics"
         And an empty catalog file named "test_catalog.fpicat"
@@ -21,7 +21,7 @@ Scenario: Add a file by copying them to another location.
         | filename                       |
         | data/catalog/pics/FPI_0001.JPG |
 
-Scenario: Add several file by copying them to another location.
+Scenario: Add several files by copying them to another location.
     Given the command to ingest assets
         And the option to copy the file to directory "data/catalog/pics"
         And an empty catalog file named "test_catalog.fpicat"
