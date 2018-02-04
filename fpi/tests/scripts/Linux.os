@@ -15,7 +15,7 @@ Mount() {
 }
 
 Unmount() {
-    while [ $# -gt 1 ]
+    while [ $# -gt 0 ]
     do
         sudo umount "$1"
         shift
