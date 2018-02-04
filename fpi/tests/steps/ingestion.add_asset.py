@@ -19,7 +19,7 @@ def given_command_ingest(context):
     """Set command to ingest assets into a catalog."""
     context.command = 'ingest'
     context.option = 'add'
-    context.suboptions = None
+    context.suboptions = {}
     now = datetime.datetime.utcnow()
     context.session_name = now.strftime("%Y-%m-%dT%H:%M:%S.%f%z")
 
@@ -62,7 +62,7 @@ def when_ingest_by_add(context):
         context.option,
         context.files,
         context.session_name,
-        context.suboptions)
+        **context.suboptions)
 
 
 @then('one asset is in the catalog with its attributes')
@@ -156,4 +156,4 @@ def given_source_directory(context, sourcedir):
 @given('the option to ingest recursively')
 def given_suboption_recurse(context):
     """Set the option to recursively ingest directories."""
-    context.suboptions = ['recurse']
+    context.suboptions['recurse'] = True
