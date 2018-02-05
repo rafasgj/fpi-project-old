@@ -14,6 +14,10 @@ from base import Base
 import dao
 
 
+def _add(src, dest):
+    pass
+
+
 class Catalog(object):
     """Implements the abstraction of a DAM Catalog."""
 
@@ -45,53 +49,53 @@ class Catalog(object):
         else:
             raise Exception("Refusing to overwrite catalog.")
 
-    def ingest(self, method, filelist, session_name=None, *args, **kwargs):
+    def ingest(self, method, filelist, sname=None, *args, **kwargs):
         """Ingest the files in filelist using the provided method."""
         recurse = kwargs.get('recurse', False)
-        if session_name is None:
+        if sname is None:
             now = datetime.datetime.utcnow()
-            session_name = now.strftime("%Y-%m-%dT%H:%M:%S.%f%z")
+            sname = now.strftime("%Y-%m-%dT%H:%M:%S.%f%z")
         session = self.Session()
         if method == 'add':
-            target_dir = None
-        elif method == "copy":
-            target_dir = kwargs['target_dir']
-            if not os.path.exists(target_dir):
-                os.makedirs(target_dir)
+            tgt = None
+            fn = _add
+        elif method == 'copy' or method == 'move':
+            tgt = kwargs['target_dir']
+            if not os.path.exists(tgt):
+                os.makedirs(tgt)
+            fn = shutil.copy2 if method == 'copy' else shutil.move
         else:
             raise Exception("Invalid ingestion method.")
 
         for f in filelist:
             if os.path.isfile(f):
-                self.__ingest_file(session, session_name, f, target_dir)
+                self.__ingest_file(fn, session, sname, f, tgt)
             else:
-                self.__ingest_dir(session, session_name,
-                                  f, target_dir, recurse)
+                self.__ingest_dir(fn, session, sname, f, tgt, recurse)
         session.commit()
 
-    def __ingest_file(self, session, session_name, src, target_dir=None):
-        if target_dir is None:
+    def __ingest_file(self, method, session, sname, src, tgt=None):
+        if tgt is None:
             fname = src
         else:
-            fname = os.path.join(target_dir, os.path.basename(src))
-            shutil.copy2(src, fname)
-        asset = dao.Asset(fname, session_name)
+            fname = os.path.join(tgt, os.path.basename(src))
+        method(src, fname)
+        asset = dao.Asset(fname, sname)
         session.add(asset)
         image = dao.Image(asset, fname)
         session.add(image)
 
-    def __ingest_dir(self, session, session_name, dirname, tgt, recurse):
-        for entry in os.scandir(dirname):
+    def __ingest_dir(self, method, session, sname, dir, tgt, recurse):
+        for entry in os.scandir(dir):
             if entry.is_file():
                 if tgt is None:
                     fname = None
                 else:
                     fname = os.path.join(tgt, os.path.basename(entry.path))
-                self.__ingest_file(session, session_name,
-                                   entry.path, fname)
+                self.__ingest_file(method, session, sname, entry.path, fname)
             else:
                 if recurse:
-                    self.__ingest_dir(session, session_name,
+                    self.__ingest_dir(method, session, sname,
                                       entry.path, tgt, True)
 
     def search(self):
