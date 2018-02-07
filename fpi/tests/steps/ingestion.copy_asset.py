@@ -26,4 +26,4 @@ def then_original_files_exist(context):
 def then_files_are_in_their_correct_places(context):
     """Check if the destination files are in the correct place."""
     for f in [row['filename'] for row in context.table]:
-        os.path.isfile(f)
+        assert os.path.isfile(f) is True
