@@ -10,6 +10,9 @@
 # temporary files
 *.swp
 
+# Visual Studio Code
+/.vscode/
+
 # Python specific
 __pycache__/
 *.pyc
