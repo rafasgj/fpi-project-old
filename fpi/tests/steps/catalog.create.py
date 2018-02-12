@@ -2,6 +2,9 @@
 
 from behave import given, when, then
 
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy import create_engine
+
 from common.util import check_catalog_exists, get_sqlite_init_string
 
 from catalog import Catalog
@@ -41,32 +44,16 @@ def step_check_catalog_is_empty_after_creation(context):
     """Create a catalog that is empty, and have the given name."""
     assert context.exception is None
     assert check_catalog_exists(context) is True
-
-
-@then('there is no Asset in the catalog.')
-def step_check_asset_count(context):
-    """Check if there are any Asset in the catalog."""
-    from sqlalchemy import create_engine
-    from sqlalchemy.orm import sessionmaker
     engine = create_engine(get_sqlite_init_string(context))
     session = sessionmaker(bind=engine)()
     assert session.query(Asset).count() is 0
 
 
 @given('that a catalog with the same name exists')
-def step_test_when_catalog_exists(context):
+def given_a_catalog_already_exists(context):
     """Ensure a catalog is already created before testing."""
     if not check_catalog_exists(context):
         try:
             Catalog(context.catalog_name).create()
         except Exception:
             pass
-
-
-@then('an "{exception}" is raised saing "{msg}"')
-def step_impl(context, exception, msg):
-    """Test if an exception is raised when the catalog exists."""
-    assert context.exception is not None
-    assert isinstance(context.exception, eval(exception)) is True
-    assert str(context.exception) == msg
-    assert check_catalog_exists(context) is True

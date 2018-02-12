@@ -46,8 +46,7 @@ def then_compare_filenames_and_ids(context):
 def given_assets_ingested_is_session(context, session_name):
     """Ensure assets were ingested in a specific session."""
     context.files = [row['filename'] for row in context.table]
-    context.catalog.ingest("add", context.files,
-                           session_name=session_name.strip())
+    context.catalog.ingest("add", context.files, session_name=session_name)
 
 
 @when('listing all sessions in the catalog')

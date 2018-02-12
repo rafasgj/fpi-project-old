@@ -1,6 +1,8 @@
 """Common database test utilities."""
 
 
+# Utility functions
+
 def get_catalog_file(context):
     """Generate a catalog file name for a context."""
     return "%s.fpicat" % (context.catalog_name)

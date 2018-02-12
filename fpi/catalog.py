@@ -49,13 +49,12 @@ class Catalog(object):
         else:
             raise Exception("Refusing to overwrite catalog.")
 
-    def ingest(self, method, filelist, sname=None, *args, **kwargs):
+    def ingest(self, method, filelist, *args, **kwargs):
         """Ingest the files in filelist using the provided method."""
-        recurse = kwargs.get('recurse', False)
-        if sname is None:
-            now = datetime.datetime.utcnow()
-            sname = now.strftime("%Y-%m-%dT%H:%M:%S.%f%z")
         session = self.Session()
+        if kwargs.get('session_name', None) is None:
+            now = datetime.datetime.utcnow()
+            kwargs['session_name'] = now.strftime("%Y-%m-%dT%H%M%S.%f%z")
         if method == 'add':
             tgt = None
             fn = _add
@@ -63,40 +62,75 @@ class Catalog(object):
             tgt = kwargs['target_dir']
             if not os.path.exists(tgt):
                 os.makedirs(tgt)
-            fn = shutil.copy2 if method == 'copy' else shutil.move
+            fn = shutil.copy2 if method == 'copy' else \
+                shutil.move
         else:
             raise Exception("Invalid ingestion method.")
 
+        kwargs['method'] = fn
+
         for f in filelist:
+            kwargs['source'] = f
             if os.path.isfile(f):
-                self.__ingest_file(fn, session, sname, f, tgt)
+                self.__ingest_file(session, kwargs)
             else:
-                self.__ingest_dir(fn, session, sname, f, tgt, recurse)
+                self.__ingest_dir(session, f, kwargs)
         session.commit()
 
-    def __ingest_file(self, method, session, sname, src, tgt=None):
-        if tgt is None:
-            fname = src
+    def __find_first(self, chlist, string):
+        if string is None:
+            return None
+        lst = [c for c in chlist]
+        return next((i for i, ch in enumerate(string) if ch in lst), None)
+
+    def __rename(self, src, options):
+        """Create a file path using the renaming rules."""
+        target = options.get('target_dir', None)
+        rule = options.get('rename', None)
+        if target is None and rule is None:
+            return src
         else:
-            fname = os.path.join(tgt, os.path.basename(src))
+            if rule is None:
+                fname = src
+            else:
+                assert self.__find_first('/:\\*?', rule) is None
+                rule += "{extension}"
+                _, extension = os.path.splitext(options['source'])
+                metadata = options.get('metadata', None)
+                assert metadata is not None
+                dt = metadata.capture_datetime
+                rep = {"year": dt.strftime("%Y"),
+                       "yy": dt.strftime("%Y"),
+                       "month": dt.strftime("%m"),
+                       "monthabrv": dt.strftime("%b"),
+                       "day": dt.strftime("%d"),
+                       "session": options['session_name'],
+                       "extension": extension,
+                       "ext": extension.lower()}
+                fname = rule.format(**rep)
+            return os.path.join(target, os.path.basename(fname))
+
+    def __ingest_file(self, session, options):
+        src = options.get('source', None)
+        assert src is not None
+        options['metadata'] = metadata = dao.Metadata(src)
+        method = options.get('method', _add)
+        fname = self.__rename(src, options)
         method(src, fname)
-        asset = dao.Asset(fname, sname)
+        asset = dao.Asset(fname, options['session_name'], metadata)
         session.add(asset)
-        image = dao.Image(asset, fname)
+        image = dao.Image(asset, metadata)
         session.add(image)
 
-    def __ingest_dir(self, method, session, sname, dir, tgt, recurse):
-        for entry in os.scandir(dir):
+    def __ingest_dir(self, session, directory, options):
+        recurse = options.get('recurse', False)
+        for entry in os.scandir(directory):
             if entry.is_file():
-                if tgt is None:
-                    fname = None
-                else:
-                    fname = os.path.join(tgt, os.path.basename(entry.path))
-                self.__ingest_file(method, session, sname, entry.path, fname)
+                options['source'] = entry.path
+                self.__ingest_file(session, options)
             else:
                 if recurse:
-                    self.__ingest_dir(method, session, sname,
-                                      entry.path, tgt, True)
+                    self.__ingest_dir(session, entry.path, options)
 
     def search(self):
         """Search for assets in the catalog."""

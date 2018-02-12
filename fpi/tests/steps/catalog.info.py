@@ -15,7 +15,7 @@ def given_option_session(context):
     context.option = "session"
 
 
-@given('the name of a session as "{session_name}"')
+@given('the session query as "{session_name}"')
 def given_session_name(context, session_name):
     """Given the session name."""
     context.parameter = session_name
@@ -49,15 +49,15 @@ def then_check_session_asset_fullpath_and_id(context):
             raise Exception(msg)
 
 
-@given('the option to obtain information abount as Asset')
+@given('the option to obtain information about an Asset')
 def given_option_asset(context):
     """Set option to Asset."""
     context.option = "asset"
 
 
-@given('the asset id "{asset_id}"')
-def given_asset_id(context, asset_id):
-    """Set the query parameter to the given asset id."""
+@given(u'the asset id "{asset_id}"')
+def given_an_asset_id(context, asset_id):
+    """Set the asset id to be used."""
     context.parameter = asset_id
 
 
