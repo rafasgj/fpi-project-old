@@ -17,6 +17,7 @@ Scenario: Add a file at its original location.
         And the asset id is the MD5 hash "4613ad3fd0c246dd5bb96b33b09c2996"
         And its import time is within 2 seconds from the current time
         And the import session title is the UTC time when the scenario started
+        And no exception is raised
 
 Scenario: Add several files at their original locations.
     Given the command to ingest assets
@@ -52,6 +53,7 @@ Scenario: Add several files at their original locations.
         | FPI_0005.JPG | 8dde366bfc65efd9fabcc74728061740 |
         | FPI_0006.JPG | d41d8cd98f00b204e9800998ecf8427e |
         | FPI_0007.JPG | c8b07cb389edaaf736b2486361b5e593 |
+        And no exception is raised
 
 Scenario: Add a file at its original location, for a named session.
     Given the command to ingest assets
@@ -63,6 +65,7 @@ Scenario: Add a file at its original location, for a named session.
     When ingesting assets into the catalog
     Then one asset is in the catalog with its attributes
         And the import session title is "import session"
+        And no exception is raised
 
 Scenario: Add all files in a directory, at their original locations.
     Given the command to ingest assets
@@ -90,6 +93,7 @@ Scenario: Add all files in a directory, at their original locations.
         | FPI_0005.JPG | 8dde366bfc65efd9fabcc74728061740 |
         | FPI_0006.JPG | d41d8cd98f00b204e9800998ecf8427e |
         | FPI_0007.JPG | c8b07cb389edaaf736b2486361b5e593 |
+        And no exception is raised
 
 Scenario: Recursively add files from a directory, at their original locations.
     Given the command to ingest assets
@@ -118,3 +122,4 @@ Scenario: Recursively add files from a directory, at their original locations.
         | FPI_0005.JPG | 8dde366bfc65efd9fabcc74728061740 |
         | FPI_0006.JPG | d41d8cd98f00b204e9800998ecf8427e |
         | FPI_0007.JPG | c8b07cb389edaaf736b2486361b5e593 |
+        And no exception is raised
