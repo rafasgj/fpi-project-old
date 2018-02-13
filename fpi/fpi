@@ -5,6 +5,7 @@
 from optparse import OptionParser
 
 import cli
+import cli_opt
 
 
 def start_gui(option, _, parameter, opt_parser):
@@ -22,7 +23,7 @@ def _main():
     opt_parser.add_option("", "--gui", action="callback", callback=start_gui,
                           help="start f/π GUI version.")
 
-    options, args = cli.configure_option_parser(opt_parser).parse_args()
+    options, args = cli_opt.configure_option_parser(opt_parser).parse_args()
 
     if len(args) < 2:
         msg = "You must provide a catalog name or file."
