@@ -56,14 +56,11 @@ class Catalog(object):
             now = datetime.datetime.utcnow()
             kwargs['session_name'] = now.strftime("%Y-%m-%dT%H%M%S.%f%z")
         if method == 'add':
-            tgt = None
             fn = _add
-        elif method == 'copy' or method == 'move':
-            tgt = kwargs['target_dir']
-            if not os.path.exists(tgt):
-                os.makedirs(tgt)
-            fn = shutil.copy2 if method == 'copy' else \
-                shutil.move
+        elif method == 'copy':
+            fn = shutil.copy2
+        elif method == 'move':
+            fn = shutil.move
         else:
             raise Exception("Invalid ingestion method.")
 
@@ -83,9 +80,23 @@ class Catalog(object):
         lst = [c for c in chlist]
         return next((i for i, ch in enumerate(string) if ch in lst), None)
 
-    def __rename(self, src, options):
+    def _format_fs_rule(self, rule, options):
+        _, extension = os.path.splitext(options['source'])
+        metadata = options.get('metadata', None)
+        assert metadata is not None
+        dt = metadata.capture_datetime
+        rep = {"year": dt.strftime("%Y"),
+               "yy": dt.strftime("%Y"),
+               "month": dt.strftime("%m"),
+               "monthabrv": dt.strftime("%b"),
+               "day": dt.strftime("%d"),
+               "session": options['session_name'],
+               "extension": extension,
+               "ext": extension.lower()}
+        return rule.format(**rep)
+
+    def __rename(self, src, target, options):
         """Create a file path using the renaming rules."""
-        target = options.get('target_dir', None)
         rule = options.get('rename', None)
         if target is None and rule is None:
             return src
@@ -95,27 +106,26 @@ class Catalog(object):
             else:
                 assert self.__find_first('/:\\*?', rule) is None
                 rule += "{extension}"
-                _, extension = os.path.splitext(options['source'])
-                metadata = options.get('metadata', None)
-                assert metadata is not None
-                dt = metadata.capture_datetime
-                rep = {"year": dt.strftime("%Y"),
-                       "yy": dt.strftime("%Y"),
-                       "month": dt.strftime("%m"),
-                       "monthabrv": dt.strftime("%b"),
-                       "day": dt.strftime("%d"),
-                       "session": options['session_name'],
-                       "extension": extension,
-                       "ext": extension.lower()}
-                fname = rule.format(**rep)
+                fname = self._format_fs_rule(rule, options)
             return os.path.join(target, os.path.basename(fname))
 
+    def _make_dirs(self, src, options):
+        gen = options.get('directory_rule', None)
+        tgt = options['target_dir']
+        if gen is not None:
+            tgt = os.path.join(tgt, self._format_fs_rule(gen, options))
+        if not os.path.exists(tgt):
+            os.makedirs(tgt)
+        return tgt
+
     def __ingest_file(self, session, options):
-        src = options.get('source', None)
+        fname = src = options.get('source', None)
         assert src is not None
         options['metadata'] = metadata = dao.Metadata(src)
         method = options.get('method', _add)
-        fname = self.__rename(src, options)
+        if method != _add:
+            target = self._make_dirs(src, options)
+            fname = self.__rename(src, target, options)
         method(src, fname)
         asset = dao.Asset(fname, options['session_name'], metadata)
         session.add(asset)

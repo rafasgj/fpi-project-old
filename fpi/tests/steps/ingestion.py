@@ -71,6 +71,12 @@ def given_suboption_recurse(context):
     context.suboptions['recurse'] = True
 
 
+@given('the directory rule "{directory_rule}"')
+def step_impl(context, directory_rule):
+    """Set the directory creation rule."""
+    context.suboptions['directory_rule'] = directory_rule
+
+
 # Set rename rule
 
 @given('the rename rule "{rename_rule}"')
