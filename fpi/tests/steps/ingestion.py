@@ -14,10 +14,12 @@ from dao import Asset
 #    - context.suboptions: A dictionaire with the ingest options
 #        - session_name: The session name (string, optional)
 #           * "Given a session name of {session_name}"
-#        - recurse: To recurse subdirectiories (boolean, optinal, True)
+#        - recurse: To recurse subdirectiories (boolean, optional, True)
 #           * "Given the option to ingest recursively"
-#        - target_dir: The target directory.
-#           * "Given a session name of {session_name}"
+#        - target_dir: The target directory.  (string, optional)
+#           * "Given the target directory {target_dir}"
+#        - directory_rule: The rule to create directories. (string, optional)
+#           * "Given the directory rule {directory_rule}"
 
 
 @given('the command to ingest assets')
