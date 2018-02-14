@@ -8,7 +8,7 @@ import cli
 import cli_opt
 
 
-def start_gui(option, _, parameter, opt_parser):
+def start_gui(option, string, parameter, opt_parser):
     """Start f/π GUI version."""
     raise NotImplementedError("f/π GUI not yet implemented.")
 
@@ -23,22 +23,23 @@ def _main():
     opt_parser.add_option("", "--gui", action="callback", callback=start_gui,
                           help="start f/π GUI version.")
 
-    options, args = cli_opt.configure_option_parser(opt_parser).parse_args()
+    opt_parser = cli_opt.configure_option_parser(opt_parser)
 
-    if len(args) < 2:
-        msg = "You must provide a catalog name or file."
-        if len(args) < 1:
-            msg = "You must provide the command to execute.\n" + msg
-        print(msg + "\n")
-        opt_parser.print_usage()
-        exit(1)
-    else:
-        try:
-            cli.execute(options, args)
-        except Exception as e:
-            print("ERROR: %s\n" % e)
+    try:
+        options, args = opt_parser.parse_args()
+
+        if len(args) == 0:
             opt_parser.print_help()
             exit(1)
+        elif len(args) < 2:
+            msg = "You must provide a command and a catalog name or file."
+            raise Exception(msg)
+        else:
+            cli.execute(options, args)
+    except Exception as e:
+        print("ERROR: %s\n" % e)
+        opt_parser.print_usage()
+        exit(1)
 
 
 if __name__ == "__main__":
