@@ -53,6 +53,11 @@ def given_option_move(context):
     context.ingest_method = "move"
 
 
+@given('the ingestion method {method}')
+def given_ingest_method(context, method):
+    context.ingest_method = method
+
+
 # Directory options
 
 @given('the target directory "{target_dir}"')

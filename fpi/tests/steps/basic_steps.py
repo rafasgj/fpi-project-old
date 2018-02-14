@@ -17,13 +17,19 @@ import catalog
 @given('an empty catalog file named "{filename}"')
 def given_empty_catalog(context, filename):
     """Ensure the catalog with the given filename does exist."""
-    context.catalog_name = filename[:-7] if filename.endswith(".fpicat") \
-        else filename
-    context.catalog_file = "%s.fpicat" % context.catalog_name
+    context.catalog_name = filename
     context.engine = create_engine(get_sqlite_init_string(context))
     context.session = sessionmaker(bind=context.engine)()
-    context.catalog = catalog.Catalog(context.catalog_file)
+    context.catalog = catalog.Catalog(context.catalog_name)
     context.catalog.create()
+
+
+# Files that might or might not exist
+
+@given('a file {filename}')
+def given_file_name(context, filename):
+    """Set file list to a single file, not checking it."""
+    context.files = [filename]
 
 
 # Assert that a device exists at a given mount point.

@@ -27,13 +27,14 @@ def step_opt_catalog_create(context):
 def given_catalog_name(context, name):
     """Set the new catalog name."""
     context.catalog_name = name
+    context.catalog = Catalog(context.catalog_name)
 
 
 @when('creating a new catalog')
 def step_execute_catalog_creation(context):
     """Execute catalog creation."""
     try:
-        Catalog(context.catalog_name).create()
+        context.catalog.create()
         context.exception = None
     except Exception as e:
         context.exception = e
