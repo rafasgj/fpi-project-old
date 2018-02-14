@@ -26,7 +26,8 @@ def remove_tree(fselement):
 def before_scenario(context, scenario):
     """Execute before each scenario."""
     remove_catalog(context)
-    if "move" in scenario.feature.tags:
+    tags = set(scenario.feature.tags + scenario.tags)
+    if "move" in tags:
         for d in ['data/catalog', 'data/originals']:
             if os.path.isdir(d):
                 remove_tree(d)
