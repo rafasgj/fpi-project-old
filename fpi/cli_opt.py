@@ -2,6 +2,25 @@
 
 from optparse import OptionGroup
 
+from cli import configuration
+
+
+def _set_method(option, string, parameter, opt_parser):
+    if configuration.get('method', None) is not None:
+        raise ValueError("Can only set one ingestion method.")
+    if string == '--add':
+        configuration['method'] = 'add'
+        configuration['target_dir'] = None
+    elif string == '--copy':
+        configuration['method'] = 'copy'
+        configuration['target_dir'] = parameter
+    elif string == '--move':
+        configuration['method'] = 'move'
+        configuration['target_dir'] = parameter
+    else:
+        err = "Internal error: invalid ingestion option '%s'"
+        raise Exception(err % option)
+
 
 def _init_opt_grp(parser):
     """Initialize the Catalog option group."""
@@ -15,40 +34,38 @@ def _init_opt_grp(parser):
 def _init_ingestion_opt(parser):
     """Initialize the Inges option group."""
     opt_grp = OptionGroup(parser, "Ingest")
-    opt_grp.add_option("", "--add", action="store_true", default=False,
+    opt_grp.add_option("", "--add", action="callback",
+                       callback=_set_method, nargs=0,
                        help="""ingest files by adding them in their current
                                location.""")
-    opt_grp.add_option("", "--copy", dest="target_dir",
+    opt_grp.add_option("", "--copy", action="callback",
+                       callback=_set_method, nargs=1, type='string',
                        help="""ingest files by copyng them from their
                                current location to the given directory.""")
-    opt_grp.add_option("", "--move", dest="target_dir",
+    opt_grp.add_option("", "--move", action="callback",
+                       callback=_set_method, nargs=1, type='string',
                        help="""ingest files by moving them from their
                                current location to the given directory.""")
-    opt_grp.add_option("", "--rename-rule", dest="rename",
+    opt_grp.add_option("", "--rename-rule", dest="rename", metavar="RENAME_RULE",
                        help="""describe rename rule.""")
-    opt_grp.add_option("", "--directory-rule",
+    opt_grp.add_option("", "--directory-rule", dest="directory_rule",
                        help="""describe directory rule.""")
     opt_grp.add_option("", "--recurse", action="store_true", default=False,
                        help="""execute the option recursively starting from
                                the given directory.""")
+    opt_grp.add_option("", "--session", dest="session_name",
+                       help="""define the import session name.""")
     return opt_grp
 
 
 def _init_info_opt(parser):
     """Initialize the Inges option group."""
     parser = OptionGroup(parser, "Info")
-    parser.add_option("", "--session", action="store_true", default=False,
-                      help="""request information about sessions stored
-                              in the catalog.""")
-    parser.add_option("", "--file", action="store_true", default=False,
-                      help="""request information about an asset file
-                              stored in the catalog.""")
-    parser.add_option("", "--asset", action="store_true", default=False,
-                      help="""request information about an asset stored
-                              in the catalog.""")
+    parser.add_option("", "--object", dest="object", default="asset",
+                      choices=["file","session","asset"],
+                      help="""define object type to query.""")
     parser.add_option("", "--list", action="store_true", default=False,
-                      help="""list all assets in the catalog or
-                              session.""")
+                      help="""list all assets in the catalog or session.""")
     parser.add_option("", "--id",
                       help="""the id of the element to query. For session
                               it is the session name. For assets, it is
