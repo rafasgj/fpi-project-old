@@ -131,7 +131,13 @@ class Catalog(object):
         if gen is not None:
             tgt = os.path.join(tgt, self._format_fs_rule(gen, options))
         if not os.path.exists(tgt):
-            os.makedirs(tgt)
+            try:
+                os.makedirs(tgt)
+            except:
+                raise Exception("Cannot use target directory.")
+        else:
+            if not os.path.isdir(tgt):
+                raise Exception("Cannot use target directory.")
         return tgt
 
     def __ingest_file(self, options):
