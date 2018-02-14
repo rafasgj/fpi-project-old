@@ -133,7 +133,7 @@ class Catalog(object):
         if not os.path.exists(tgt):
             try:
                 os.makedirs(tgt)
-            except:
+            except Exception as e:
                 raise Exception("Cannot use target directory.")
         else:
             if not os.path.isdir(tgt):
