@@ -1,11 +1,11 @@
-Feature: Retrieve information abount an item of the catalog.
+Feature: Retrieve information about an item of the catalog.
     As a User,
     I want to obtain information about itens in the catalog,
     So that I can search for the item that I want.
 
 Scenario: Get information about a session.
     Given the command to obtain information about itens in the catalog
-        And the option to obtain information abount a Session
+        And the option to obtain information about a Session
         And the session query as "First Session"
         And an empty catalog named "test_catalog.fpicat"
         And the catalog has some assets ingested in a session "First Session"
@@ -27,6 +27,7 @@ Scenario: Get information about a session.
         | /DCIM/100FPIAM/FPI_0002.JPG | 3b1479d722fbe11df5677bb521e2575b |
         | /DCIM/100FPIAM/FPI_0003.JPG | 123b707265158269808f78573e736a6e |
         | /DCIM/100FPIAM/FPI_0004.JPG | f5737b7e1d7b25662f74b885fa545b02 |
+        And no exception is raised
 
 Scenario: Get information about an asset, using the asset id.
     Given the command to obtain information about itens in the catalog
@@ -45,3 +46,4 @@ Scenario: Get information about an asset, using the asset id.
         And the asset image information for Width, Height and Capture Date/Time
         | Width | Height |  Capture Date Time  |
         |  1000 |    500 | 2011-10-28 12:00:00 |
+        And no exception is raised

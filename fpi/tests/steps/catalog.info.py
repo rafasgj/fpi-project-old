@@ -9,7 +9,7 @@ def given_command_info(context):
     context.command = "info"
 
 
-@given('the option to obtain information abount a Session')
+@given('the option to obtain information about a Session')
 def given_option_session(context):
     """Set the option to 'option'."""
     context.option = "session"
@@ -24,8 +24,12 @@ def given_session_name(context, session_name):
 @when('requesting information about an item in the catalog')
 def when_request_info(context):
     """Request info about an item in the catalog."""
-    context.result = context.catalog.info(context.option,
-                                          context.parameter)
+    try:
+        context.result = context.catalog.info(context.option,
+                                              context.parameter)
+        context.exception = None
+    except Exception as e:
+        context.exception = e
 
 
 @then('I expect to see the session name')

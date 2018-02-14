@@ -2,8 +2,6 @@
 
 from behave import given, when, then
 
-from catalog import Catalog
-
 
 @given('the command to list assets in the catalog')
 def given_command_list(context):

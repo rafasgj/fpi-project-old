@@ -31,7 +31,7 @@ def given_catalog_file(context, catalog_file):
     """Set the filename of the catalog."""
     context.exception = None
     context.catalog_file = catalog_file
-    context.catalog = Catalog(context.catalog_file)
+    context.catalog = catalog.Catalog(context.catalog_file)
 
 
 # Files that might or might not exist

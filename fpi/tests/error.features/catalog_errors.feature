@@ -1,7 +1,4 @@
-Feature: Ensure user errors are handled gently.
-    As a User,
-    I want the system to correct me if I use the system wrongly,
-    So that I learn to use the system properly.
+Feature: Warn user when trying to use a non-existing catalog.
 
 Scenario Outline: Ingesting files in a non-existing catalog file.
     Given the command to ingest assets
@@ -21,10 +18,36 @@ Scenario Outline: Ingesting files in a non-existing catalog file.
     | move   | inexistent        | path/to/image.cr2 |
     | move   | inexistent.fpicat | path/to/image.cr2 |
 
-Scenario Outline: Requesting info from a non-existing catalog file.
+Scenario Outline: Listing assets from a non-existing catalog file.
     Given the command to list assets in the catalog
         And a catalog named "<name>"
     When listing all assets in the catalog
+    Then an "Exception" is raised saing "Trying to use an inexistent catalog '<name>'."
+
+    Examples:
+    | name              |
+    | inexistent        |
+    | inexistent.fpicat |
+
+Scenario Outline: Requesting info from a non-existing catalog file.
+    Given the command to obtain information about itens in the catalog
+        And the option to obtain information about a Session
+        And the session query as "First Session"
+        And a catalog named "<name>"
+    When requesting information about an item in the catalog
+    Then an "Exception" is raised saing "Trying to use an inexistent catalog '<name>'."
+
+    Examples:
+    | name              |
+    | inexistent        |
+    | inexistent.fpicat |
+
+Scenario Outline: Requesting info from a non-existing catalog file.
+    Given the command to obtain information about itens in the catalog
+        And the option to obtain information about an Asset
+        And the session query as "First Session"
+        And a catalog named "<name>"
+    When requesting information about an item in the catalog
     Then an "Exception" is raised saing "Trying to use an inexistent catalog '<name>'."
 
     Examples:

@@ -55,6 +55,7 @@ def given_option_move(context):
 
 @given('the ingestion method {method}')
 def given_ingest_method(context, method):
+    """Set the ingest method to use."""
     context.ingest_method = method
 
 
