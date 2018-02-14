@@ -1,6 +1,6 @@
 """Functions used to manage catalogs."""
 
-from sqlalchemy_utils import database_exists, create_database
+from sqlalchemy_utils import database_exists
 
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
@@ -37,21 +37,34 @@ class Catalog(object):
         """Initialize a new catalog."""
         self.catalog_name = catalog_name
         init_string = self.__get_catalog_init_string()
-        self.engine = create_engine(init_string)
-        self.Session = sessionmaker(bind=self.engine)
+        if database_exists(init_string):
+            self.engine = create_engine(init_string)
+            self.Session = sessionmaker(bind=self.engine)
+
+    def _check_catalog(self):
+        if self.__dict__.get("engine", None) is None:
+            err = "Trying to use an inexistent catalog '%s'."
+            raise Exception(err % self.catalog_name)
+
+    @property
+    def session(self):
+        """Retrieve the database session."""
+        self._check_catalog()
+        return self.Session()
 
     def create(self):
         """Create a new catalog."""
         init_string = self.__get_catalog_init_string()
         if not database_exists(init_string):
-            create_database(init_string)
+            self.engine = create_engine(init_string)
+            self.Session = sessionmaker(bind=self.engine)
             Base.metadata.create_all(self.engine)
         else:
             raise Exception("Refusing to overwrite catalog.")
 
     def ingest(self, method, filelist, *args, **kwargs):
         """Ingest the files in filelist using the provided method."""
-        session = self.Session()
+        session = self.session
         if kwargs.get('session_name', None) is None:
             now = datetime.datetime.utcnow()
             kwargs['session_name'] = now.strftime("%Y-%m-%dT%H%M%S.%f%z")
@@ -144,14 +157,12 @@ class Catalog(object):
 
     def search(self):
         """Search for assets in the catalog."""
-        session = self.Session()
-        return session.query(dao.Asset).all()
+        return self.session.query(dao.Asset).all()
 
     def sessions(self):
         """Search for assets in the catalog."""
-        session = self.Session()
         field = dao.Asset.import_session
-        query = session.query(field).group_by(field)
+        query = self.session.query(field).group_by(field)
         return [s.import_session for s in query.all()]
 
     def info(self, object, parameter):
@@ -167,8 +178,7 @@ class Catalog(object):
         SI = namedtuple('SessionInfo',
                         'session_name creation_time assets')
         RS = namedtuple('SessionAsset', 'id fullpath')
-        session = self.Session()
-        query = session.query(dao.Asset).order_by(dao.Asset.import_time)
+        query = self.session.query(dao.Asset).order_by(dao.Asset.import_time)
         items = query.filter(dao.Asset.import_session == session_id).all()
         time = items[0].import_time
         assets = [RS(id=a.id, fullpath=a.fullpath) for a in items]
@@ -176,6 +186,5 @@ class Catalog(object):
                   assets=assets)
 
     def __info_asset(self, asset_id):
-        session = self.Session()
-        result = session.query(dao.Asset).filter(dao.Asset.id == asset_id)
+        result = self.session.query(dao.Asset).filter(dao.Asset.id == asset_id)
         return result.one()
