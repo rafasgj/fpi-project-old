@@ -69,3 +69,27 @@ Scenario: Create directories using image metadata, while copying files.
         | data/catalog/pics/2010/12-27/2010-12-27_firstsession.JPG |
         | data/catalog/pics/2011/10-28/2011-10-28_firstsession.JPG |
         | data/catalog/pics/2011/04-03/2011-04-03_firstsession.JPG |
+
+Scenario: Rename files using a number sequence.
+    Given the command to ingest assets
+        And the option to ingest by copy
+        And the target directory "data/catalog/pics"
+        And an empty catalog named "test_catalog.fpicat"
+        And a device mounted at "data/samples"
+        And a list of files
+        | filename                                |
+        | data/samples/DCIM/100FPIAM/FPI_0001.JPG |
+        | data/samples/DCIM/100FPIAM/FPI_0002.JPG |
+        | data/samples/DCIM/100FPIAM/FPI_0003.JPG |
+        | data/samples/DCIM/100FPIAM/FPI_0007.JPG |
+        And a session name of "firstsession"
+        And the rename rule "{seq:04}"
+    When ingesting assets into the catalog
+    Then no exception is raised
+        And the original files are in their original places
+        And the destination files are in their respective places
+        | filename                                      |
+        | data/catalog/pics/0001.JPG |
+        | data/catalog/pics/0002.JPG |
+        | data/catalog/pics/0003.JPG |
+        | data/catalog/pics/0004.JPG |

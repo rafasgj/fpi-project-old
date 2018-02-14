@@ -78,6 +78,7 @@ class Catalog(object):
             raise Exception("Invalid ingestion method.")
 
         kwargs['method'] = fn
+        kwargs['sequence'] = 1
 
         for f in filelist:
             kwargs['source'] = f
@@ -105,7 +106,9 @@ class Catalog(object):
                "day": dt.strftime("%d"),
                "session": options['session_name'],
                "extension": extension,
-               "ext": extension.lower()}
+               "ext": extension.lower(),
+               "seq": options.get("sequence", 1)
+               }
         return rule.format(**rep)
 
     def __rename(self, src, target, options):
@@ -117,9 +120,9 @@ class Catalog(object):
             if rule is None:
                 fname = src
             else:
-                assert self.__find_first('/:\\*?', rule) is None
                 rule += "{extension}"
                 fname = self._format_fs_rule(rule, options)
+                assert self.__find_first('/:\\*?}{', fname) is None
             return os.path.join(target, os.path.basename(fname))
 
     def _make_dirs(self, src, options):
@@ -144,6 +147,7 @@ class Catalog(object):
         session.add(asset)
         image = dao.Image(asset, metadata)
         session.add(image)
+        options['sequence'] += 1
 
     def __ingest_dir(self, session, directory, options):
         recurse = options.get('recurse', False)
