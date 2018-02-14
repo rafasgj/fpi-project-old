@@ -5,7 +5,7 @@ Feature: List assets in a catalog.
 
 Scenario: List assets in the catalog.
     Given the command to list assets in the catalog
-        And a catalog file named as "test_catalog.fpicat"
+        And an empty catalog named "test_catalog.fpicat"
         And the catalog has some assets
         | filename                                |
         | data/samples/DCIM/100FPIAM/FPI_0001.JPG |
@@ -25,10 +25,11 @@ Scenario: List assets in the catalog.
 | data/samples/DCIM/100FPIAM/FPI_0005.JPG | 8dde366bfc65efd9fabcc74728061740 |
 | data/samples/DCIM/100FPIAM/FPI_0006.JPG | d41d8cd98f00b204e9800998ecf8427e |
 | data/samples/DCIM/100FPIAM/FPI_0007.JPG | c8b07cb389edaaf736b2486361b5e593 |
+        And no exception is raised
 
 Scenario: List sessions in the catalog.
     Given the command to list assets in the catalog
-        And a catalog file named as "test_catalog.fpicat"
+        And an empty catalog named "test_catalog.fpicat"
         And the catalog has some assets ingested in a session "First Session"
         | filename                                |
         | data/samples/DCIM/100FPIAM/FPI_0001.JPG |
@@ -46,3 +47,4 @@ Scenario: List sessions in the catalog.
         | First Session  |
         | Second Session |
         And I expect the session names to be unique
+        And no exception is raised

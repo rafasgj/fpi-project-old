@@ -14,14 +14,24 @@ import catalog
 
 # Create an empty catalog
 
-@given('an empty catalog file named "{filename}"')
+@given('an empty catalog named "{filename}"')
 def given_empty_catalog(context, filename):
     """Ensure the catalog with the given filename does exist."""
+    context.exception = None
     context.catalog_name = filename
     context.engine = create_engine(get_sqlite_init_string(context))
     context.session = sessionmaker(bind=context.engine)()
     context.catalog = catalog.Catalog(context.catalog_name)
     context.catalog.create()
+
+
+# Set the catalog name, but don't create it.
+@given('a catalog file named as "{catalog_file}"')
+def given_catalog_file(context, catalog_file):
+    """Set the filename of the catalog."""
+    context.exception = None
+    context.catalog_file = catalog_file
+    context.catalog = Catalog(context.catalog_file)
 
 
 # Files that might or might not exist

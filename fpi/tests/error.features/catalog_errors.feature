@@ -20,3 +20,14 @@ Scenario Outline: Ingesting files in a non-existing catalog file.
     | copy   | inexistent.fpicat | path/to/image.cr2 |
     | move   | inexistent        | path/to/image.cr2 |
     | move   | inexistent.fpicat | path/to/image.cr2 |
+
+Scenario Outline: Requesting info from a non-existing catalog file.
+    Given the command to list assets in the catalog
+        And a catalog named "<name>"
+    When listing all assets in the catalog
+    Then an "Exception" is raised saing "Trying to use an inexistent catalog '<name>'."
+
+    Examples:
+    | name              |
+    | inexistent        |
+    | inexistent.fpicat |

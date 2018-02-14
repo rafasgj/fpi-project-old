@@ -11,14 +11,6 @@ def given_command_list(context):
     context.command = 'list'
 
 
-@given('a catalog file named as "{catalog_file}"')
-def given_catalog_file(context, catalog_file):
-    """Set the filename of the catalog."""
-    context.catalog_file = catalog_file
-    context.catalog = Catalog(context.catalog_file)
-    context.catalog.create()
-
-
 @given('the catalog has some assets')
 def given_filename_list(context):
     """Add given filenames to the catalog."""
@@ -29,7 +21,11 @@ def given_filename_list(context):
 @when('listing all assets in the catalog')
 def when_listing_assets(context):
     """List all the assets in the catalog."""
-    context.result = context.catalog.search()
+    try:
+        context.result = context.catalog.search()
+        context.exception = None
+    except Exception as e:
+        context.exception = e
 
 
 @then('I expect all the assets to be listed, with their id and full path')

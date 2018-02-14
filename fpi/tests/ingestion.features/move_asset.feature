@@ -9,7 +9,7 @@ Scenario: Add a file to the catalog by moving it to another location.
     Given the command to ingest assets
         And the option to ingest by move
         And the target directory "data/catalog/pics"
-        And an empty catalog file named "test_catalog.fpicat"
+        And an empty catalog named "test_catalog.fpicat"
         And a device mounted at "data/samples"
         And an image file at "data/originals/FPI_0001.JPG"
     When ingesting assets into the catalog
@@ -23,7 +23,7 @@ Scenario: Add several files by moving them to another location.
     Given the command to ingest assets
         And the option to ingest by move
         And the target directory "data/catalog/pics"
-        And an empty catalog file named "test_catalog.fpicat"
+        And an empty catalog named "test_catalog.fpicat"
         And a device mounted at "data/samples"
         And a list of files
         | filename                    |

@@ -7,7 +7,7 @@ Scenario: Get information about a session.
     Given the command to obtain information about itens in the catalog
         And the option to obtain information abount a Session
         And the session query as "First Session"
-        And a catalog file named as "test_catalog.fpicat"
+        And an empty catalog named "test_catalog.fpicat"
         And the catalog has some assets ingested in a session "First Session"
         | filename                                |
         | data/samples/DCIM/100FPIAM/FPI_0001.JPG |
@@ -32,7 +32,7 @@ Scenario: Get information about an asset, using the asset id.
     Given the command to obtain information about itens in the catalog
         And the option to obtain information about an Asset
         And the asset id "123b707265158269808f78573e736a6e"
-        And a catalog file named as "test_catalog.fpicat"
+        And an empty catalog named "test_catalog.fpicat"
         And the catalog has some assets
         | filename                                |
         | data/samples/DCIM/100FPIAM/FPI_0001.JPG |

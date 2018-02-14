@@ -9,7 +9,7 @@ Scenario: Rename a file using the image metadata, while copying files.
     Given the command to ingest assets
         And the option to ingest by copy
         And the target directory "data/catalog/pics"
-        And an empty catalog file named "test_catalog.fpicat"
+        And an empty catalog named "test_catalog.fpicat"
         And a device mounted at "data/samples"
         And an image file at "data/samples/DCIM/100FPIAM/FPI_0001.JPG"
         And a session name of "firstsession"
@@ -25,7 +25,7 @@ Scenario: Rename files using the image metadata, while copying files.
     Given the command to ingest assets
         And the option to ingest by copy
         And the target directory "data/catalog/pics"
-        And an empty catalog file named "test_catalog.fpicat"
+        And an empty catalog named "test_catalog.fpicat"
         And a device mounted at "data/samples"
         And a list of files
         | filename                                |
@@ -49,7 +49,7 @@ Scenario: Create directories using image metadata, while copying files.
     Given the command to ingest assets
         And the option to ingest by copy
         And the target directory "data/catalog/pics"
-        And an empty catalog file named "test_catalog.fpicat"
+        And an empty catalog named "test_catalog.fpicat"
         And a device mounted at "data/samples"
         And a list of files
         | filename                                |

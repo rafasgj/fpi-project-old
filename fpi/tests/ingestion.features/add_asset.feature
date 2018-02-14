@@ -6,7 +6,7 @@ Feature: Ingest files into the catalog.
 Scenario: Add a file at its original location.
     Given the command to ingest assets
         And the option to add a new file at its position
-        And an empty catalog file named "test_catalog.fpicat"
+        And an empty catalog named "test_catalog.fpicat"
         And a device mounted at "data/samples"
         And an image file at "data/samples/DCIM/100FPIAM/FPI_0001.JPG"
     When ingesting assets into the catalog
@@ -22,7 +22,7 @@ Scenario: Add a file at its original location.
 Scenario: Add several files at their original locations.
     Given the command to ingest assets
         And the option to add a new file at its position
-        And an empty catalog file named "test_catalog.fpicat"
+        And an empty catalog named "test_catalog.fpicat"
         And a device mounted at "data/samples"
         And a list of files
         | filename                                |
@@ -59,7 +59,7 @@ Scenario: Add a file at its original location, for a named session.
     Given the command to ingest assets
         And the option to add a new file at its position
         And a session name of "import session"
-        And an empty catalog file named "test_catalog.fpicat"
+        And an empty catalog named "test_catalog.fpicat"
         And a device mounted at "data/samples"
         And an image file at "data/samples/DCIM/100FPIAM/FPI_0001.JPG"
     When ingesting assets into the catalog
@@ -70,7 +70,7 @@ Scenario: Add a file at its original location, for a named session.
 Scenario: Add all files in a directory, at their original locations.
     Given the command to ingest assets
         And the option to add a new file at its position
-        And an empty catalog file named "test_catalog.fpicat"
+        And an empty catalog named "test_catalog.fpicat"
         And a device mounted at "data/samples"
         And the source directory "data/samples/DCIM/100FPIAM"
     When ingesting assets into the catalog
@@ -98,7 +98,7 @@ Scenario: Add all files in a directory, at their original locations.
 Scenario: Recursively add files from a directory, at their original locations.
     Given the command to ingest assets
         And the option to add a new file at its position
-        And an empty catalog file named "test_catalog.fpicat"
+        And an empty catalog named "test_catalog.fpicat"
         And a device mounted at "data/samples"
         And the source directory "data/samples/DCIM"
         And the option to ingest recursively
