@@ -4,6 +4,7 @@ from sqlalchemy_utils import database_exists
 
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
+from sqlalchemy.exc import IntegrityError
 
 import datetime
 import os
@@ -64,7 +65,7 @@ class Catalog(object):
 
     def ingest(self, method, filelist, *args, **kwargs):
         """Ingest the files in filelist using the provided method."""
-        session = self.session
+        self._check_catalog()
         if kwargs.get('session_name', None) is None:
             now = datetime.datetime.utcnow()
             kwargs['session_name'] = now.strftime("%Y-%m-%dT%H%M%S.%f%z")
@@ -83,10 +84,9 @@ class Catalog(object):
         for f in filelist:
             kwargs['source'] = f
             if os.path.isfile(f):
-                self.__ingest_file(session, kwargs)
+                self.__ingest_file(kwargs)
             else:
-                self.__ingest_dir(session, f, kwargs)
-        session.commit()
+                self.__ingest_dir(f, kwargs)
 
     def __find_first(self, chlist, string):
         if string is None:
@@ -134,7 +134,7 @@ class Catalog(object):
             os.makedirs(tgt)
         return tgt
 
-    def __ingest_file(self, session, options):
+    def __ingest_file(self, options):
         fname = src = options.get('source', None)
         assert src is not None
         options['metadata'] = metadata = dao.Metadata(src)
@@ -143,21 +143,26 @@ class Catalog(object):
             target = self._make_dirs(src, options)
             fname = self.__rename(src, target, options)
         method(src, fname)
-        asset = dao.Asset(fname, options['session_name'], metadata)
-        session.add(asset)
-        image = dao.Image(asset, metadata)
-        session.add(image)
+        session = self.session
+        try:
+            asset = dao.Asset(fname, options['session_name'], metadata)
+            session.add(asset)
+            image = dao.Image(asset, metadata)
+            session.add(image)
+            session.commit()
+        except IntegrityError as e:
+            raise Exception("Ingesting an asset already in the catalog.")
         options['sequence'] += 1
 
-    def __ingest_dir(self, session, directory, options):
+    def __ingest_dir(self, directory, options):
         recurse = options.get('recurse', False)
         for entry in os.scandir(directory):
             if entry.is_file():
                 options['source'] = entry.path
-                self.__ingest_file(session, options)
+                self.__ingest_file(options)
             else:
                 if recurse:
-                    self.__ingest_dir(session, entry.path, options)
+                    self.__ingest_dir(entry.path, options)
 
     def search(self):
         """Search for assets in the catalog."""
