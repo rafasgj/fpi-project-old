@@ -5,6 +5,8 @@ from behave import given, when, then
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
 
+import os.path
+
 from common.util import check_catalog_exists, get_sqlite_init_string
 
 from catalog import Catalog
@@ -30,8 +32,18 @@ def given_catalog_name(context, name):
     context.catalog = Catalog(context.catalog_name)
 
 
+@given('that a catalog with the same name exists')
+def given_a_catalog_already_exists(context):
+    """Ensure a catalog is already created before testing."""
+    if not check_catalog_exists(context):
+        try:
+            Catalog(context.catalog_name).create()
+        except Exception:
+            pass
+
+
 @when('creating a new catalog')
-def step_execute_catalog_creation(context):
+def when_execute_catalog_creation(context):
     """Execute catalog creation."""
     try:
         context.catalog.create()
@@ -41,7 +53,7 @@ def step_execute_catalog_creation(context):
 
 
 @then('an empty catalog is created with the given name')
-def step_check_catalog_is_empty_after_creation(context):
+def then_check_catalog_is_empty_after_creation(context):
     """Create a catalog that is empty, and have the given name."""
     assert context.exception is None
     assert check_catalog_exists(context) is True
@@ -50,11 +62,9 @@ def step_check_catalog_is_empty_after_creation(context):
     assert session.query(Asset).count() is 0
 
 
-@given('that a catalog with the same name exists')
-def given_a_catalog_already_exists(context):
-    """Ensure a catalog is already created before testing."""
-    if not check_catalog_exists(context):
-        try:
-            Catalog(context.catalog_name).create()
-        except Exception:
-            pass
+@then('a directory with the catalog name exists with the catalog file inside')
+def then_check_directory_with_catalog(context):
+    """Check if the catalog was created inside a directory."""
+    assert os.path.isdir(context.catalog_name)
+    filename = "%s.fpicat" % context.catalog_name
+    assert os.path.isfile(os.path.join(context.catalog_name, filename))

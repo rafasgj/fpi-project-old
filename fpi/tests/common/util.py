@@ -7,7 +7,7 @@ def get_catalog_file(context):
     """Generate a catalog file name for a context."""
     if context.catalog_name.endswith('.fpicat'):
         return context.catalog_name
-    return "%s.fpicat" % (context.catalog_name)
+    return "%s/%s.fpicat" % (context.catalog_name, context.catalog_name)
 
 
 def get_sqlite_init_string(context):

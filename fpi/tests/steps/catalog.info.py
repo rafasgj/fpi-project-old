@@ -9,12 +9,6 @@ def given_command_info(context):
     context.command = "info"
 
 
-@given('the option to obtain information about a Session')
-def given_option_session(context):
-    """Set the option to 'option'."""
-    context.option = "session"
-
-
 @given('the session query as "{session_name}"')
 def given_session_name(context, session_name):
     """Given the session name."""
@@ -53,10 +47,10 @@ def then_check_session_asset_fullpath_and_id(context):
             raise Exception(msg)
 
 
-@given('the option to obtain information about an Asset')
-def given_option_asset(context):
+@given('the option to obtain information about {object_type}')
+def given_option_asset(context, object_type):
     """Set option to Asset."""
-    context.option = "asset"
+    context.option = object_type
 
 
 @given(u'the asset id "{asset_id}"')

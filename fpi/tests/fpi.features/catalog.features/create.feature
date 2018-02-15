@@ -8,7 +8,8 @@ Scenario: Create a new f/π catalog.
         And the option to create a new catalog
         And a catalog named "test_catalog"
     When creating a new catalog
-    Then an empty catalog is created with the given name
+    Then a directory with the catalog name exists with the catalog file inside
+        And an empty catalog is created with the given name
         And no exception is raised
 
 Scenario: Refuse to create f/π catalog because it exists.

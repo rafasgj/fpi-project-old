@@ -22,25 +22,28 @@ def _add(src, dest):
 class Catalog(object):
     """Implements the abstraction of a DAM Catalog."""
 
-    @classmethod
-    def __get_catalog_filename(self, catalog):
-        """Given a catalog name or filename, return the catalog filename."""
-        if catalog.endswith('.fpicat'):
-            return catalog
-        return "%s.fpicat" % (catalog)
+    @property
+    def __init_string(self):
+        return 'sqlite:///%s' % self.catalog_file
 
-    def __get_catalog_init_string(self):
-        """Given a catalog name or filename, return its init string."""
-        filename = Catalog.__get_catalog_filename(self.catalog_name)
-        return "sqlite:///%s" % (filename)
+    def __open_database(self):
+        if database_exists(self.__init_string):
+            self.__start_engine()
+
+    def __start_engine(self):
+        self.engine = create_engine(self.__init_string)
+        self.Session = sessionmaker(bind=self.engine)
 
     def __init__(self, catalog_name):
         """Initialize a new catalog."""
-        self.catalog_name = catalog_name
-        init_string = self.__get_catalog_init_string()
-        if database_exists(init_string):
-            self.engine = create_engine(init_string)
-            self.Session = sessionmaker(bind=self.engine)
+        noext, ext = os.path.splitext(catalog_name)
+        self.catalog_name = os.path.basename(noext)
+        if os.path.isfile(catalog_name) or ext == '.fpicat':
+            self.catalog_file = catalog_name
+        else:
+            fname = '%s/%s.fpicat' % (catalog_name, self.catalog_name)
+            self.catalog_file = fname
+        self.__open_database()
 
     def _check_catalog(self):
         if self.__dict__.get("engine", None) is None:
@@ -55,10 +58,14 @@ class Catalog(object):
 
     def create(self):
         """Create a new catalog."""
-        init_string = self.__get_catalog_init_string()
-        if not database_exists(init_string):
-            self.engine = create_engine(init_string)
-            self.Session = sessionmaker(bind=self.engine)
+        directory, filename = os.path.split(self.catalog_file)
+        if len(directory) > 0:
+            if not os.path.exists(directory):
+                os.makedirs(directory)
+            elif not os.path.isdir(directory):
+                raise Exception("Cannot create catalog directory.")
+        if not database_exists(self.__init_string):
+            self.__start_engine()
             Base.metadata.create_all(self.engine)
         else:
             raise Exception("Refusing to overwrite catalog.")

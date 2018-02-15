@@ -8,9 +8,13 @@ import shutil
 def remove_catalog(context):
     """Remove the cataog used for testing."""
     # TODO: Obtain catalog name from context.
-    catalog_file = "%s.fpicat" % ("test_catalog")
-    if os.path.isfile(catalog_file):
-        os.unlink(catalog_file)
+    try:
+        remove_tree('test_catalog')
+    except Exception as e:
+        try:
+            os.unlink('test_catalog.fpicat')
+        except Exception as e:
+            pass
 
 
 def remove_tree(fselement):
