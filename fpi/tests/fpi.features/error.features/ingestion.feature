@@ -6,10 +6,11 @@ Scenario Outline: Add a file twice to the catalog, and it should not be allowed.
         And the ingestion method <method>
         And the target directory "data/catalog/pics"
         And an empty catalog named "test_catalog"
+        And a device mounted at "data/samples"
         And a list of files
         | filename                                |
-        | data/originals/FPI_0001.JPG |
-        | data/originals/FPI_0001.JPG |
+        | data/samples/DCIM/100FPIAM/FPI_0001.JPG |
+        | data/samples/DCIM/100FPIAM/FPI_0001.JPG |
     When ingesting assets into the catalog
     Then an "Exception" is raised saing "Ingesting an asset already in the catalog."
         And one asset is in the catalog with its attributes
