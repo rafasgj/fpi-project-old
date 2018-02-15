@@ -61,11 +61,11 @@ def _init_ingestion_opt(parser):
 def _init_info_opt(parser):
     """Initialize the Inges option group."""
     parser = OptionGroup(parser, "Info")
+    parser.add_option("", "--list", action="store_true", default=False,
+                      help="""list all assets in the catalog or session.""")
     parser.add_option("", "--object", dest="object", default="asset",
                       choices=["file", "session", "asset"],
                       help="""define object type to query.""")
-    parser.add_option("", "--list", action="store_true", default=False,
-                      help="""list all assets in the catalog or session.""")
     parser.add_option("", "--id",
                       help="""the id of the element to query. For session
                               it is the session name. For assets, it is
