@@ -36,25 +36,21 @@ def process_ingest_cmd(catalog, options, files):
     catalog.ingest(method, files, **configuration)
 
 
-_VALID_COMMANDS = [
-    "catalog",
-    "ingest",
-    "info"
-]
+commands = {
+    "catalog": process_catalog_cmd,
+    "ingest": process_ingest_cmd
+}
 
 
 def execute(options, args):
     """Execute f/π command line interface."""
     command = args[0]
     cat = catalog.Catalog(args[1])
-    files = args[2:]
+    values = args[2:]
 
-    if command not in _VALID_COMMANDS:
+    fn = commands.get(command, None)
+
+    if fn is None:
         raise Exception("Provided command is invalid.")
-
-    if command == "catalog":
-        process_catalog_cmd(cat, options, files)
-    elif command == "ingest":
-        process_ingest_cmd(cat, options, files)
-    elif command == "info":
-        raise NotImplementedError("Command not implemented.")
+    else:
+        fn(cat, options, values)
