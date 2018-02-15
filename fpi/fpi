@@ -4,8 +4,14 @@
 
 from optparse import OptionParser
 
+import PIL.Image
+
 import cli
 import cli_opt
+
+
+# initialize Pillow decoders/encoders
+PIL.Image.init()
 
 
 def start_gui(option, string, parameter, opt_parser):

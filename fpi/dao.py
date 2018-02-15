@@ -8,6 +8,8 @@ import os, os.path
 import hashlib
 import datetime
 
+import PIL.Image
+
 import gobject_import   # noqa: F401
 from gi.repository import GExiv2
 
@@ -19,11 +21,53 @@ class Metadata(object):
 
     def __init__(self, filepath):
         """Initialize a new metadata object by loading the file metadata."""
+        self.filepath = filepath
         self.info = GExiv2.Metadata(filepath)
+        self._capture_datetime = self._extract_datetime()
+        self._width, self._height = self._get_dimension()
 
     @property
     def capture_datetime(self):
         """Return a datetime object with the image create date time."""
+        return self._capture_datetime
+
+    @property
+    def width(self):
+        """Return the width of the original image."""
+        return self._width
+
+    @property
+    def height(self):
+        """Return the height of the original image."""
+        return self._height
+
+    @property
+    def thumbnail(self):
+        """Extract the metadata thumbnail."""
+        return self.info.get_exif_thumbnail()
+
+    def _get_value_from_tags(self, tags):
+        value = None
+        for tag in tags:
+            value = self.info.get(tag)
+            if value is not None:
+                return value
+        return None
+
+    def _get_dimension(self):
+        width_tags = ['Exif.Photo.PixelXDimension']
+        height_tags = ['Exif.Photo.PixelYDimension']
+
+        width = self._get_value_from_tags(width_tags)
+        height = self._get_value_from_tags(height_tags)
+
+        if width is None or height is None:
+            img = PIL.Image.open(self.filepath)
+            width, height = img.size
+        
+        return (width, height)
+
+    def _extract_datetime(self):
         capture_tag = ['Exif.Photo.DateTimeOriginal',
                        'Exif.Photo.DateTimeDigitized',
                        'Iptc.Application2.DateCreated',
@@ -52,32 +96,17 @@ class Metadata(object):
         else:
             raise Exception("Could not retrieve capture_datetime")
 
-    @property
-    def width(self):
-        """Return the width of the original image."""
-        return self.info.get('Exif.Photo.PixelXDimension')
-
-    @property
-    def height(self):
-        """Return the height of the original image."""
-        return self.info.get('Exif.Photo.PixelYDimension')
-
-    @property
-    def thumbnail(self):
-        """Extract the metadata thumbnail."""
-        return self.info.get_exif_thumbnail()
-
 
 class Asset(Base):
     """Models the high level catalog asset."""
 
     __tablename__ = "assets"
     id = Column(String, primary_key=True)
-    device_id = Column(Integer)
-    path = Column(String)
-    filename = Column(String)
-    import_time = Column(DateTime)
-    import_session = Column(String)
+    device_id = Column(Integer, nullable=False)
+    path = Column(String, nullable=False)
+    filename = Column(String, nullable=False)
+    import_time = Column(DateTime, nullable=False)
+    import_session = Column(String, nullable=False)
 
     virtual_copies = relationship("Image", backref="asset")
 
@@ -120,9 +149,9 @@ class Image(Base):
     __tablename__ = "images"
     id = Column(Integer, primary_key=True)
     asset_id = Column(String, ForeignKey('assets.id'))
-    capture_datetime = Column(DateTime)
-    width = Column(Integer)
-    height = Column(Integer)
+    capture_datetime = Column(DateTime, nullable=False)
+    width = Column(Integer, nullable=False)
+    height = Column(Integer, nullable=False)
 
     # asset = relationship("Asset", back_populates="virtual_copies")
 

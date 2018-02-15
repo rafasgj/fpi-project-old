@@ -164,7 +164,12 @@ class Catalog(object):
             session.add(image)
             session.commit()
         except IntegrityError as e:
-            raise Exception("Ingesting an asset already in the catalog.")
+            if 'NOT NULL constraint failed' in str(e):
+                raise Exception("INTERNAL ERROR: Null field.")
+            if 'UNIQUE constraint failed' in str(e):
+                raise Exception("Ingesting an asset already in the catalog.")
+            # Raise any unknown error.
+            raise e
         options['sequence'] += 1
 
     def __ingest_dir(self, directory, options):

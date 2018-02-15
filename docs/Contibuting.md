@@ -39,13 +39,18 @@ standard Python setups, so you will need to install the modules:
 * sqlalchemy
 * sqlalchemy-utils
 
-It is suggested that you install them through _pip_:
+Also, some commom modules are used:
+
+* Pillow
+
+It is suggested that you install all of them through _pip_:
 
 ```
 python3 -m pip install --user -r requirements.txt
 ```
 
-Or install each package, one by one.
+Or install each package, one by one. If installing the packages
+individually, make sure you use the correct versions
 
 You will also need a source code editor, and you can use any editor you
 prefer.

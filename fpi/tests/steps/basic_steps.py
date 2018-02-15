@@ -57,6 +57,7 @@ def then_expception_raised_during_operatiion(context, exception, msg):
     """Test if an exception is raised."""
     assert context.exception is not None
     assert isinstance(context.exception, eval(exception)) is True
+    # raise context.exception
     assert str(context.exception) == msg
 
 
