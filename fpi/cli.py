@@ -21,8 +21,8 @@ def process_catalog_cmd(catalog, options, files):
             raise Exception(err)
         print("Creating catalog.")
         catalog.create()
-        return
-    raise Exception("Ivalid command options.")
+    else:
+        raise Exception("Invalid command option.")
 
 
 def process_ingest_cmd(catalog, options, files):
@@ -36,9 +36,18 @@ def process_ingest_cmd(catalog, options, files):
     catalog.ingest(method, files, **configuration)
 
 
+def process_info_cmd(catalog, options, files):
+    """Process the INFO command."""
+    if options.list:
+        for asset in catalog.search():
+            print('id: %s\tfile: @%s' % (asset.id, asset.fullpath))
+    else:
+        raise Exception("Invalid command option.")
+
 commands = {
     "catalog": process_catalog_cmd,
-    "ingest": process_ingest_cmd
+    "ingest": process_ingest_cmd,
+    "info": process_info_cmd
 }
 
 
