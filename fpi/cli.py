@@ -38,11 +38,35 @@ def process_ingest_cmd(catalog, options, files):
 
 def process_info_cmd(catalog, options, files):
     """Process the INFO command."""
+    obj = options.object.strip().lower() \
+        if options.object is not None else None
+
     if options.list:
-        for asset in catalog.search():
-            print('id: %s\tfile: @%s' % (asset.id, asset.fullpath))
+        if obj == 'session':
+            for session in catalog.sessions():
+                print(session)
+        else:
+            for asset in catalog.search():
+                print('id: %s\tfile: @%s' % (asset.id, asset.fullpath))
     else:
-        raise Exception("Invalid command option.")
+        obj_id = options.id.strip()
+        result = catalog.info(obj, obj_id)
+        if obj == 'session':
+            pass
+        else:
+            img = result.virtual_copies[0]
+            info = {
+                "id": result.id,
+                "file": result.filename,
+                "path": result.path,
+                "width": img.width,
+                "height": img.height,
+                "capture": img.capture_datetime.strftime("%Y-%m-%d %H:%M:%S")
+            }
+            fmt = "id: {id}\n\tfile: {file}\n\tpath: {path}\n\twidth: {width}\
+                   \n\theight: {height}\n\tcapture time:{capture}\n"
+            print(fmt.format(**info))
+
 
 commands = {
     "catalog": process_catalog_cmd,

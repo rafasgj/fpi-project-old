@@ -64,8 +64,9 @@ def _init_info_opt(parser):
     parser.add_option("", "--list", action="store_true", default=False,
                       help="""list all assets in the catalog or session.""")
     parser.add_option("", "--object", dest="object", default="asset",
-                      choices=["file", "session", "asset"],
-                      help="""define object type to query.""")
+                      metavar="TYPE", choices=["session", "asset"],
+                      help="""define object type to query. It must be one of
+                              asset or session.""")
     parser.add_option("", "--id",
                       help="""the id of the element to query. For session
                               it is the session name. For assets, it is

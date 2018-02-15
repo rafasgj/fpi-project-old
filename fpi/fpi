@@ -38,6 +38,7 @@ def _main():
         else:
             cli.execute(options, args)
     except Exception as e:
+        # raise e
         print("ERROR: %s\n" % e)
         opt_parser.print_usage()
         exit(1)

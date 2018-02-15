@@ -182,9 +182,9 @@ class Catalog(object):
 
     def info(self, object, parameter):
         """Get information about an object, given its identifier."""
-        if object is "session":
+        if object == "session":
             return self.__info_session(parameter)
-        if object is "asset":
+        if object == "asset":
             return self.__info_asset(parameter)
         else:
             raise Exception("Invalid object.")
