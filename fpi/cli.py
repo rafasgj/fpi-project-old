@@ -30,7 +30,7 @@ def process_ingest_cmd(catalog, options, files):
     configuration['session_name'] = options.session_name
     configuration['rename'] = options.rename
     configuration['directory_rule'] = options.directory_rule
-    configuration['recurse'] = options.rename if options.rename else False
+    configuration['recurse'] = options.recurse
     method = configuration.get('method', 'add')
     del(configuration['method'])
     catalog.ingest(method, files, **configuration)
