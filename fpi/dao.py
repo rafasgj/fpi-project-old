@@ -64,7 +64,7 @@ class Metadata(object):
         if width is None or height is None:
             img = PIL.Image.open(self.filepath)
             width, height = img.size
-        
+
         return (width, height)
 
     def _extract_datetime(self):

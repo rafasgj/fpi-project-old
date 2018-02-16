@@ -27,6 +27,7 @@ def given_command_ingest(context):
     """Set command to ingest assets into a catalog."""
     context.command = 'ingest'
     context.ingest_method = 'add'
+    context.files = []
     context.suboptions = {}
     now = datetime.datetime.utcnow()
     context.suboptions['session_name'] = now.strftime("%Y-%m-%dT%H:%M:%S.%f%z")
@@ -142,7 +143,8 @@ def then_one_asset_is_in_the_catalog(context):
 @then('there are {some} assets is the catalog, with its attributes')
 def then_some_assets_are_stored(context, some):
     """Check if the right number of assets were added to the catalog."""
-    assert context.session.query(Asset).count() is int(some)
+    count = context.session.query(Asset).count()
+    assert count is int(some)
 
 
 # Test asset attributes.

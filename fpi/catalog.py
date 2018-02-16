@@ -70,30 +70,36 @@ class Catalog(object):
         else:
             raise Exception("Refusing to overwrite catalog.")
 
+    _INGEST_METHOD = {
+        'add': _add,
+        'copy': shutil.copy2,
+        'move': shutil.move
+    }
+
     def ingest(self, method, filelist, *args, **kwargs):
         """Ingest the files in filelist using the provided method."""
+        if len(filelist) == 0:
+            raise Exception("No item to ingest.")
         self._check_catalog()
         if kwargs.get('session_name', None) is None:
             now = datetime.datetime.utcnow()
             kwargs['session_name'] = now.strftime("%Y-%m-%dT%H%M%S.%f%z")
-        if method == 'add':
-            fn = _add
-        elif method == 'copy':
-            fn = shutil.copy2
-        elif method == 'move':
-            fn = shutil.move
-        else:
+        fn = Catalog._INGEST_METHOD.get(method, None)
+        if fn is None:
             raise Exception("Invalid ingestion method.")
 
         kwargs['method'] = fn
         kwargs['sequence'] = 1
 
-        for f in filelist:
-            kwargs['source'] = f
-            if os.path.isfile(f):
-                self.__ingest_file(kwargs)
+        self.__ingest_itens(filelist, kwargs)
+
+    def __ingest_itens(self, items, options):
+        for i in items:
+            options['source'] = i
+            if os.path.isfile(i):
+                self.__ingest_file(options)
             else:
-                self.__ingest_dir(f, kwargs)
+                self.__ingest_dir(options)
 
     def __find_first(self, chlist, string):
         if string is None:
@@ -172,15 +178,15 @@ class Catalog(object):
             raise e
         options['sequence'] += 1
 
-    def __ingest_dir(self, directory, options):
-        recurse = options.get('recurse', False)
+    def __ingest_dir(self, options):
+        directory = options['source']
         for entry in os.scandir(directory):
+            options['source'] = entry.path
             if entry.is_file():
-                options['source'] = entry.path
                 self.__ingest_file(options)
             else:
-                if recurse:
-                    self.__ingest_dir(entry.path, options)
+                if options.get('recurse', False):
+                    self.__ingest_dir(options)
 
     def search(self):
         """Search for assets in the catalog."""

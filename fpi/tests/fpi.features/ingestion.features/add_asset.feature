@@ -123,3 +123,31 @@ Scenario: Recursively add files from a directory, at their original locations.
         | FPI_0006.JPG | d41d8cd98f00b204e9800998ecf8427e |
         | FPI_0007.JPG | c8b07cb389edaaf736b2486361b5e593 |
         And no exception is raised
+
+@copy @move
+Scenario Outline: Ingest files in the catalog using only the catalog name.
+    Given the command to ingest assets
+        And the ingestion method <method>
+        And an empty catalog named "test_catalog"
+        And a device mounted at "data/samples"
+        And the source directory "data/originals"
+        And the target directory "data/catalog/pics"
+        And the option to ingest recursively
+    When ingesting assets into the catalog
+    Then no exception is raised
+        And there are 7 assets is the catalog, with its attributes
+        And the assets id is a MD5 hash
+        | filename     | hash                             |
+        | FPI_0001.JPG | 4613ad3fd0c246dd5bb96b33b09c2996 |
+        | FPI_0002.JPG | 3b1479d722fbe11df5677bb521e2575b |
+        | FPI_0003.JPG | 123b707265158269808f78573e736a6e |
+        | FPI_0004.JPG | f5737b7e1d7b25662f74b885fa545b02 |
+        | FPI_0005.JPG | 8dde366bfc65efd9fabcc74728061740 |
+        | FPI_0006.JPG | d41d8cd98f00b204e9800998ecf8427e |
+        | FPI_0007.JPG | c8b07cb389edaaf736b2486361b5e593 |
+
+    Examples:
+    | method | Header 2 | Header 3 |
+    | add    | Value 2  | Value 3  |
+    | copy   | Value 2  | Value 3  |
+    | move   | Value 2  | Value 3  |
