@@ -66,3 +66,9 @@ def then_no_expception_raised(context):
     """Test if an exception is raised."""
     if context.exception is not None:
         raise context.exception
+
+
+@then('the directory "{directory}" does not exist')
+def then_directory_does_not_exist(context, directory):
+    """Test if the given directory does not exist."""
+    assert os.path.exists(directory) is False

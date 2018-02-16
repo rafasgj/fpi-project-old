@@ -35,3 +35,18 @@ Scenario Outline: Fail to copy or move files to an invalid target directory.
     | method |
     | move   |
     | copy   |
+
+@copy @move
+Scenario Outline: No file is given to ingest.
+    Given the command to ingest assets
+        And the ingestion method <method>
+        And the target directory "test_catalog/pictures"
+        And an empty catalog named "test_catalog"
+    When ingesting assets into the catalog
+    Then an "Exception" is raised saing "No item to ingest."
+        And the directory "test_catalog/pictures" does not exist
+
+    Examples:
+    | method |
+    | move   |
+    | copy   |
