@@ -55,8 +55,10 @@ class Metadata(object):
         return None
 
     def _get_dimension(self):
-        width_tags = ['Exif.Photo.PixelXDimension']
-        height_tags = ['Exif.Photo.PixelYDimension']
+        width_tags = ['Exif.Image.ImageWidth',
+                      'Exif.Photo.PixelXDimension']
+        height_tags = ['Exif.Image.ImageLength',
+                       'Exif.Photo.PixelYDimension']
 
         width = self._get_value_from_tags(width_tags)
         height = self._get_value_from_tags(height_tags)
