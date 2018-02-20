@@ -3,6 +3,7 @@
 from sqlalchemy import Column, ForeignKey, String, Integer, DateTime
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy.orm.session import object_session
 
 import os, os.path
 import hashlib
@@ -148,12 +149,61 @@ class Asset(Base):
 class Image(Base):
     """Models an Image, for the DAM system."""
 
+    # Flags
+    UNFLAG = 0
+    PICK = 1
+    REJECT = 2
+
     __tablename__ = "images"
     id = Column(Integer, primary_key=True)
     asset_id = Column(String, ForeignKey('assets.id'))
     capture_datetime = Column(DateTime, nullable=False)
     width = Column(Integer, nullable=False)
     height = Column(Integer, nullable=False)
+    flag = Column(Integer, nullable=False, default=0)
+
+    @hybrid_property
+    def pick(self):
+        """Return True if the image is flagged as PICK."""
+        return self.flag == Image.PICK
+
+    @hybrid_property
+    def reject(self):
+        """Return True if the image is flagged as REJECT."""
+        return self.flag == Image.REJECT
+
+    @hybrid_property
+    def unflagged(self):
+        """Return True if the image is not flagged."""
+        return not (self.pick or self.reject)
+
+    @pick.setter
+    def pick(self, value):
+        """Set/unset the PICK flag."""
+        self.set_flag(Image.PICK if value is True else Image.UNFLAG)
+
+    @reject.setter
+    def reject(self, value):
+        """Set/unset the PICK flag."""
+        self.set_flag(Image.REJECT if value is True else Image.UNFLAG)
+
+    @unflagged.setter
+    def unflagged(self, value):
+        """Unflag the object."""
+        if value is True:
+            self.set_flag(Image.UNFLAG)
+
+    def set_flag(self, value):
+        """Set flag for this object."""
+        if value not in [Image.UNFLAG, Image.PICK, Image.REJECT]:
+            raise Exception("Internal Error: Invalid flag value")
+        if value != self.flag:
+            # update(Image).where(Image.id == self.id).values(flag=flag_value)
+            self.flag = value
+            try:
+                object_session(self).commit()
+            except Exception as e:
+                object_session(self).rollback()
 
     # asset = relationship("Asset", back_populates="virtual_copies")
 
