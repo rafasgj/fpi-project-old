@@ -32,21 +32,47 @@ class Catalog(object):
 
     def __start_engine(self):
         self.engine = create_engine(self.__init_string)
-        self.Session = sessionmaker(bind=self.engine)
+        self._session = sessionmaker(bind=self.engine)()
+
+    def __set_catalog_name_and_file(self, catalog_name):
+        if not os.path.exists(catalog_name):
+            name, ext = os.path.splitext(catalog_name)
+            if ext == '.fpicat':
+                if os.path.isdir(name):
+                    fname = '%s/%s.fpicat' % (name, os.path.basename(name))
+                else:
+                    fname = catalog_name
+                return (os.path.basename(name), fname)
+            else:
+                fname = '%s.fpicat' % catalog_name
+                if os.path.isfile(fname):
+                    return (os.path.basename(catalog_name), fname)
+                else:
+                    base = os.path.basename(name)
+                    fname = '%s/%s.fpicat' % (name, base)
+                    return (base, fname)
+        elif os.path.isfile(catalog_name):
+            name, ext = os.path.splitext(catalog_name)
+            if ext == '.fpicat':
+                return (os.path.basename(name), catalog_name)
+            else:
+                raise Exception("Refusing to overwrite existing file.")
+        elif os.path.isdir(catalog_name):
+            base = os.path.basename(catalog_name)
+            filename = '%s/%s.fpicat' % (catalog_name, base)
+            return (base, filename)
+        return (None, None)
 
     def __init__(self, catalog_name):
         """Initialize a new catalog."""
-        noext, ext = os.path.splitext(catalog_name)
-        self.catalog_name = os.path.basename(noext)
-        if os.path.isfile(catalog_name) or ext == '.fpicat':
-            self.catalog_file = catalog_name
-        else:
-            fname = '%s/%s.fpicat' % (catalog_name, self.catalog_name)
-            self.catalog_file = fname
+        self._session = None
+        cname, fname = self.__set_catalog_name_and_file(catalog_name)
+        self.catalog_name = cname
+        self.catalog_file = fname
         self.__open_database()
 
     def _check_catalog(self):
-        if self.__dict__.get("engine", None) is None:
+        if self._session is None:
             err = "Trying to use an inexistent catalog '%s'."
             raise Exception(err % self.catalog_name)
 
@@ -54,7 +80,7 @@ class Catalog(object):
     def session(self):
         """Retrieve the database session."""
         self._check_catalog()
-        return self.Session()
+        return self._session
 
     def create(self):
         """Create a new catalog."""
