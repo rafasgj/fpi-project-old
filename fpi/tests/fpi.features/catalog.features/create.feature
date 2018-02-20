@@ -12,10 +12,15 @@ Scenario: Create a new f/π catalog.
         And an empty catalog is created with the given name
         And no exception is raised
 
-Scenario: Refuse to create f/π catalog because it exists.
+Scenario Outline: Refuse to create f/π catalog because it exists.
 Given the command to manage a catalog
         And the option to create a new catalog
-        And a catalog named "test_catalog"
+        And a catalog named "<catalog_name>"
         And that a catalog with the same name exists
     When creating a new catalog
     Then an "Exception" is raised saing "Refusing to overwrite catalog."
+
+    Examples:
+    | catalog_name        |
+    | test_catalog        |
+    | test_catalog.fpicat |

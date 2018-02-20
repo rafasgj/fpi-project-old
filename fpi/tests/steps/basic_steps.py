@@ -18,7 +18,7 @@ import catalog
 def given_empty_catalog(context, filename):
     """Ensure the catalog with the given filename does exist."""
     context.exception = None
-    context.catalog_name = filename
+    context.catalog_name = filename.strip()
     context.engine = create_engine(get_sqlite_init_string(context))
     context.session = sessionmaker(bind=context.engine)()
     context.catalog = catalog.Catalog(context.catalog_name)
@@ -30,7 +30,7 @@ def given_empty_catalog(context, filename):
 def given_catalog_file(context, catalog_file):
     """Set the filename of the catalog."""
     context.exception = None
-    context.catalog_file = catalog_file
+    context.catalog_file = catalog_file.strip()
     context.catalog = catalog.Catalog(context.catalog_file)
 
 
@@ -47,7 +47,7 @@ def given_file_name(context, filename):
 @given('a device mounted at "{mount_point}"')
 def given_mount_point(context, mount_point):
     """Ensure the directory given is a mount point."""
-    assert os.path.ismount(os.path.realpath(mount_point)) is True
+    assert os.path.ismount(os.path.realpath(mount_point.strip())) is True
 
 
 # Test exceptions
@@ -57,7 +57,6 @@ def then_expception_raised_during_operatiion(context, exception, msg):
     """Test if an exception is raised."""
     assert context.exception is not None
     assert isinstance(context.exception, eval(exception)) is True
-    # raise context.exception
     assert str(context.exception) == msg
 
 

@@ -28,7 +28,7 @@ def step_opt_catalog_create(context):
 @given('a catalog named "{name}"')
 def given_catalog_name(context, name):
     """Set the new catalog name."""
-    context.catalog_name = name
+    context.catalog_name = name.strip()
     context.catalog = Catalog(context.catalog_name)
 
 
