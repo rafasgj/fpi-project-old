@@ -3,13 +3,13 @@
 from sqlalchemy import Column, ForeignKey, String, Integer, DateTime
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.orm.session import object_session
 
 import os, os.path
 import hashlib
 import datetime
 
 import PIL.Image
+from enum import Enum
 
 import gobject_import   # noqa: F401
 from gi.repository import GExiv2
@@ -150,9 +150,11 @@ class Image(Base):
     """Models an Image, for the DAM system."""
 
     # Flags
-    UNFLAG = 0
-    PICK = 1
-    REJECT = 2
+    class Flags(Enum):
+        """Define the available Flags for an Image."""
+        UNFLAG = 0
+        PICK = 1
+        REJECT = 2
 
     __tablename__ = "images"
     id = Column(Integer, primary_key=True)
@@ -162,15 +164,17 @@ class Image(Base):
     height = Column(Integer, nullable=False)
     flag = Column(Integer, nullable=False, default=0)
 
+    # asset = relationship("Asset", back_populates="virtual_copies")
+
     @hybrid_property
     def pick(self):
         """Return True if the image is flagged as PICK."""
-        return self.flag == Image.PICK
+        return self.flag == Image.Flags.PICK.value
 
     @hybrid_property
     def reject(self):
         """Return True if the image is flagged as REJECT."""
-        return self.flag == Image.REJECT
+        return self.flag == Image.Flags.REJECT.value
 
     @hybrid_property
     def unflagged(self):
@@ -180,32 +184,29 @@ class Image(Base):
     @pick.setter
     def pick(self, value):
         """Set/unset the PICK flag."""
-        self.set_flag(Image.PICK if value is True else Image.UNFLAG)
+        self.set_flag(Image.Flags.PICK if value is True
+                      else Image.Flags.UNFLAG)
 
     @reject.setter
     def reject(self, value):
         """Set/unset the PICK flag."""
-        self.set_flag(Image.REJECT if value is True else Image.UNFLAG)
+        self.set_flag(Image.FlagsREJECT if value is True
+                      else Image.Flags.UNFLAG)
 
     @unflagged.setter
     def unflagged(self, value):
         """Unflag the object."""
         if value is True:
-            self.set_flag(Image.UNFLAG)
+            self.set_flag(Image.Flags.UNFLAG)
 
     def set_flag(self, value):
         """Set flag for this object."""
-        if value not in [Image.UNFLAG, Image.PICK, Image.REJECT]:
+        if value in Image.Flags:
+            value = value.value
+        if Image.Flags(value) not in Image.Flags:
             raise Exception("Internal Error: Invalid flag value")
         if value != self.flag:
-            # update(Image).where(Image.id == self.id).values(flag=flag_value)
-            self.flag = value
-            try:
-                object_session(self).commit()
-            except Exception as e:
-                object_session(self).rollback()
-
-    # asset = relationship("Asset", back_populates="virtual_copies")
+                self.flag = value
 
     def __init__(self, asset, metadata):
         """Initialize a new image asset."""

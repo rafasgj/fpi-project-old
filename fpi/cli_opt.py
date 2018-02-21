@@ -32,7 +32,7 @@ def _init_opt_grp(parser):
 
 
 def _init_ingestion_opt(parser):
-    """Initialize the Inges option group."""
+    """Initialize the Ingest option group."""
     grp = OptionGroup(parser, "Ingest")
     grp.add_option("", "--add", action="callback",
                    callback=_set_method, nargs=0,
@@ -59,7 +59,7 @@ def _init_ingestion_opt(parser):
 
 
 def _init_info_opt(parser):
-    """Initialize the Inges option group."""
+    """Initialize the Info option group."""
     parser = OptionGroup(parser, "Info")
     parser.add_option("", "--list", action="store_true", default=False,
                       help="""list all assets in the catalog or session.""")
@@ -75,11 +75,21 @@ def _init_info_opt(parser):
     return parser
 
 
+def _init_attrib_opt(parser):
+    """Initialize the Attrib option group."""
+    parser = OptionGroup(parser, "Attrib")
+    parser.add_option("-f", "--flag", dest="flag",
+                      metavar="FLAG", choices=['pick', 'reject', 'unflag'],
+                      help="""Define or remove an asset flag.""")
+    return parser
+
+
 def configure_option_parser(parser):
     """Configure the option parser with the CLI options."""
     # Add command options
     parser.add_option_group(_init_opt_grp(parser))
     parser.add_option_group(_init_ingestion_opt(parser))
     parser.add_option_group(_init_info_opt(parser))
+    parser.add_option_group(_init_attrib_opt(parser))
     # Ok, all configuration is done.
     return parser

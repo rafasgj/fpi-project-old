@@ -30,13 +30,16 @@ def given_catalog_with_assets(context, catalog_name):
 def when_setting_image_flag(context, asset, image, flag):
     """Set image flag to the given value."""
     if flag.strip().lower() == 'pick':
-        f = dao.Image.PICK
+        f = dao.Image.Flags.PICK
     elif flag.strip().lower() == 'reject':
-        f = dao.Image.REJECT
+        f = dao.Image.Flags.REJECT
     else:
-        f = dao.Image.UNFLAG
-    img = _get_image_from_catalog(context.catalog, asset, image)
-    img.set_flag(f)
+        f = dao.Image.Flags.UNFLAG
+
+    context.command = 'attrib'
+    context.options = {'flag': f.value}
+    context.assets = [asset]
+    context.catalog.set_attributes(context.assets, context.options)
 
 
 @then('the flag of {image} of {asset} to {flag} is set')

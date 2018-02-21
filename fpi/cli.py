@@ -1,15 +1,19 @@
 """Configure and run optparse to set configuration based on user options."""
 
 import catalog
+import dao
 
 
 # Processing Options:
+#   * Ingest
 #   - session_name
 #   - target_dir
 #   - rename
 #   - directory_rule
 #   - recurse
 #   - method
+#   * Attrib
+#   - flag
 configuration = {}
 
 
@@ -68,10 +72,22 @@ def process_info_cmd(catalog, options, files):
             print(fmt.format(**info))
 
 
+def process_attrib_cmd(catalog, options, assets):
+    """Process the ATTRIB command."""
+    if options.flag == 'pick':
+        configuration['flag'] = dao.Image.Flags.PICK
+    elif options.flag == 'reject':
+        configuration['flag'] = dao.Image.Flags.REJECT
+    elif options.flag == 'unflag':
+        configuration['flag'] = dao.Image.Flags.UNFLAG
+    catalog.set_attributes(assets, configuration)
+
+
 commands = {
-    "catalog": process_catalog_cmd,
-    "ingest": process_ingest_cmd,
-    "info": process_info_cmd
+    'catalog': process_catalog_cmd,
+    'ingest': process_ingest_cmd,
+    'info': process_info_cmd,
+    'attrib': process_attrib_cmd
 }
 
 
