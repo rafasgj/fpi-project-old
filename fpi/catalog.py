@@ -247,12 +247,12 @@ class Catalog(object):
     def __info_asset(self, asset_id):
         result = self.session.query(dao.Asset).filter(dao.Asset.id == asset_id)
         return result.one()
-    
+
     def set_attributes(self, assets, options):
+        """Set attributes provided in options to each of the given assets."""
         session = self.session
         for asset in assets:
             q = session.query(dao.Image).filter(dao.Image.asset_id == asset)
             for image in q:
                 image.set_flag(options.get('flag', image.flag))
         session.commit()
-

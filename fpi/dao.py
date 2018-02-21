@@ -152,6 +152,7 @@ class Image(Base):
     # Flags
     class Flags(Enum):
         """Define the available Flags for an Image."""
+
         UNFLAG = 0
         PICK = 1
         REJECT = 2
