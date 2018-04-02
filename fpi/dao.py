@@ -7,12 +7,13 @@ from sqlalchemy.ext.hybrid import hybrid_property
 import os, os.path
 import hashlib
 import datetime
+import base64
+import io
 
 import PIL.Image
 from enum import Enum
 
-import gobject_import   # noqa: F401
-from gi.repository import GExiv2
+import exiftool
 
 from base import Base
 
@@ -23,7 +24,8 @@ class Metadata(object):
     def __init__(self, filepath):
         """Initialize a new metadata object by loading the file metadata."""
         self.filepath = filepath
-        self.info = GExiv2.Metadata(filepath)
+        with exiftool.ExifTool() as et:
+            self.info = et.execute_json('-b', filepath)[0]
         self._capture_datetime = self._extract_datetime()
         self._width, self._height = self._get_dimension()
 
@@ -45,7 +47,16 @@ class Metadata(object):
     @property
     def thumbnail(self):
         """Extract the metadata thumbnail."""
-        return self.info.get_exif_thumbnail()
+        tags = ['EXIF:ThumbnailImage', 'EXIF:PreviewImage']
+        for tag in tags:
+            t = self.info.get(tag)
+            if t is not None:
+                return base64.b64decode(t.split(":")[-1])
+        img = PIL.Image.open(self.info.get('SourceFile'))
+        img.thumbnail((216, 216), PIL.Image.ANTIALIAS)
+        barray = io.BytesIO()
+        img.save(barray, format="JPEG")
+        return barray.getvalue()
 
     def _get_value_from_tags(self, tags):
         value = None
@@ -71,30 +82,26 @@ class Metadata(object):
         return (width, height)
 
     def _extract_datetime(self):
-        capture_tag = ['Exif.Photo.DateTimeOriginal',
-                       'Exif.Photo.DateTimeDigitized',
-                       'Iptc.Application2.DateCreated',
-                       'Iptc.Application2.DigitizationDate',
-                       'Exif.Image.DateTime',
-                       'Xmp.xmp.CreateDate']
+        capture_tag = ['EXIF:DateTimeOriginal',
+                       'EXIF:DateTimeDigitized',
+                       'IPTC:DateCreated',
+                       'IPTC:DigitizationDate',
+                       'EXIF:DateTime',
+                       'XMP:CreateDate']
         for tag in capture_tag:
             value = self.info.get(tag)
             if value is not None:
-                if tag.startswith('Exif.'):
-                    fmt = "%Y:%m:%d %H:%M:%S"
-                    dt = datetime.datetime.strptime(value, fmt)
-                else:    # XMP or IPTC
-                    if tag.startswith("Iptc."):
-                        if tag.endswith(".DateCreated"):
-                            timetag = "Iptc.Application2.TimeCreated"
-                        else:
-                            timetag = "Iptc.Application2.DigitizationTime"
-                        tg = self.info.get(timetag)
-                        if tg is None:
-                            continue
-                        value = value + "T" + tg
-                    fmt = "%Y-%m-%dT%H:%M:%S"
-                    dt = datetime.datetime.strptime(value[:19], fmt)
+                if tag.startswith("IPTC:"):
+                    if tag.endswith("DateCreated"):
+                        timetag = "IPTC:TimeCreated"
+                    else:
+                        timetag = "IPTC:DigitizationTime"
+                    tg = self.info.get(timetag)
+                    if tg is None:
+                        continue
+                    value = value + " " + tg
+                fmt = "%Y:%m:%d %H:%M:%S"
+                dt = datetime.datetime.strptime(value[:19], fmt)
                 return dt
         else:
             raise Exception("Could not retrieve capture_datetime")
