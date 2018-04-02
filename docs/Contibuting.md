@@ -1,5 +1,4 @@
-Contributing to f/π
-===================
+# Contributing to f/π
 
 There are many ways to contriubte to [f/π]:
 
@@ -45,7 +44,7 @@ Also, some commom modules are used:
 
 It is suggested that you install all of them through _pip_:
 
-```
+```bash
 python3 -m pip install --user -r requirements.txt
 ```
 
@@ -61,9 +60,9 @@ install the packages (shown with dependencies):
 * language-gherkin:1.0.4
 * linter:2.2.0
 * linter-flake8:2.3.0
-    * linter-ui-default:1.6.10
-        * intentions:1.1.5
-        * busy-signal:1.4.3
+  * linter-ui-default:1.6.10
+    * intentions:1.1.5
+    * busy-signal:1.4.3
 
 ## Reporting a bug
 
@@ -77,7 +76,7 @@ yet been reported. If the bug has not been reported, create a new issue,
 if it has been reported, you can add your specific case as a comment to
 the existing issue.
 
-## Requesting a New Feature <a id="features"/>
+## Requesting a New Feature <span id="features"/>
 
 When requesting a new feature in f/π, please fill out a new issue.
 Please provide example use cases. Describe what you want to do, how you
@@ -95,7 +94,7 @@ fearture request is implemented.
 If possible, use the following template to write your feature request
 (the **And** parts are not required):
 
-```
+```gherkin
 Given that <>,
     And <> ...
 When <>,
@@ -104,30 +103,30 @@ Then <>,
     And <> ...
 ```
 
-## Contributing Code <a id="code"/>
+## Contributing Code <span id="code"/>
 
 f/π development happens on Github. Code contributions should be
 submitted there, through merge requests.
 
 Your merge requests should:
 
-- Provide a test scenario that describe what you are trying to
+* Provide a test scenario that describe what you are trying to
 accomplish, and which inputs you will use;
-- Fix one issue and fix it well;
-- Fix the issue, but do not include extraneous refactoring or code
+* Fix one issue and fix it well;
+* Fix the issue, but do not include extraneous refactoring or code
 reformatting. Refactoring should be an issue on itself;
-- Have descriptive titles and descriptions;
+* Have descriptive titles and descriptions;
 
 Have commits that follow these rules:
 
-- Do not commit any code if it does not comply with [PEP8]. Run [Flake8]
+* Do not commit any code if it does not comply with [PEP8]. Run [Flake8]
 on the code to ensure it;
-- Create a description of one line with, at most, 72 characters long;
-- If needed you can add more lines, with no more than 72 characters
+* Create a description of one line with, at most, 72 characters long;
+* If needed you can add more lines, with no more than 72 characters
 each;
-- The final line of the body references the issue appropriately. If the
-commit fixes the issue, add "Fixes #<issue>";
-- It is suggested that you use the .gitcommittemplate file, as a commit
+* The final line of the body references the issue appropriately. If the
+commit fixes the issue, add "Fixes #\<issue\>";
+* It is suggested that you use the .gitcommittemplate file, as a commit
 template.
 
 ----
