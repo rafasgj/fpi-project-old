@@ -1,8 +1,22 @@
 """Functions to configure CLI options."""
 
-from optparse import OptionGroup
+from optparse import OptionParser, OptionGroup
 
 from cli import configuration
+
+
+def init(callback=None):
+    """Initialize the CLI command parser."""
+    desc = """f/π is an open source, catalog-oriented digital asset managemt tool.
+            The available commands are: catalog, ingest and info."""
+    usage_string = "%prog command catalog [options] file|directory ..."
+
+    opt_parser = OptionParser(usage=usage_string,
+                              version="f/π version α-1",
+                              description=desc)
+    opt_parser.add_option("", "--gui", action="callback", callback=callback,
+                          help="start f/π GUI version.")
+    return _configure_option_parser(opt_parser)
 
 
 def _set_method(option, string, parameter, opt_parser):
@@ -84,7 +98,7 @@ def _init_attrib_opt(parser):
     return parser
 
 
-def configure_option_parser(parser):
+def _configure_option_parser(parser):
     """Configure the option parser with the CLI options."""
     # Add command options
     parser.add_option_group(_init_opt_grp(parser))

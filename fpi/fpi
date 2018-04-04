@@ -2,8 +2,6 @@
 
 """f/π is an open source, catalog-oriented digital asset managemt tool."""
 
-from optparse import OptionParser
-
 import PIL.Image
 
 import cli
@@ -20,19 +18,8 @@ def start_gui(option, string, parameter, opt_parser):
 
 
 def _main():
-    desc = """f/π is an open source, catalog-oriented digital asset managemt tool.
-            The available commands are: catalog, ingest and info."""
-    usage_string = "%prog command catalog [options] file|directory ..."
-    
-    opt_parser = OptionParser(usage=usage_string,
-                              version="f/π version α-1",
-                              description=desc)
-    opt_parser.add_option("", "--gui", action="callback", callback=start_gui,
-                          help="start f/π GUI version.")
-
-    opt_parser = cli_opt.configure_option_parser(opt_parser)
-
     try:
+        opt_parser = cli_opt.init(cb=start_gui)
         options, args = opt_parser.parse_args()
 
         if len(args) == 0:
