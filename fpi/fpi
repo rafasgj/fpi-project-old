@@ -18,8 +18,8 @@ def start_gui(option, string, parameter, opt_parser):
 
 
 def _main():
+    opt_parser = cli_opt.init(callback=start_gui)
     try:
-        opt_parser = cli_opt.init(cb=start_gui)
         options, args = opt_parser.parse_args()
 
         if len(args) == 0:
