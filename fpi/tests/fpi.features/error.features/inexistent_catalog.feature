@@ -7,7 +7,7 @@ Scenario Outline: Ingesting files in a non-existing catalog file.
         And a catalog named "<file>"
         And a file <filename>
     When ingesting assets into the catalog
-    Then an "Exception" is raised saing "Trying to use an inexistent catalog '<name>'."
+    Then an "Exception" is raised saying "Trying to use an inexistent catalog '<name>'."
 
     Examples:
     | method | file              | name       | filename          |
@@ -22,7 +22,7 @@ Scenario Outline: Listing assets from a non-existing catalog file.
     Given the command to list assets in the catalog
         And a catalog named "<file>"
     When listing all assets in the catalog
-    Then an "Exception" is raised saing "Trying to use an inexistent catalog '<name>'."
+    Then an "Exception" is raised saying "Trying to use an inexistent catalog '<name>'."
 
     Examples:
     | file              | name       |    
@@ -36,7 +36,7 @@ Scenario Outline: Requesting info from a non-existing catalog file.
         And the session query as "First Session"
         And a catalog named "<file>"
     When requesting information about an item in the catalog
-    Then an "Exception" is raised saing "Trying to use an inexistent catalog '<name>'."
+    Then an "Exception" is raised saying "Trying to use an inexistent catalog '<name>'."
 
     Examples:
     | object  | file              | name       |

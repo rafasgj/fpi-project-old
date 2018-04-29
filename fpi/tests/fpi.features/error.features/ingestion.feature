@@ -12,7 +12,7 @@ Scenario Outline: Add a file twice to the catalog, and it should not be allowed.
         | data/samples/DCIM/100FPIAM/FPI_0001.JPG |
         | data/samples/DCIM/100FPIAM/FPI_0001.JPG |
     When ingesting assets into the catalog
-    Then an "Exception" is raised saing "Ingesting an asset already in the catalog."
+    Then an "Exception" is raised saying "Ingesting an asset already in the catalog."
         And one asset is in the catalog with its attributes
         And the asset id is the MD5 hash "4613ad3fd0c246dd5bb96b33b09c2996"
 
@@ -29,7 +29,7 @@ Scenario Outline: Fail to copy or move files to an invalid target directory.
         And an empty catalog named "test_catalog"
         And an image file at "data/originals/FPI_0001.JPG"
     When ingesting assets into the catalog
-    Then an "Exception" is raised saing "Cannot use target directory."
+    Then an "Exception" is raised saying "Cannot use target directory."
 
     Examples:
     | method |
@@ -43,7 +43,7 @@ Scenario Outline: No file is given to ingest.
         And the target directory "test_catalog/pictures"
         And an empty catalog named "test_catalog"
     When ingesting assets into the catalog
-    Then an "Exception" is raised saing "No item to ingest."
+    Then an "Exception" is raised saying "No item to ingest."
         And the directory "test_catalog/pictures" does not exist
 
     Examples:
