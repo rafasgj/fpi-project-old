@@ -2,14 +2,13 @@
 
 from behave import given, then
 
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy import create_engine
-
-from common.util import get_sqlite_init_string
+# from common.util import get_sqlite_init_string
 
 import os.path
 
 import catalog
+
+from common.util import get_catalog_file
 
 
 # Create an empty catalog
@@ -19,10 +18,12 @@ def given_empty_catalog(context, filename):
     """Ensure the catalog with the given filename does exist."""
     context.exception = None
     context.catalog_name = filename.strip()
-    context.engine = create_engine(get_sqlite_init_string(context))
-    context.session = sessionmaker(bind=context.engine)()
     context.catalog = catalog.Catalog(context.catalog_name)
     context.catalog.create()
+    context.session = context.catalog.session
+    catalog_file = get_catalog_file(context)
+    context.catalog_directory = os.path.dirname(catalog_file)
+    context.catalog_file = catalog_file
 
 
 # Set the catalog name, but don't create it.
@@ -30,8 +31,10 @@ def given_empty_catalog(context, filename):
 def given_catalog_file(context, catalog_file):
     """Set the filename of the catalog."""
     context.exception = None
-    context.catalog_file = catalog_file.strip()
     context.catalog = catalog.Catalog(context.catalog_file)
+    catalog_file = get_catalog_file(context)
+    context.catalog_directory = os.path.dirname(catalog_file)
+    context.catalog_file = catalog_file
 
 
 # Files that might or might not exist
@@ -52,12 +55,12 @@ def given_mount_point(context, mount_point):
 
 # Test exceptions
 
-@then('an "{exception}" is raised saing "{msg}"')
+@then('an "{exception}" is raised saying "{msg}"')
 def then_expception_raised_during_operatiion(context, exception, msg):
     """Test if an exception is raised."""
     assert context.exception is not None
     assert isinstance(context.exception, eval(exception)) is True
-    assert str(context.exception) == msg
+    assert str(context.exception).startswith(msg) is True
 
 
 @then('no exception is raised')

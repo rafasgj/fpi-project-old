@@ -1,13 +1,21 @@
 """Common database test utilities."""
 
+import os.path
+
 
 # Utility functions
 
 def get_catalog_file(context):
     """Generate a catalog file name for a context."""
-    if context.catalog_name.endswith('.fpicat'):
-        return context.catalog_name
-    return "%s/%s.fpicat" % (context.catalog_name, context.catalog_name)
+    directory = ""
+    if not context.catalog_name.startswith('./'):
+        basename = os.path.basename(context.catalog_name)
+        filename, ext = os.path.splitext(os.path.split(basename)[-1])
+        if ext is '':
+            ext = '.fpicat'
+        basedir = "/".join(os.path.split(basename)[:-1])
+        directory = os.path.join(basedir, filename)
+    return "%s/%s%s" % (directory, filename, ext)
 
 
 def get_sqlite_init_string(context):

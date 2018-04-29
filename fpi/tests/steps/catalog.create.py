@@ -7,7 +7,9 @@ from sqlalchemy import create_engine
 
 import os.path
 
-from common.util import check_catalog_exists, get_sqlite_init_string
+from common.util import check_catalog_exists, \
+    get_sqlite_init_string, \
+    get_catalog_file
 
 from catalog import Catalog
 from dao import Asset
@@ -28,8 +30,8 @@ def step_opt_catalog_create(context):
 @given('a catalog named "{name}"')
 def given_catalog_name(context, name):
     """Set the new catalog name."""
-    context.catalog_name = name.strip()
-    context.catalog = Catalog(context.catalog_name)
+    context.catalog_name = name
+    context.catalog = Catalog(name)
 
 
 @given('that a catalog with the same name exists')
@@ -43,8 +45,11 @@ def given_a_catalog_already_exists(context):
 
 
 @when('creating a new catalog')
-def when_execute_catalog_creation(context):
+def when_creating_new_catalog(context):
     """Execute catalog creation."""
+    catalog_file = get_catalog_file(context)
+    context.catalog_directory = os.path.dirname(catalog_file)
+    context.catalog_file = catalog_file
     try:
         context.catalog.create()
         context.exception = None
@@ -56,6 +61,8 @@ def when_execute_catalog_creation(context):
 def then_check_catalog_is_empty_after_creation(context):
     """Create a catalog that is empty, and have the given name."""
     assert context.exception is None
+    if check_catalog_exists(context) is False:
+        raise Exception("FAILED: %s" % context.catalog_name)
     assert check_catalog_exists(context) is True
     engine = create_engine(get_sqlite_init_string(context))
     session = sessionmaker(bind=engine)()
@@ -65,6 +72,5 @@ def then_check_catalog_is_empty_after_creation(context):
 @then('a directory with the catalog name exists with the catalog file inside')
 def then_check_directory_with_catalog(context):
     """Check if the catalog was created inside a directory."""
-    assert os.path.isdir(context.catalog_name)
-    filename = "%s.fpicat" % context.catalog_name
-    assert os.path.isfile(os.path.join(context.catalog_name, filename))
+    assert os.path.isdir(context.catalog_directory) is True
+    assert os.path.isfile(context.catalog_file) is True

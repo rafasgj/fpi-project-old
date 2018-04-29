@@ -109,6 +109,12 @@ def given_list_of_files(context):
     context.files = [row['filename'] for row in context.table]
 
 
+@given('an image without an embedded thumbnail "{filename}"')
+def given_image_without_thumbnail(context, filename):
+    """Set an image to be ingested that do not hav an embedded thumbnail."""
+    context.files = [filename]
+
+
 # Session name
 
 @given('a session name of "{session_name}"')
@@ -144,7 +150,10 @@ def then_one_asset_is_in_the_catalog(context):
 def then_some_assets_are_stored(context, some):
     """Check if the right number of assets were added to the catalog."""
     count = context.session.query(Asset).count()
-    assert count is int(some)
+    if count != int(some):
+        fmt = "Number of objects do not match: %d != %d."
+        msg = fmt % (count, int(some))
+        raise Exception(msg)
 
 
 # Test asset attributes.
@@ -231,4 +240,6 @@ def then_files_are_in_their_correct_places(context):
 def then_originals_do_not_exist(context):
     """Check if the original files do not exist anymore."""
     for f in context.files:
-        assert os.path.exists(f) is False
+        if os.path.exists(f):
+            if os.path.isfile(f):
+                raise Exception("File exists: %s" % f)
