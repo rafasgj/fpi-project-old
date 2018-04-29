@@ -9,6 +9,7 @@ from sqlalchemy.exc import IntegrityError
 import datetime
 import os
 import shutil
+import time
 from collections import namedtuple
 
 from base import Base
@@ -35,32 +36,30 @@ class Catalog(object):
         self._session = sessionmaker(bind=self.engine)()
 
     def __set_catalog_name_and_file(self, catalog_name):
-        if not os.path.exists(catalog_name):
-            name, ext = os.path.splitext(catalog_name)
-            if ext == '.fpicat':
-                if os.path.isdir(name):
-                    fname = '%s/%s.fpicat' % (name, os.path.basename(name))
-                else:
-                    fname = catalog_name
-                return (os.path.basename(name), fname)
-            else:
-                fname = '%s.fpicat' % catalog_name
-                if os.path.isfile(fname):
-                    return (os.path.basename(catalog_name), fname)
-                else:
-                    base = os.path.basename(name)
-                    fname = '%s/%s.fpicat' % (name, base)
-                    return (base, fname)
+        def name_with_dir(a_name):
+            a_basename = os.path.basename(a_name)
+            return '%s/%s.fpicat' % (a_name, a_basename)
+        name, ext = os.path.splitext(catalog_name)
+        base = os.path.basename(name)
+        catalog = catalog_name
+        if os.path.exists(catalog):
+            return (base, catalog)
+        elif ext == '.fpicat':
+            if name == base:
+                catalog = '%s/%s%s' % (base, base, ext)
+            return (base, catalog)
         elif os.path.isfile(catalog_name):
-            name, ext = os.path.splitext(catalog_name)
-            if ext == '.fpicat':
-                return (os.path.basename(name), catalog_name)
-            else:
-                raise Exception("Refusing to overwrite existing file.")
+            msg = "Refusing to overwrite existing file: '%'" % (catalog_name)
+            raise Exception(msg)
         elif os.path.isdir(catalog_name):
-            base = os.path.basename(catalog_name)
-            filename = '%s/%s.fpicat' % (catalog_name, base)
-            return (base, filename)
+            return (base, name_with_dir(catalog_name))
+        else:
+            catalog = '%s.fpicat' % catalog_name
+            if os.path.isfile(catalog):
+                return (base, catalog)
+            else:
+                return (base, name_with_dir(catalog_name))
+        # we should not get here...
         return (None, None)
 
     def __init__(self, catalog_name):
@@ -90,11 +89,12 @@ class Catalog(object):
                 os.makedirs(directory)
             elif not os.path.isdir(directory):
                 raise Exception("Cannot create catalog directory.")
-        if not database_exists(self.__init_string):
+        if database_exists(self.__init_string):
+            msg = "Refusing to overwrite catalog '%s'." % self.catalog_file
+            raise Exception(msg)
+        else:
             self.__start_engine()
             Base.metadata.create_all(self.engine)
-        else:
-            raise Exception("Refusing to overwrite catalog.")
 
     _INGEST_METHOD = {
         'add': _add,
@@ -190,18 +190,24 @@ class Catalog(object):
         method(src, fname)
         session = self.session
         try:
-            asset = dao.Asset(fname, options['session_name'], metadata)
+            asset = dao.Asset(fname, options['session_name'])
             session.add(asset)
             image = dao.Image(asset, metadata)
             session.add(image)
             session.commit()
         except IntegrityError as e:
+            session.rollback()
             if 'NOT NULL constraint failed' in str(e):
                 raise Exception("INTERNAL ERROR: Null field.")
             if 'UNIQUE constraint failed' in str(e):
                 raise Exception("Ingesting an asset already in the catalog.")
             # Raise any unknown error.
             raise e
+        except FileNotFoundError as fnf:
+            session.rollback()
+            fmt = "ORIGINAL = %s \n\n SRC = %s \n\t FNAME = %s"
+            msg = fmt % (fnf, src, fname)
+            raise Exception(msg)
         options['sequence'] += 1
 
     def __ingest_dir(self, options):
@@ -255,4 +261,9 @@ class Catalog(object):
             q = session.query(dao.Image).filter(dao.Image.asset_id == asset)
             for image in q:
                 image.set_flag(options.get('flag', image.flag))
-        session.commit()
+        try:
+            session.commit()
+        except Exception as e:
+            session.rollback()
+            # TODO: Handle errors.
+            raise e

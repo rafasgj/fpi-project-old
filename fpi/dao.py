@@ -28,6 +28,7 @@ class Metadata(object):
             self.info = et.execute_json('-b', filepath)[0]
         self._capture_datetime = self._extract_datetime()
         self._width, self._height = self._get_dimension()
+        self._thumbnail = None
 
     @property
     def capture_datetime(self):
@@ -46,6 +47,12 @@ class Metadata(object):
 
     @property
     def thumbnail(self):
+        """Return a tumbnail of the image."""
+        if self._thumbnail is None:
+            self._thumbnail = self._get_thumbnail()
+        return self._thumbnail
+
+    def _get_thumbnail(self):
         """Extract the metadata thumbnail."""
         tags = ['EXIF:ThumbnailImage', 'EXIF:PreviewImage']
         for tag in tags:
@@ -53,7 +60,7 @@ class Metadata(object):
             if t is not None:
                 return base64.b64decode(t.split(":")[-1])
         img = PIL.Image.open(self.info.get('SourceFile'))
-        img.thumbnail((216, 216), PIL.Image.ANTIALIAS)
+        img.thumbnail((192, 192), PIL.Image.ANTIALIAS)
         barray = io.BytesIO()
         img.save(barray, format="JPEG")
         return barray.getvalue()
@@ -133,8 +140,9 @@ class Asset(Base):
             filepath = os.path.dirname(filepath)
         return ""
 
-    def __init__(self, filepath, session_name, exif):
+    def __init__(self, filepath, session_name):
         """Initialize an asset given a path to it."""
+        exif = Metadata(filepath)
         # asset attributes
         dirname, basename = os.path.split(filepath)
         dirname = os.path.realpath(dirname)
