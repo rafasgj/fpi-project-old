@@ -31,7 +31,7 @@ def before_scenario(context, scenario):
     """Execute before each scenario."""
     remove_catalog(context)
     tags = set(scenario.feature.tags + scenario.tags)
-    if "move" in tags:
+    if 'copy' in tags or 'move' in tags:
         for d in ['data/catalog', 'data/originals']:
             if os.path.isdir(d):
                 remove_tree(d)
