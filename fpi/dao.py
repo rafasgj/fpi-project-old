@@ -13,7 +13,7 @@ import io
 import PIL.Image
 from enum import Enum
 
-import exiftool
+import phexif
 
 from base import Base
 
@@ -24,8 +24,8 @@ class Metadata(object):
     def __init__(self, filepath):
         """Initialize a new metadata object by loading the file metadata."""
         self.filepath = filepath
-        with exiftool.ExifTool() as et:
-            self.info = et.execute_json('-b', filepath)[0]
+        with phexif.ExifTool() as et:
+            self.info = et.get_metadata(filepath)[0]
         self._capture_datetime = self._extract_datetime()
         self._width, self._height = self._get_dimension()
         self._thumbnail = None

@@ -9,7 +9,6 @@ from sqlalchemy.exc import IntegrityError
 import datetime
 import os
 import shutil
-import time
 from collections import namedtuple
 
 from base import Base
