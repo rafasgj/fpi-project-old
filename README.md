@@ -1,5 +1,4 @@
-f/π
-===
+# f/π
 
 As technology and digital photography have changed the work done by
 photographers, they now hold libraries with thousands of images, videos
@@ -38,6 +37,12 @@ f/π will have support for:
 - Image tagging with hierarchical keywords, labels, ratings and
   selection attributes.
 - Multiple operating systems, such as Linux, macOS and Windows.
+
+## Requirements
+
+f/π requires a few Python modules, can be found on
+[requiremensts.txt](../requirements.txt), and
+[Phil Harvey's ExifTool](https://sno.phy.queensu.ca/~phil/exiftool/).
 
 ## Contributing to the project
 
