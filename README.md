@@ -41,7 +41,7 @@ f/π will have support for:
 ## Requirements
 
 f/π requires a few Python modules, can be found on
-[requirements.txt], and [Phil Harvey's ExifTool].
+[requirements.txt](requirements.txt), and [Phil Harvey's ExifTool].
 
 ## Contributing to the project
 
