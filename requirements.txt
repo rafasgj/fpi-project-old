@@ -8,12 +8,12 @@
 #
 
 # GObject
-pygobject == 3.27.1
+# pygobject == 3.27.1
 
 # SQLAlchemy ORM
-sqlalchemy == 1.2.2
-sqlalchemy-utils == 0.32.21
-# migrate
+sqlalchemy >= 1.2.7
+sqlalchemy-utils >= 0.32.21
+# alembic == 0.9.9
 
 # BDD / Tests
 behave >= 1.2.5
@@ -23,5 +23,5 @@ flake8 >= 3.5.0
 flake8-docstrings >= 1.3.0
 
 # Python
-Pillow == 3.2.0
+Pillow >= 3.2.0
 
