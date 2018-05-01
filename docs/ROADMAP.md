@@ -1,5 +1,4 @@
-f/π Roadmap
-===========
+# f/π Roadmap
 
 ## Version α-1
 
@@ -107,15 +106,19 @@ fpi label catalog_path --remove label_name
 > Remove a label from the system and from all the assets that were
   marked with this label.
 
-fpi attrib catalog_path asset_id attribute:value ...
+fpi label catalog_path --set label_name asset_id ...
 
-> Set the value of an attribute of an asset ingested in the system.
+> Apply the label to all given assets.
 
-  |  Attribute  | Valid values                                        |
-  | :---------: | :-------------------------------------------------- |
-  |  rating (r) | Numerical: 0-5.                                     |
-  |  label (l)  | String: a valid label                               |
-  |  flag (f)   | String: One of pick (p), unpick (u) or rejected (x) |
+fpi attrib catalog_path --attribute=value ... asset_id ... 
+
+> Set the value of one or more attributes of a list of asset assets
+  ingested into the system.
+
+|  Attribute  | Valid values                                        |
+| :---------: | :-------------------------------------------------- |
+|  --rating   | Numerical: 0-5.                                     |
+|  --flag     | String: One of pick (p), unpick (u) or rejected (x) |
 
 fpi list catalog_path criteria
 

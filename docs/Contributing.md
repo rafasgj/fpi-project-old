@@ -34,7 +34,7 @@ standard Python setups, so you will need to install the modules:
 * flake8
 * flake8-docstrings
 * pygobject
-* migrate
+* alembic
 * sqlalchemy
 * sqlalchemy-utils
 
@@ -54,6 +54,10 @@ individually, make sure you use the correct versions
 You will also need a source code editor, and you can use any editor you
 prefer.
 
+## Source Editors
+
+### Atom
+
 If using [Atom], it is suggested that you use version 1.19 or later, and
 install the packages (shown with dependencies):
 
@@ -63,6 +67,17 @@ install the packages (shown with dependencies):
   * linter-ui-default:1.6.10
     * intentions:1.1.5
     * busy-signal:1.4.3
+
+### Microsoft's Visual Studio Code
+
+If using Microsoft's [Visual Studio Code], it is suggested that you use
+the latest version, and install the extensions:
+
+* Python
+* Cucumber (Gherkin) Full Suport
+* markdownlint
+* Markdown Preview Github Styling
+* Github
 
 ## Reporting a bug
 
