@@ -13,7 +13,7 @@
 # SQLAlchemy ORM
 sqlalchemy >= 1.2.7
 sqlalchemy-utils >= 0.32.21
-# alembic == 0.9.9
+alembic >= 0.9.9
 
 # BDD / Tests
 behave >= 1.2.5
