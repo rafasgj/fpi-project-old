@@ -38,28 +38,23 @@ class Catalog(object):
         def name_with_dir(a_name):
             a_basename = os.path.basename(a_name)
             return '%s/%s.fpicat' % (a_name, a_basename)
+
         name, ext = os.path.splitext(catalog_name)
         base = os.path.basename(name)
         catalog = catalog_name
         if os.path.exists(catalog):
-            return (base, catalog)
+            pass
         elif ext == '.fpicat':
             if name == base:
                 catalog = '%s/%s%s' % (base, base, ext)
-            return (base, catalog)
         elif os.path.isfile(catalog_name):
             msg = "Refusing to overwrite existing file: '%'" % (catalog_name)
             raise Exception(msg)
-        elif os.path.isdir(catalog_name):
-            return (base, name_with_dir(catalog_name))
         else:
             catalog = '%s.fpicat' % catalog_name
-            if os.path.isfile(catalog):
-                return (base, catalog)
-            else:
-                return (base, name_with_dir(catalog_name))
-        # we should not get here...
-        return (None, None)
+            if not os.path.isfile(catalog):
+                catalog = name_with_dir(catalog_name)
+        return (base, catalog)
 
     def __init__(self, catalog_name):
         """Initialize a new catalog."""
