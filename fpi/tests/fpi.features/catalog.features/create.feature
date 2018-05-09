@@ -8,9 +8,9 @@ Scenario Outline: Create a new f/π catalog.
         And the option to create a new catalog
         And a catalog named "<catalog_name>"
     When creating a new catalog
-    Then a directory with the catalog name exists with the catalog file inside
+    Then no exception is raised
+        And a directory with the catalog name exists with the catalog file inside
         And an empty catalog is created with the given name
-        And no exception is raised
 
     Examples:
     | catalog_name        |
