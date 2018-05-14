@@ -17,7 +17,7 @@ Scenario Outline: Add flags to images.
     Examples:
     | asset                            | image | flag      |
     | 3b1479d722fbe11df5677bb521e2575b |   1   | pick      |
-#    | 3b1479d722fbe11df5677bb521e2575b |   1   | reject    |
-#    | c8b07cb389edaaf736b2486361b5e593 |   1   | pick      |
-#    | c8b07cb389edaaf736b2486361b5e593 |   1   | reject    |
-#    | 8dde366bfc65efd9fabcc74728061740 |   1   | unflagged |
+    | 3b1479d722fbe11df5677bb521e2575b |   1   | reject    |
+    | c8b07cb389edaaf736b2486361b5e593 |   1   | pick      |
+    | c8b07cb389edaaf736b2486361b5e593 |   1   | reject    |
+    | 8dde366bfc65efd9fabcc74728061740 |   1   | unflagged |
