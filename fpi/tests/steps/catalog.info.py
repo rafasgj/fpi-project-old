@@ -15,10 +15,23 @@ def given_session_name(context, session_name):
     context.parameter = session_name
 
 
+@given('the option to obtain information about {object_type}')
+def given_option_asset(context, object_type):
+    """Set option to Asset."""
+    context.option = object_type
+
+
+@given(u'the asset id "{asset_id}"')
+def given_an_asset_id(context, asset_id):
+    """Set the asset id to be used."""
+    context.parameter = asset_id
+
+
 @when('requesting information about an item in the catalog')
 def when_request_info(context):
     """Request info about an item in the catalog."""
     try:
+        context.catalog.open()
         context.result = context.catalog.info(context.option,
                                               context.parameter)
         context.exception = None
@@ -45,18 +58,6 @@ def then_check_session_asset_fullpath_and_id(context):
         else:
             msg = "Asset not validated: (%s,%s)" % asset
             raise Exception(msg)
-
-
-@given('the option to obtain information about {object_type}')
-def given_option_asset(context, object_type):
-    """Set option to Asset."""
-    context.option = object_type
-
-
-@given(u'the asset id "{asset_id}"')
-def given_an_asset_id(context, asset_id):
-    """Set the asset id to be used."""
-    context.parameter = asset_id
 
 
 @then('I expect to see the asset fullpath and id')

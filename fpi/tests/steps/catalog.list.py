@@ -20,6 +20,7 @@ def given_filename_list(context):
 def when_listing_assets(context):
     """List all the assets in the catalog."""
     try:
+        context.catalog.open()
         context.result = context.catalog.search()
         context.exception = None
     except Exception as e:

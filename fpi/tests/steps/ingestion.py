@@ -129,6 +129,7 @@ def given_session_name(context, session_name):
 def when_ingesting_assets(context):
     """Ingest a file into the catalog and keep it where it is."""
     try:
+        context.catalog.open()
         context.catalog.ingest(
             context.ingest_method,
             context.files,

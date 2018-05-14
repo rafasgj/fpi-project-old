@@ -13,7 +13,6 @@ from common.util import check_catalog_exists, \
 
 from catalog import Catalog
 from dao import Asset
-import errors
 
 
 def __set_context_catalog_name(context, catalog_name):
@@ -21,36 +20,17 @@ def __set_context_catalog_name(context, catalog_name):
     catalog_file = get_catalog_file(context)
     context.catalog_directory = os.path.dirname(catalog_file)
     context.catalog_file = catalog_file
+    context.catalog = Catalog(context.catalog_name)
 
 
 @given('an existing catalog named "{catalog_name}"')
 def given_existing_catalog(context, catalog_name):
     """Set the catalog name, or raise an error if it does not exist."""
-    # TODO: Make this configurable.
-    os.chdir("data/versions")
-    # TODO: Could be used to check DB version.
+    # TODO: Could be used an option to check DB version.
     context.command = "info"
     __set_context_catalog_name(context, catalog_name)
     if not check_catalog_exists(context):
         raise Exception("Given catalog should exist.")
-
-
-@when('I try to open the catalog')
-def when_open_catalog(context):
-    """Open an existing catalog."""
-    if not check_catalog_exists(context):
-        raise Exception("Given catalog should exist.")
-    try:
-        context.catalog = Catalog(context.catalog_name)
-        context.exception = None
-    except Exception as e:
-        context.exception = e
-
-
-@then('it warns that the catalog is of an unexpected version')
-def then_catalog_has_unexpected_version(context):
-    """Check if opening a catalog raised UnexpectedCatalogVersion exception."""
-    assert isinstance(context.exception, errors.UnexpectedCatalogVersion)
 
 
 @given('the command to manage a catalog')
@@ -63,12 +43,6 @@ def step_command_catalog_mgmt(context):
 def step_opt_catalog_create(context):
     """Set option to create a catalog."""
     context.option = 'new'
-
-
-@given('a catalog named "{catalog_name}"')
-def given_catalog_name(context, catalog_name):
-    """Set the new catalog name."""
-    __set_context_catalog_name(context, catalog_name)
 
 
 @given('that a catalog with the same name exists')
@@ -85,8 +59,19 @@ def given_a_catalog_already_exists(context):
 def when_creating_new_catalog(context):
     """Execute catalog creation."""
     try:
-        context.catalog = Catalog(context.catalog_name)
         context.catalog.create()
+        context.exception = None
+    except Exception as e:
+        context.exception = e
+
+
+@when('I try to open the catalog')
+def when_open_catalog(context):
+    """Open an existing catalog."""
+    if not check_catalog_exists(context):
+        raise Exception("Given catalog should exist.")
+    try:
+        context.catalog.open()
         context.exception = None
     except Exception as e:
         context.exception = e
