@@ -1,3 +1,3 @@
 #!/bin/sh
 
-PYTHONPATH="$PYTHONPATH:.." python3 -m behave $*
+PYTHONPATH="$PYTHONPATH:.." python3 -m behave --tags=-skip $*
