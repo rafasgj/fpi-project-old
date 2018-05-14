@@ -8,11 +8,26 @@ from sqlalchemy.exc import IntegrityError
 
 import datetime
 import os
+import os.path
 import shutil
 from collections import namedtuple
 
-from base import Base
+import logging
+from alembic.migration import MigrationContext
+
+# import argparse
+import alembic.config
+import alembic.command
+
 import dao
+import errors
+from version import Version
+
+
+_fpi_dir = os.path.dirname(os.path.realpath(__file__))
+_PATH = os.path.join(_fpi_dir, "migration")
+_migration_config = os.path.join(_PATH, "fpi.ini")
+_migration_scripts = os.path.join(_PATH, "schemas")
 
 
 def _add(src, dest):
@@ -22,17 +37,40 @@ def _add(src, dest):
 class Catalog(object):
     """Implements the abstraction of a DAM Catalog."""
 
+    def __init__(self, catalog_name):
+        """Initialize a new catalog."""
+        self._engine = None
+        self._session = None
+        cname, fname = self.__set_catalog_name_and_file(catalog_name)
+        self._catalog_name = cname
+        self._catalog_file = fname
+
     @property
     def __init_string(self):
-        return 'sqlite:///%s' % self.catalog_file
+        return 'sqlite:///%s' % self._catalog_file
 
-    def __open_database(self):
+    @property
+    def revision(self):
+        """Query the database revision."""
+        if self._engine is None:
+            return None
+        logging.getLogger("alembic").setLevel(logging.CRITICAL)
+        context = MigrationContext.configure(self._engine.connect())
+        revision = context.get_current_revision()
+        return revision
+
+    def open(self):
+        """Open the database for use."""
+        if self._session is not None:
+            return
         if database_exists(self.__init_string):
-            self.__start_engine()
-
-    def __start_engine(self):
-        self.engine = create_engine(self.__init_string)
-        self._session = sessionmaker(bind=self.engine)()
+            self._engine = create_engine(self.__init_string)
+            if Version.version_match(self.revision):
+                msg = "Catalog needs to be upgraded."
+                raise errors.UnexpectedCatalogVersion(msg)
+            self._session = sessionmaker(bind=self._engine)()
+        else:
+            raise errors.InexistentCatalog(self._catalog_file)
 
     def __set_catalog_name_and_file(self, catalog_name):
         def name_with_dir(a_name):
@@ -56,18 +94,19 @@ class Catalog(object):
                 catalog = name_with_dir(catalog_name)
         return (base, catalog)
 
-    def __init__(self, catalog_name):
-        """Initialize a new catalog."""
-        self._session = None
-        cname, fname = self.__set_catalog_name_and_file(catalog_name)
-        self.catalog_name = cname
-        self.catalog_file = fname
-        self.__open_database()
-
     def _check_catalog(self):
         if self._session is None:
-            err = "Trying to use an inexistent catalog '%s'."
-            raise Exception(err % self.catalog_name)
+            err = "Catalog '%s' has not been opened."
+            raise Exception(err % self._catalog_name)
+
+    def __upgrade(self):
+        """Upgrade catalog to the latest version."""
+        alembic_cfg = alembic.config.Config(_migration_config)
+        # alembic_cfg.cmd_opts = argparse.Namespace()
+        alembic_cfg.set_main_option("sqlalchemy.url", self.__init_string)
+        alembic_cfg.set_main_option("script_location", _migration_scripts)
+        # alembic_cfg.cmd_opts.x.append("catalog=" + self._catalog_file)
+        alembic.command.upgrade(alembic_cfg, "head")
 
     @property
     def session(self):
@@ -77,18 +116,21 @@ class Catalog(object):
 
     def create(self):
         """Create a new catalog."""
-        directory, filename = os.path.split(self.catalog_file)
+        if self._session is not None:
+            raise Exception("Catalog is already created and opened.")
+        directory, filename = os.path.split(self._catalog_file)
         if len(directory) > 0:
             if not os.path.exists(directory):
                 os.makedirs(directory)
             elif not os.path.isdir(directory):
                 raise Exception("Cannot create catalog directory.")
         if database_exists(self.__init_string):
-            msg = "Refusing to overwrite catalog '%s'." % self.catalog_file
+            msg = "Refusing to overwrite catalog '%s'." % self._catalog_file
             raise Exception(msg)
         else:
-            self.__start_engine()
-            Base.metadata.create_all(self.engine)
+            self.__upgrade()
+            self._engine = create_engine(self.__init_string)
+            self._session = sessionmaker(bind=self._engine)()
 
     _INGEST_METHOD = {
         'add': _add,
@@ -216,22 +258,27 @@ class Catalog(object):
 
     def search(self):
         """Search for assets in the catalog."""
+        self._check_catalog()
         return self.session.query(dao.Asset).all()
 
     def sessions(self):
         """Search for assets in the catalog."""
+        self._check_catalog()
         field = dao.Asset.import_session
         query = self.session.query(field).group_by(field)
         return [s.import_session for s in query.all()]
 
     def info(self, object, parameter):
         """Get information about an object, given its identifier."""
-        if object == "session":
-            return self.__info_session(parameter)
-        if object == "asset":
-            return self.__info_asset(parameter)
-        else:
-            raise Exception("Invalid object.")
+        self._check_catalog()
+        objects = {
+            "session": self.__info_session,
+            "asset": self.__info_asset
+        }
+        fn = objects.get(object, None)
+        if fn is None:
+            raise Exception("Invalid object: %s." % object)
+        return fn(parameter)
 
     def __info_session(self, session_id):
         SI = namedtuple('SessionInfo',
@@ -250,14 +297,15 @@ class Catalog(object):
 
     def set_attributes(self, assets, options):
         """Set attributes provided in options to each of the given assets."""
-        session = self.session
+        self._check_catalog()
         for asset in assets:
-            q = session.query(dao.Image).filter(dao.Image.asset_id == asset)
+            q = self.session.query(dao.Image)\
+                            .filter(dao.Image.asset_id == asset)
             for image in q:
                 image.set_flag(options.get('flag', image.flag))
         try:
-            session.commit()
+            self.session.commit()
         except Exception as e:
-            session.rollback()
+            self.session.rollback()
             # TODO: Handle errors.
             raise e

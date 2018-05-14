@@ -31,6 +31,7 @@ def process_catalog_cmd(catalog, options, files):
 
 def process_ingest_cmd(catalog, options, files):
     """Process the INGEST command."""
+    catalog.open()
     configuration['session_name'] = options.session_name
     configuration['rename'] = options.rename
     configuration['directory_rule'] = options.directory_rule
@@ -42,6 +43,7 @@ def process_ingest_cmd(catalog, options, files):
 
 def process_info_cmd(catalog, options, files):
     """Process the INFO command."""
+    catalog.open()
     obj = options.object.strip().lower() \
         if options.object is not None else None
 
@@ -74,6 +76,7 @@ def process_info_cmd(catalog, options, files):
 
 def process_attrib_cmd(catalog, options, assets):
     """Process the ATTRIB command."""
+    catalog.open()
     if options.flag == 'pick':
         configuration['flag'] = dao.Image.Flags.PICK
     elif options.flag == 'reject':
