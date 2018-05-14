@@ -9,10 +9,14 @@ def remove_catalog(context):
     """Remove the cataog used for testing."""
     # TODO: Obtain catalog name from context.
     try:
-        remove_tree('test_catalog')
+        if context.catalog_directory is not None:
+            remove_tree(context.catalog_directory)
     except Exception as e:
         try:
-            os.unlink('test_catalog.fpicat')
+            if hasattr(context, 'catalog_file'):
+                os.unlink(context.catalog_file)
+            else:
+                os.unlink('test_catalog.fpicat')
         except Exception as e:
             pass
 
@@ -38,8 +42,14 @@ def before_scenario(context, scenario):
         shutil.copytree('data/samples/DCIM/100FPIAM', 'data/originals')
 
 
+def after_scenario(context, scenario):
+    """Execute after each scenario."""
+    remove_catalog(context)
+
+
 def before_feature(context, feature):
     """Execute befora a feature is executed."""
+    remove_catalog(context)
     if "copy" in feature.tags:
         if os.path.isdir('data/catalog'):
             remove_tree('data/catalog')
