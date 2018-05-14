@@ -123,3 +123,38 @@ Scenario: Recursively add files from a directory, at their original locations.
         | FPI_0006.JPG | 5776c5ce1acce6475244b0d21092689e |
         | FPI_0007.JPG | c8b07cb389edaaf736b2486361b5e593 |
         And no exception is raised
+
+Scenario: Add files to a catalog that has some assets.
+    Given the command to ingest assets
+        And the option to add a new file at its position
+        And an empty catalog named "data/test_catalog"
+        And a device mounted at "data/samples"
+        And the catalog has some assets
+        | filename                                |
+        | data/samples/DCIM/100FPIAM/FPI_0001.JPG |
+        | data/samples/DCIM/100FPIAM/FPI_0002.JPG |
+        | data/samples/DCIM/100FPIAM/FPI_0003.JPG |
+        And a list of files
+        | filename                                |
+        | data/samples/DCIM/100FPIAM/FPI_0005.JPG |
+        | data/samples/DCIM/100FPIAM/FPI_0006.JPG |
+        | data/samples/DCIM/100FPIAM/FPI_0007.JPG |
+    When ingesting assets into the catalog
+    Then there are 6 assets is the catalog, with its attributes
+        And the destination file attributes are stored within the asset
+        | device_id | filename     | path           |
+        |    1794   | FPI_0001.JPG | /DCIM/100FPIAM |
+        |    1794   | FPI_0002.JPG | /DCIM/100FPIAM |
+        |    1794   | FPI_0003.JPG | /DCIM/100FPIAM |
+        |    1794   | FPI_0005.JPG | /DCIM/100FPIAM |
+        |    1794   | FPI_0006.JPG | /DCIM/100FPIAM |
+        |    1794   | FPI_0007.JPG | /DCIM/100FPIAM |
+        And the assets id is a MD5 hash
+        | filename     | hash                             |
+        | FPI_0001.JPG | 4613ad3fd0c246dd5bb96b33b09c2996 |
+        | FPI_0002.JPG | 3b1479d722fbe11df5677bb521e2575b |
+        | FPI_0003.JPG | 123b707265158269808f78573e736a6e |
+        | FPI_0005.JPG | 8dde366bfc65efd9fabcc74728061740 |
+        | FPI_0006.JPG | 5776c5ce1acce6475244b0d21092689e |
+        | FPI_0007.JPG | c8b07cb389edaaf736b2486361b5e593 |
+        And no exception is raised
