@@ -13,7 +13,7 @@ def get_catalog_file(context):
         filename, ext = os.path.splitext(os.path.split(basename)[-1])
         if ext is '':
             ext = '.fpicat'
-        basedir = "/".join(os.path.split(basename)[:-1])
+        basedir = os.path.dirname(context.catalog_name)
         directory = os.path.join(basedir, filename)
     return "%s/%s%s" % (directory, filename, ext)
 
