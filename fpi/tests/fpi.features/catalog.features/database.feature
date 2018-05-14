@@ -1,3 +1,4 @@
+@skip
 Feature: Automatically manage catalog versions when upgrading the system.
     As a User,
     I want to have the catalog automatically updated
@@ -5,6 +6,6 @@ Feature: Automatically manage catalog versions when upgrading the system.
     So that I can use the new features.
 
 Scenario: The system correctly recognizes that the database needs an upgrade.
-    Given an existing catalog named "alpha_1"
+    Given an existing catalog named "data/versions/alpha_1"
     When I try to open the catalog
-    Then it warns that the catalog is of an unexpected version
+    Then an "errors.UnexpectedCatalogVersion" is raised
