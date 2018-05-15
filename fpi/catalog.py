@@ -65,7 +65,7 @@ class Catalog(object):
             return
         if database_exists(self.__init_string):
             self._engine = create_engine(self.__init_string)
-            if Version.version_match(self.revision):
+            if not Version.version_match(self.revision):
                 msg = "Catalog needs to be upgraded."
                 raise errors.UnexpectedCatalogVersion(msg)
             self._session = sessionmaker(bind=self._engine)()
@@ -73,25 +73,16 @@ class Catalog(object):
             raise errors.InexistentCatalog(self._catalog_file)
 
     def __set_catalog_name_and_file(self, catalog_name):
-        def name_with_dir(a_name):
-            a_basename = os.path.basename(a_name)
-            return '%s/%s.fpicat' % (a_name, a_basename)
-
         name, ext = os.path.splitext(catalog_name)
+        dirname = os.path.dirname(name)
         base = os.path.basename(name)
         catalog = catalog_name
-        if os.path.exists(catalog):
+        if not dirname:
+            catalog = "%s/%s" % (base, catalog)
+        if ext == '.fpicat':
             pass
-        elif ext == '.fpicat':
-            if name == base:
-                catalog = '%s/%s%s' % (base, base, ext)
-        elif os.path.isfile(catalog_name):
-            msg = "Refusing to overwrite existing file: '%'" % (catalog_name)
-            raise Exception(msg)
         else:
-            catalog = '%s.fpicat' % catalog_name
-            if not os.path.isfile(catalog):
-                catalog = name_with_dir(catalog_name)
+            catalog = '%s/%s.fpicat' % (name, base)
         return (base, catalog)
 
     def _check_catalog(self):
@@ -126,6 +117,9 @@ class Catalog(object):
                 raise Exception("Cannot create catalog directory.")
         if database_exists(self.__init_string):
             msg = "Refusing to overwrite catalog '%s'." % self._catalog_file
+            raise Exception(msg)
+        elif os.path.isfile(self._catalog_file):
+            msg = "Refusing to overwrite file '%s'." % self._catalog_file
             raise Exception(msg)
         else:
             self.__upgrade()
