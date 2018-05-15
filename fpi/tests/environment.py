@@ -40,11 +40,16 @@ def before_scenario(context, scenario):
             if os.path.isdir(d):
                 remove_tree(d)
         shutil.copytree('data/samples/DCIM/100FPIAM', 'data/originals')
+    elif 'version' in tags:
+        shutil.copytree('data/versions', 'data/catalogs')
 
 
 def after_scenario(context, scenario):
     """Execute after each scenario."""
+    tags = set(scenario.feature.tags + scenario.tags)
     remove_catalog(context)
+    if 'version' in tags:
+        remove_tree('data/catalogs')
 
 
 def before_feature(context, feature):
