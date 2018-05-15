@@ -20,7 +20,7 @@ class Version(object):
     @classmethod
     def db_revision(self, version=None):
         """Retrieve database revision for a specific version."""
-        v = Version.system if version is None else version
+        v = Version.system() if version is None else version
         return Version.DB_REVISION[v]
 
     @classmethod
