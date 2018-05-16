@@ -21,13 +21,13 @@ class Version(object):
     def db_revision(self, version=None):
         """Retrieve database revision for a specific version."""
         v = Version.system() if version is None else version
-        return Version.DB_REVISION[v]
+        return Version.DB_REVISION.get(v, "invalid")
 
     @classmethod
     def db_version(self, revision=None):
         """Retriver the system version for a database revision."""
         v = self.db_revision() if revision is None else revision
-        return Version.DB_VERSION[v]
+        return Version.DB_VERSION.get(v, "invalid")
 
     @classmethod
     def version_match(self, revision):
