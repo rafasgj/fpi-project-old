@@ -42,6 +42,9 @@ def _init_opt_grp(parser):
     opt_grp.add_option("", "--new", action="store_true", default=False,
                        help="""creates a new f/π catalog with the given
                                name.""")
+    opt_grp.add_option("", "--upgrade", action="store_true", default=False,
+                       help="""upgrades a f/π catalog to the latest
+                               revision.""")
     return opt_grp
 
 

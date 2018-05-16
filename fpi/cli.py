@@ -25,6 +25,9 @@ def process_catalog_cmd(catalog, options, files):
             raise Exception(err)
         print("Creating catalog.")
         catalog.create()
+    if options.upgrade:
+        print("Upgrading catalog.")
+        catalog.upgrade()
     else:
         raise Exception("Invalid command option.")
 
@@ -55,34 +58,37 @@ def process_info_cmd(catalog, options, files):
             for asset in catalog.search():
                 print('id: %s\tfile: @%s' % (asset.id, asset.fullpath))
     else:
-        obj_id = options.id.strip()
-        result = catalog.info(obj, obj_id)
-        if obj == 'session':
-            pass
-        else:
-            img = result.virtual_copies[0]
-            info = {
-                "id": result.id,
-                "file": result.filename,
-                "path": result.path,
-                "width": img.width,
-                "height": img.height,
-                "capture": img.capture_datetime.strftime("%Y-%m-%d %H:%M:%S")
-            }
-            fmt = "id: {id}\n\tfile: {file}\n\tpath: {path}\n\twidth: {width}\
-                   \n\theight: {height}\n\tcapture time:{capture}\n"
-            print(fmt.format(**info))
+        _cmd_info_display_asset(catalog, obj, options.id.strip())
+
+
+def _cmd_info_display_asset(catalog, obj, obj_id):
+    result = catalog.info(obj, obj_id)
+    if obj == 'session':
+        pass
+    else:
+        img = result.virtual_copies[0]
+        info = {
+            "id": result.id,
+            "file": result.filename,
+            "path": result.path,
+            "width": img.width,
+            "height": img.height,
+            "capture": img.capture_datetime.strftime("%Y-%m-%d %H:%M:%S")
+        }
+        fmt = "id: {id}\n\tfile: {file}\n\tpath: {path}\n\twidth: {width}\
+                \n\theight: {height}\n\tcapture time:{capture}\n"
+        print(fmt.format(**info))
 
 
 def process_attrib_cmd(catalog, options, assets):
     """Process the ATTRIB command."""
     catalog.open()
-    if options.flag == 'pick':
-        configuration['flag'] = dao.Image.Flags.PICK
-    elif options.flag == 'reject':
-        configuration['flag'] = dao.Image.Flags.REJECT
-    elif options.flag == 'unflag':
-        configuration['flag'] = dao.Image.Flags.UNFLAG
+    flag_options = {
+        'pick': dao.Image.Flags.PICK,
+        'reject': dao.Image.Flags.REJECT,
+        'unflag': dao.Image.Flags.UNFLAG,
+    }
+    configuration['flag'] = flag_options.get(options.flag, None)
     catalog.set_attributes(assets, configuration)
 
 

@@ -24,18 +24,17 @@ import errors
 from version import Version
 
 
-_fpi_dir = os.path.dirname(os.path.realpath(__file__))
-_PATH = os.path.join(_fpi_dir, "migration")
-_migration_config = os.path.join(_PATH, "fpi.ini")
-_migration_scripts = os.path.join(_PATH, "schemas")
-
-
-def _add(src, dest):
-    pass
-
-
 class Catalog(object):
     """Implements the abstraction of a DAM Catalog."""
+
+    # Constants required for catalog upgrade.
+    __fpi_dir = os.path.dirname(os.path.realpath(__file__))
+    __PATH = os.path.join(__fpi_dir, "migration")
+    __migration_config = os.path.join(__PATH, "fpi.ini")
+    __migration_scripts = os.path.join(__PATH, "schemas")
+
+    def __add(src, dest):
+        pass
 
     def __init__(self, catalog_name):
         """Initialize a new catalog."""
@@ -70,7 +69,8 @@ class Catalog(object):
                 raise errors.UnexpectedCatalogVersion(msg)
             self._session = sessionmaker(bind=self._engine)()
         else:
-            raise errors.InexistentCatalog(self._catalog_file)
+            msg = "Catalog not found: %s" % (self._catalog_file)
+            raise errors.InexistentCatalog(msg)
 
     def __set_catalog_name_and_file(self, catalog_name):
         name, ext = os.path.splitext(catalog_name)
@@ -92,13 +92,21 @@ class Catalog(object):
 
     def upgrade(self):
         """Upgrade catalog to the latest version."""
-        if database_exists(self.__init_string):
-            if Version.version_match(self.revision):
-                msg = "Catalog is in the current version."
-                raise errors.UnexpectedCatalogVersion(msg)
-        alembic_cfg = alembic.config.Config(_migration_config)
+        try:
+            self.open()
+        except errors.UnexpectedCatalogVersion as e:
+            self.__perform_upgrade()
+        except Exception:
+            raise
+        else:
+            msg = "Catalog is in the current version."
+            raise errors.UnexpectedCatalogVersion(msg)
+
+    def __perform_upgrade(self):
+        alembic_cfg = alembic.config.Config(Catalog.__migration_config)
         alembic_cfg.set_main_option("sqlalchemy.url", self.__init_string)
-        alembic_cfg.set_main_option("script_location", _migration_scripts)
+        alembic_cfg.set_main_option("script_location",
+                                    Catalog.__migration_scripts)
         alembic.command.upgrade(alembic_cfg, "head")
 
     @property
@@ -124,12 +132,12 @@ class Catalog(object):
             msg = "Refusing to overwrite file '%s'." % self._catalog_file
             raise Exception(msg)
         else:
-            self.upgrade()
+            self.__perform_upgrade()
             self._engine = create_engine(self.__init_string)
             self._session = sessionmaker(bind=self._engine)()
 
     _INGEST_METHOD = {
-        'add': _add,
+        'add': __add,
         'copy': shutil.copy2,
         'move': shutil.move
     }
@@ -215,8 +223,8 @@ class Catalog(object):
         fname = src = options.get('source', None)
         assert src is not None
         options['metadata'] = metadata = dao.Metadata(src)
-        method = options.get('method', _add)
-        if method != _add:
+        method = options.get('method', Catalog.__add)
+        if method is not Catalog.__add:
             target = self._make_dirs(src, options)
             fname = self.__rename(src, target, options)
         method(src, fname)
