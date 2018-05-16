@@ -53,11 +53,11 @@ class Catalog(object):
     def revision(self):
         """Query the database revision."""
         if self._engine is None:
-            return None
+            return ""
         logging.getLogger("alembic").setLevel(logging.CRITICAL)
         context = MigrationContext.configure(self._engine.connect())
-        revision = context.get_current_revision()
-        return revision
+        rev = context.get_current_revision()
+        return rev
 
     def open(self):
         """Open the database for use."""
@@ -90,13 +90,15 @@ class Catalog(object):
             err = "Catalog '%s' has not been opened."
             raise Exception(err % self._catalog_name)
 
-    def __upgrade(self):
+    def upgrade(self):
         """Upgrade catalog to the latest version."""
+        if database_exists(self.__init_string):
+            if Version.version_match(self.revision):
+                msg = "Catalog is in the current version."
+                raise errors.UnexpectedCatalogVersion(msg)
         alembic_cfg = alembic.config.Config(_migration_config)
-        # alembic_cfg.cmd_opts = argparse.Namespace()
         alembic_cfg.set_main_option("sqlalchemy.url", self.__init_string)
         alembic_cfg.set_main_option("script_location", _migration_scripts)
-        # alembic_cfg.cmd_opts.x.append("catalog=" + self._catalog_file)
         alembic.command.upgrade(alembic_cfg, "head")
 
     @property
@@ -122,7 +124,7 @@ class Catalog(object):
             msg = "Refusing to overwrite file '%s'." % self._catalog_file
             raise Exception(msg)
         else:
-            self.__upgrade()
+            self.upgrade()
             self._engine = create_engine(self.__init_string)
             self._session = sessionmaker(bind=self._engine)()
 
