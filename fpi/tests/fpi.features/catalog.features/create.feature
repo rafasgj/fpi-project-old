@@ -23,7 +23,7 @@ Given the command to manage a catalog
         And a catalog named "<catalog_name>"
         And that a catalog with the same name exists
     When creating a new catalog
-    Then an "Exception" is raised saying "Refusing to overwrite catalog"
+    Then an exception "Exception" is raised saying "Refusing to overwrite catalog"
 
     Examples:
     | catalog_name        |

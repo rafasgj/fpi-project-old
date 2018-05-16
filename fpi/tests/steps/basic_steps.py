@@ -76,7 +76,7 @@ def given_mount_point(context, mount_point):
 
 # Test exceptions
 
-@then('an "{exception}" is raised')
+@then('an exception "{exception}" is raised')
 def then_expception_raised(context, exception):
     """Test if an exception is raised."""
     assert context.exception is not None
@@ -85,7 +85,7 @@ def then_expception_raised(context, exception):
     assert isinstance(context.exception, eval(exception)) is True
 
 
-@then('an "{exception}" is raised saying "{msg}"')
+@then('an exception "{exception}" is raised saying "{msg}"')
 def then_expception_raised_with_message(context, exception, msg):
     """Test if an exception is raised."""
     assert context.exception is not None

@@ -22,7 +22,7 @@ Scenario Outline: Listing assets from a non-existing catalog file.
     Given the command to list assets in the catalog
         And a catalog named "<file>"
     When listing all assets in the catalog
-    Then an "errors.InexistentCatalog" is raised
+    Then an exception "errors.InexistentCatalog" is raised
 
     Examples:
     | file              | name       |    
@@ -36,7 +36,7 @@ Scenario Outline: Requesting info from a non-existing catalog file.
         And the session query as "First Session"
         And a catalog named "<file>"
     When requesting information about an item in the catalog
-    Then an "errors.InexistentCatalog" is raised
+    Then an exception "errors.InexistentCatalog" is raised
 
     Examples:
     | object  | file              | name       |

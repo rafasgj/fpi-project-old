@@ -47,4 +47,3 @@ Scenario: Get information about an asset, using the asset id.
         And the asset image information for Width, Height and Capture Date/Time
         | Width | Height |  Capture Date Time  |
         |  1000 |    500 | 2011-10-28 12:00:00 |
-        And no exception is raised
