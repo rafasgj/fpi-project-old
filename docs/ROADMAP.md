@@ -90,6 +90,10 @@ This version (and most future ones) will involve changes in the
 application database, so there must be a migration tool/command that
 will update the database when needed (i.e. opening an old database).
 
+fpi catalog --upgrade
+
+> Upgrades a catalog to the current revision.
+
 ### Set asset atttributes
 
 fpi label catalog_path <br/>
