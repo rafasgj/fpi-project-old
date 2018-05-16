@@ -7,7 +7,7 @@ Scenario Outline: Ingesting files in a non-existing catalog file.
         And a catalog named "<file>"
         And a file <filename>
     When ingesting assets into the catalog
-    Then an "errors.InexistentCatalog" is raised
+    Then an exception "errors.InexistentCatalog" is raised
 
     Examples:
     | method | file              | name       | filename          |
