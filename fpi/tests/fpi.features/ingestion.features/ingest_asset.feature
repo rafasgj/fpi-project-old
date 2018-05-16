@@ -30,3 +30,14 @@ Scenario Outline: Ingest files in the catalog using only the catalog name.
     | move   |
     | copy   |
     | add    |
+
+Scenario: Ingest a file that do not have a thumbnail.
+Given the command to ingest assets
+    And the ingestion method add
+    And an empty catalog named "test_catalog"
+    And an image without an embedded thumbnail "data/samples/DCIM/100FPIAM/FPI_0006.JPG"
+When ingesting assets into the catalog
+Then no exception is raised
+    And the assets id is a MD5 hash
+    | filename     | hash                             |
+    | FPI_0006.JPG | 5776c5ce1acce6475244b0d21092689e |
