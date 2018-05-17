@@ -1,4 +1,7 @@
 Feature: Manage asset flags (pick/reject/none) and use them to search assets.
+    As a user,
+    I want to add flags to my assests,
+    So that I can easily select or exclude assets flagged.
 
 Scenario Outline: Add flags to images.
     Given a catalog named "test_catalog.fpicat" with some assets
