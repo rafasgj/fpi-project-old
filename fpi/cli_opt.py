@@ -1,112 +1,125 @@
 """Functions to configure CLI options."""
 
-from optparse import OptionParser, OptionGroup
+# from optparse import OptionParser, OptionGroup
+from argparse import ArgumentParser, Action
 
 from cli import configuration
 
 
-def init(callback=None):
+def init():
     """Initialize the CLI command parser."""
-    desc = """f/π is an open source, catalog-oriented digital asset managemt tool.
-            The available commands are: catalog, ingest and info."""
-    usage_string = "%prog command catalog [options] file|directory ..."
-
-    opt_parser = OptionParser(usage=usage_string,
-                              version="f/π version α-1",
-                              description=desc)
-    opt_parser.add_option("", "--gui", action="callback", callback=callback,
-                          help="start f/π GUI version.")
-    return _configure_option_parser(opt_parser)
-
-
-def _set_method(option, string, parameter, opt_parser):
-    if configuration.get('method', None) is not None:
-        raise ValueError("Can only set one ingestion method.")
-    if string == '--add':
-        configuration['method'] = 'add'
-        configuration['target_dir'] = None
-    elif string == '--copy':
-        configuration['method'] = 'copy'
-        configuration['target_dir'] = parameter
-    elif string == '--move':
-        configuration['method'] = 'move'
-        configuration['target_dir'] = parameter
-    else:
-        err = "Internal error: invalid ingestion option '%s'"
-        raise Exception(err % option)
+    desc = """
+           f/π is an open source, catalog-oriented digital asset managemt tool.
+           The available commands are: catalog, ingest and info.
+           """
+    epilog = """
+             Check the command options by issuing `fpi <command> --help`
+             """
+    opt_parser = ArgumentParser(description=desc, epilog=epilog)
+    opt_parser.add_argument("--gui", action="store_true",
+                            help="start f/π GUI version.")
+    opt_parser.add_argument('-v', '--version', action="version",
+                            version="f/π version α-1",
+                            help="Print f/π version.")
+    _configure_option_parser(opt_parser)
+    return opt_parser
 
 
 def _init_opt_grp(parser):
     """Initialize the Catalog option group."""
-    opt_grp = OptionGroup(parser, "Catalog")
-    opt_grp.add_option("", "--new", action="store_true", default=False,
-                       help="""creates a new f/π catalog with the given
-                               name.""")
-    opt_grp.add_option("", "--upgrade", action="store_true", default=False,
-                       help="""upgrades a f/π catalog to the latest
-                               revision.""")
-    return opt_grp
+    opt_grp = parser.add_parser("catalog", help="Manage a catalog.")
+    options = opt_grp.add_mutually_exclusive_group(required=True)
+    options.add_argument("--new", action="store", metavar="CATALOG",
+                         help="""creates a new f/π catalog with the given
+                                 name.""")
+    options.add_argument("--upgrade", action="store", metavar="CATALOG",
+                         help="""upgrades a f/π catalog to the latest
+                                 revision.""")
 
 
 def _init_ingestion_opt(parser):
     """Initialize the Ingest option group."""
-    grp = OptionGroup(parser, "Ingest")
-    grp.add_option("", "--add", action="callback",
-                   callback=_set_method, nargs=0,
-                   help="""ingest files by adding them in their current
-                           location.""")
-    grp.add_option("", "--copy", action="callback",
-                   callback=_set_method, nargs=1, type='string',
-                   help="""ingest files by copyng them from their current
-                           location to the given directory.""")
-    grp.add_option("", "--move", action="callback",
-                   callback=_set_method, nargs=1, type='string',
-                   help="""ingest files by moving them from their current
-                           location to the given directory.""")
-    grp.add_option("", "--rename-rule", dest="rename", metavar="RENAME_RULE",
-                   help="""describe rename rule.""")
-    grp.add_option("", "--directory-rule", dest="directory_rule",
-                   help="""describe directory rule.""")
-    grp.add_option("", "--recurse", action="store_true", default=False,
-                   help="""execute the option recursively starting from the
-                           given directory.""")
-    grp.add_option("", "--session", dest="session_name",
-                   help="""define the import session name.""")
-    return grp
+    grp = parser.add_parser("ingest", help="Ingest files into the catalog.")
+    opt = grp.add_mutually_exclusive_group(required=True)
+    opt.add_argument('--add', action=_IngestMethod, nargs=0,
+                     help="""ingest files by adding them in their current
+                             location.""")
+    opt.add_argument('--copy', action=_IngestMethod, metavar="DIRECTORY",
+                     dest="target_dir",
+                     help="""ingest files by copyng them from their current
+                             location to the given directory.""")
+    opt.add_argument('--move', action=_IngestMethod, metavar="DIRECTORY",
+                     dest="target_dir",
+                     help="""ingest files by moving them from their current
+                             location to the given directory.""")
+    grp.add_argument("--rename-rule", dest="rename", metavar="RENAME_RULE",
+                     help="""describe rename rule.""")
+    grp.add_argument("--directory-rule", dest="directory_rule",
+                     help="""describe directory rule.""")
+    grp.add_argument("--recurse", action="store_true", default=False,
+                     help="""ingest recursively starting from the given
+                             directory.""")
+    grp.add_argument("--session", dest="session_name",
+                     help="""define the import session name.""")
+    grp.add_argument('catalog', nargs=1)
+    grp.add_argument('file', nargs='+')
+
+
+class _IngestMethod(Action):
+    def __init__(self, option_strings, dest, nargs=None, **kwargs):
+        super(_IngestMethod, self).__init__(option_strings, dest,
+                                            nargs, **kwargs)
+
+    def __call__(self, parser, namespace, parameter, string=None):
+        if configuration.get('method', None) is not None:
+            raise ValueError("Can only set one ingestion method.")
+        if string == '--add':
+            configuration['method'] = 'add'
+            configuration['target_dir'] = None
+        elif string == '--copy':
+            configuration['method'] = 'copy'
+            configuration['target_dir'] = parameter
+        elif string == '--move':
+            configuration['method'] = 'move'
+            configuration['target_dir'] = parameter
+        else:
+            err = "Internal error: invalid ingestion option '%s'"
+            raise Exception(err % string)
 
 
 def _init_info_opt(parser):
     """Initialize the Info option group."""
-    parser = OptionGroup(parser, "Info")
-    parser.add_option("", "--list", action="store_true", default=False,
-                      help="""list all assets in the catalog or session.""")
-    parser.add_option("", "--object", dest="object", default="asset",
-                      metavar="TYPE", choices=["session", "asset"],
-                      help="""define object type to query. It must be one of
-                              asset or session.""")
-    parser.add_option("", "--id",
-                      help="""the id of the element to query. For session
-                              it is the session name. For assets, it is
-                              the asset id, and it might be only the initial
-                              part of the id.""")
-    return parser
+    grp = parser.add_parser("info", help="retrieve information abount assets.")
+    grp.add_argument("--list", action="store_true", default=False,
+                     help="""list all assets in the catalog or session.""")
+    grp.add_argument("--object", dest="object", default="asset",
+                     metavar="TYPE", choices=["session", "asset"],
+                     help="""define object type to query. It must be one of
+                             asset or session.""")
+    grp.add_argument("--id",
+                     help="""the id of the element to query. For session
+                             it is the session name. For assets, it is
+                             the asset id, and it might be only the initial
+                             part of the id.""")
+    grp.add_argument('catalog', nargs=1)
 
 
 def _init_attrib_opt(parser):
     """Initialize the Attrib option group."""
-    parser = OptionGroup(parser, "Attrib")
-    parser.add_option("-f", "--flag", dest="flag",
-                      metavar="FLAG", choices=['pick', 'reject', 'unflag'],
-                      help="""Define or remove an asset flag.""")
-    return parser
+    grp = parser.add_parser("attrib",
+                            help="""set attributes for assets.""")
+    grp.add_argument("-f", "--flag", dest="flag",
+                     metavar="FLAG", choices=['pick', 'reject', 'unflag'],
+                     help="""Define or remove a flag attribute.""")
+    grp.add_argument('catalog', nargs=1)
+    grp.add_argument('asset_id', nargs='+')
 
 
 def _configure_option_parser(parser):
     """Configure the option parser with the CLI options."""
-    # Add command options
-    parser.add_option_group(_init_opt_grp(parser))
-    parser.add_option_group(_init_ingestion_opt(parser))
-    parser.add_option_group(_init_info_opt(parser))
-    parser.add_option_group(_init_attrib_opt(parser))
-    # Ok, all configuration is done.
-    return parser
+    subparser = parser.add_subparsers(title="Available commands",
+                                      dest='command')
+    _init_opt_grp(subparser)
+    _init_ingestion_opt(subparser)
+    _init_info_opt(subparser)
+    _init_attrib_opt(subparser)

@@ -9,36 +9,36 @@ import cli_opt
 
 import errors
 
+
 # initialize Pillow decoders/encoders
 PIL.Image.init()
 
 
-def start_gui(option, string, parameter, opt_parser):
+def start_gui():
     """Start f/π GUI version."""
     raise NotImplementedError("f/π GUI not yet implemented.")
 
 
 def _main():
-    opt_parser = cli_opt.init(callback=start_gui)
+    opt_parser = cli_opt.init()
     try:
-        options, args = opt_parser.parse_args()
+        args = opt_parser.parse_args()
 
-        if len(args) == 0:
-            opt_parser.print_help()
-            exit(1)
-        elif len(args) < 2:
-            msg = "You must provide a command and a catalog name or file."
-            raise Exception(msg)
+        if args.gui:
+            start_gui()
+        elif args.command is None:
+            raise Exception("No command given.")
         else:
-            cli.execute(options, args)
+            cli.execute(args)
     except (errors.InexistentCatalog,
             errors.UnexpectedCatalogVersion) as e:
         print("ERROR: %s\n" % e)
-        exit(1)
     except Exception as e:
         print("ERROR: %s\n" % e)
-        opt_parser.print_usage()
-        exit(1)
+        opt_parser.print_help()
+    else:
+        exit(0)
+    exit(1)
 
 
 if __name__ == "__main__":

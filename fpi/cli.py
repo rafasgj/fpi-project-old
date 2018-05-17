@@ -17,48 +17,54 @@ import dao
 configuration = {}
 
 
-def process_catalog_cmd(catalog, options, files):
+def _open_catalog(options):
+    cat = catalog.Catalog(options.catalog[0])
+    cat.open()
+    return cat
+
+
+def process_catalog_cmd(options):
     """Process the CATALOG command."""
-    if options.new:
-        if len(files) > 0:
-            err = """Only the catalog name should be used with --new."""
-            raise Exception(err)
+    if options.new is not None:
         print("Creating catalog.")
-        catalog.create()
-    if options.upgrade:
+        catalog.Catalog(options.new).create()
+    elif options.upgrade is not None:
         print("Upgrading catalog.")
-        catalog.upgrade()
+        catalog.Catalog(options.upgrade).upgrade()
     else:
         raise Exception("Invalid command option.")
 
 
-def process_ingest_cmd(catalog, options, files):
+def process_ingest_cmd(options):
     """Process the INGEST command."""
-    catalog.open()
+    files = options.file
+    cat = _open_catalog(options)
     configuration['session_name'] = options.session_name
     configuration['rename'] = options.rename
     configuration['directory_rule'] = options.directory_rule
     configuration['recurse'] = options.recurse
     method = configuration.get('method', 'add')
     del(configuration['method'])
-    catalog.ingest(method, files, **configuration)
+    cat.ingest(method, files, **configuration)
 
 
-def process_info_cmd(catalog, options, files):
+def process_info_cmd(options):
     """Process the INFO command."""
-    catalog.open()
+    cat = _open_catalog(options)
     obj = options.object.strip().lower() \
         if options.object is not None else None
 
     if options.list:
         if obj == 'session':
-            for session in catalog.sessions():
+            for session in cat.sessions():
                 print(session)
         else:
-            for asset in catalog.search():
+            for asset in cat.search():
                 print('id: %s\tfile: @%s' % (asset.id, asset.fullpath))
     else:
-        _cmd_info_display_asset(catalog, obj, options.id.strip())
+        if options.id is None:
+            raise Exception("Asset ID is necessary.")
+        _cmd_info_display_asset(cat, obj, options.id.strip())
 
 
 def _cmd_info_display_asset(catalog, obj, obj_id):
@@ -76,20 +82,21 @@ def _cmd_info_display_asset(catalog, obj, obj_id):
             "capture": img.capture_datetime.strftime("%Y-%m-%d %H:%M:%S")
         }
         fmt = "id: {id}\n\tfile: {file}\n\tpath: {path}\n\twidth: {width}\
-                \n\theight: {height}\n\tcapture time:{capture}\n"
+                \n\theight: {height}\n\tcapture time: {capture}\n"
         print(fmt.format(**info))
 
 
-def process_attrib_cmd(catalog, options, assets):
+def process_attrib_cmd(options):
     """Process the ATTRIB command."""
-    catalog.open()
+    assets = options.asset_id
+    cat = _open_catalog(options)
     flag_options = {
         'pick': dao.Image.Flags.PICK,
         'reject': dao.Image.Flags.REJECT,
         'unflag': dao.Image.Flags.UNFLAG,
     }
     configuration['flag'] = flag_options.get(options.flag, None)
-    catalog.set_attributes(assets, configuration)
+    cat.set_attributes(assets, configuration)
 
 
 commands = {
@@ -100,15 +107,10 @@ commands = {
 }
 
 
-def execute(options, args):
+def execute(args):
     """Execute f/π command line interface."""
-    command = args[0]
-    cat = catalog.Catalog(args[1])
-    values = args[2:]
-
-    fn = commands.get(command, None)
-
+    fn = commands.get(args.command, None)
     if fn is None:
         raise Exception("Provided command is invalid.")
     else:
-        fn(cat, options, values)
+        fn(args)
