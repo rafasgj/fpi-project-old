@@ -24,6 +24,6 @@ Scenario: Add labels to images.
         And the asset "3b1479d722fbe11df5677bb521e2575b" has the label "label_a"
         And the asset "c8b07cb389edaaf736b2486361b5e593" has the label "label_b"
         And the asset "4613ad3fd0c246dd5bb96b33b09c2996" has no label.
-        And there are 3 assets with the label "label_a"
-        And there are 2 assets with no label
+#        And there are 3 assets with the label "label_a"
+#        And there are 2 assets with no label
         
