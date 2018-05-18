@@ -62,13 +62,15 @@ def when_setting_labels(context):
 def then_asset_has_label(context, asset_id, label):
     """Verify given asset has the given label."""
     asset = context.catalog.info('asset', asset_id)
-    assert asset.label == label
+    assert asset.virtual_copies[0].label == label
 
 
 @then('the asset "{asset_id}" has no label.')
 def then_asset_no_label(context, asset_id):
     """Verify asset has no label."""
-    context.execute_steps('then the asset "%s" has the label ""' % asset_id)
+    asset = context.catalog.info('asset', asset_id)
+    label = asset.virtual_copies[0].label
+    assert label in (False, None) 
 
 
 @then('there are {count} assets with the label "{label}"')
