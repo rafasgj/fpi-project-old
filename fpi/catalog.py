@@ -302,12 +302,20 @@ class Catalog(object):
     def set_attributes(self, assets, options):
         """Set attributes provided in options to each of the given assets."""
         self._check_catalog()
-        for asset in assets:
-            q = self.session.query(dao.Image)\
-                            .filter(dao.Image.asset_id == asset)
-            for image in q:
-                image.set_flag(options.get('flag', image.flag))
+        functions = {
+            'flag': dao.Image.set_flag,
+            'label': dao.Image.set_label
+        }
         try:
+            for asset in assets:
+                q = self.session.query(dao.Image)\
+                                .filter(dao.Image.asset_id == asset)
+                for image in q:
+                    for attribute, value in options.items():
+                        fn = functions.get(attribute, None)
+                        if fn is None:
+                            raise Exception("Invalid attribute %s" % attribute)
+                        fn(image, value)
             self.session.commit()
         except Exception as e:
             self.session.rollback()

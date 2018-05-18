@@ -178,7 +178,8 @@ class Image(Base):
     capture_datetime = Column(DateTime, nullable=False)
     width = Column(Integer, nullable=False)
     height = Column(Integer, nullable=False)
-    flag = Column(Integer, nullable=False, default=0)
+    flag = Column(Integer, nullable=True)
+    label = Column(String, nullable=True)
 
     # asset = relationship("Asset", back_populates="virtual_copies")
 
@@ -215,6 +216,9 @@ class Image(Base):
         if value is True:
             self.set_flag(Image.Flags.UNFLAG)
 
+    # The use of set_<attribute> makes it easier to implement a
+    # generic set_attribute method in the Catalog.
+
     def set_flag(self, value):
         """Set flag for this object."""
         if value in Image.Flags:
@@ -223,6 +227,10 @@ class Image(Base):
             raise Exception("Internal Error: Invalid flag value")
         if value != self.flag:
                 self.flag = value
+
+    def set_label(self, value):
+        """Set the label attribute."""
+        self.label = value
 
     def __init__(self, asset, metadata):
         """Initialize a new image asset."""

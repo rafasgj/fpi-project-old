@@ -29,8 +29,7 @@ def upgrade():
     """
     image_columns = [
         sa.Column('flag', sa.Integer, nullable=True, default='0'),
-        # sa.Column('label', sa.String, nullable=True),
-        # sa.Column('label_color', sa.Integer, nullable=True),
+        sa.Column('label', sa.String, nullable=True),
         # sa.Column('rating', sa.Integer, nullable=True, default='0')
     ]
     for column in image_columns:
