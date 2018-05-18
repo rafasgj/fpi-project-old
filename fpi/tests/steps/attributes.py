@@ -70,7 +70,7 @@ def then_asset_no_label(context, asset_id):
     """Verify asset has no label."""
     asset = context.catalog.info('asset', asset_id)
     label = asset.virtual_copies[0].label
-    assert label in (False, None) 
+    assert label in (False, None)
 
 
 @then('there are {count} assets with the label "{label}"')
