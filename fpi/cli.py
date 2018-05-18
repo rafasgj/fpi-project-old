@@ -14,8 +14,8 @@ import dao
 #   - method
 #   * Attrib
 #   - flag
+#   - label
 configuration = {}
-
 
 def _open_catalog(options):
     cat = catalog.Catalog(options.catalog[0])
@@ -88,14 +88,25 @@ def _cmd_info_display_asset(catalog, obj, obj_id):
 
 def process_attrib_cmd(options):
     """Process the ATTRIB command."""
+
+    def add_attribute(key, value):
+        if value is not None:
+            configuration[key] = value
+
     assets = options.asset_id
     cat = _open_catalog(options)
+    
     flag_options = {
         'pick': dao.Image.Flags.PICK,
         'reject': dao.Image.Flags.REJECT,
         'unflag': dao.Image.Flags.UNFLAG,
     }
-    configuration['flag'] = flag_options.get(options.flag, None)
+    # flag attribute
+    flag = flag_options.get(options.flag, None)
+    add_attribute('flag', flag)
+    # label attribute
+    add_attribute('label', options.label)
+    # add attributes to assets.
     cat.set_attributes(assets, configuration)
 
 

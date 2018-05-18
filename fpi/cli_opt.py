@@ -93,7 +93,7 @@ def _init_info_opt(parser):
     grp.add_argument("--list", action="store_true", default=False,
                      help="""list all assets in the catalog or session.""")
     grp.add_argument("--object", dest="object", default="asset",
-                     metavar="TYPE", choices=["session", "asset"],
+                     choices=["session", "asset"],
                      help="""define object type to query. It must be one of
                              asset or session.""")
     grp.add_argument("--id",
@@ -109,8 +109,10 @@ def _init_attrib_opt(parser):
     grp = parser.add_parser("attrib",
                             help="""set attributes for assets.""")
     grp.add_argument("-f", "--flag", dest="flag",
-                     metavar="FLAG", choices=['pick', 'reject', 'unflag'],
+                     choices=['pick', 'reject', 'unflag'],
                      help="""Define or remove a flag attribute.""")
+    grp.add_argument("-l", "--label", dest="label",
+                     help="""Define a label for an asset.""")
     grp.add_argument('catalog', nargs=1)
     grp.add_argument('asset_id', nargs='+')
 

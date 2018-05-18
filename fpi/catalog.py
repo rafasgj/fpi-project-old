@@ -311,7 +311,9 @@ class Catalog(object):
                 q = self.session.query(dao.Image)\
                                 .filter(dao.Image.asset_id == asset)
                 for image in q:
-                    for attribute, value in options.items():
+                    attributes = {key: options[key] for key in functions
+                                  if key in options}
+                    for attribute, value in attributes.items():
                         fn = functions.get(attribute, None)
                         if fn is None:
                             raise Exception("Invalid attribute %s" % attribute)
