@@ -84,3 +84,36 @@ def then_count_assets_with_label(context, label, count):
 def then_count_assets_no_label(context, count):
     """Verify number of assets with no label."""
     context.execute_steps('there are %d assets with the label ""' % count)
+
+
+# Tests for RATINGS
+
+@when('setting ratings to some assets')
+def when_setting_ratings(context):
+    """Set ratings to assets in a catalog."""
+    try:
+        for row in context.table:
+            asset = row['asset'].strip()
+            options = {'rating': row['rating'].strip()}
+            context.catalog.set_attributes([asset], options)
+        context.exception = None
+    except Exception as e:
+        context.exception = e
+
+
+@when(u'setting rating of "{asset_id}" to {rating}')
+def when_setting_rating_single_asset(context, asset_id, rating):
+    """Set rating of a single asset in a catalog."""
+    try:
+        context.catalog.set_attributes([asset_id], {'rating': rating})
+    except Exception as e:
+        context.exception = e
+
+
+@then('the asset "{asset_id}" has the rating {rating}')
+def then_asset_has_rating(context, asset_id, rating):
+    """Verify given asset has the given rating."""
+    asset = context.catalog.info('asset', asset_id)
+    value = int(rating)
+    assert 0 <= value <= 5
+    assert asset.virtual_copies[0].rating == value
