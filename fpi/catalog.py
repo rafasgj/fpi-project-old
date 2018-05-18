@@ -304,7 +304,8 @@ class Catalog(object):
         self._check_catalog()
         functions = {
             'flag': dao.Image.set_flag,
-            'label': dao.Image.set_label
+            'label': dao.Image.set_label,
+            'rating': dao.Image.set_rating,
         }
         try:
             for asset in assets:

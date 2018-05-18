@@ -113,6 +113,8 @@ def _init_attrib_opt(parser):
                      help="""Define or remove a flag attribute.""")
     grp.add_argument("-l", "--label", dest="label",
                      help="""Define a label for an asset.""")
+    grp.add_argument("-r", "--rating", dest="label", choices=range(0, 6),
+                     help="""Define the rating of an asset.""")
     grp.add_argument('catalog', nargs=1)
     grp.add_argument('asset_id', nargs='+')
 

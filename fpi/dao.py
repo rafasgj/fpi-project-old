@@ -180,6 +180,7 @@ class Image(Base):
     height = Column(Integer, nullable=False)
     flag = Column(Integer, nullable=True)
     label = Column(String, nullable=True)
+    rating = Column(Integer, nullable=False, server_default='0', default=0)
 
     # asset = relationship("Asset", back_populates="virtual_copies")
 
@@ -231,6 +232,14 @@ class Image(Base):
     def set_label(self, value):
         """Set the label attribute."""
         self.label = value
+
+    def set_rating(self, value):
+        """Set the label attribute."""
+        rating = int(value)
+        if 0 <= rating <= 5:
+            self.rating = rating
+        else:
+            raise ValueError("Rating must be in the range [0;5]")
 
     def __init__(self, asset, metadata):
         """Initialize a new image asset."""
