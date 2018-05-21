@@ -16,7 +16,7 @@ Scenario: List assets in the catalog.
         | data/samples/DCIM/100FPIAM/FPI_0006.JPG |
         | data/samples/DCIM/100FPIAM/FPI_0007.JPG |
     When listing all assets in the catalog
-    Then I expect all the assets to be listed, with their id and full path
+    Then I expect 7 assets to be listed, with their id and full path
 | fullpath                                | id                               |
 | data/samples/DCIM/100FPIAM/FPI_0001.JPG | 4613ad3fd0c246dd5bb96b33b09c2996 |
 | data/samples/DCIM/100FPIAM/FPI_0002.JPG | 3b1479d722fbe11df5677bb521e2575b |
@@ -48,3 +48,29 @@ Scenario: List sessions in the catalog.
         | Second Session |
         And I expect the session names to be unique
         And no exception is raised
+
+
+Scenario: List flagged assets.
+    Given the command to list assets in the catalog
+        And an empty catalog named "test_catalog.fpicat"
+        And the catalog has some assets
+        | filename                                |
+        | data/samples/DCIM/100FPIAM/FPI_0001.JPG |
+        | data/samples/DCIM/100FPIAM/FPI_0002.JPG |
+        | data/samples/DCIM/100FPIAM/FPI_0003.JPG |
+        | data/samples/DCIM/100FPIAM/FPI_0004.JPG |
+        | data/samples/DCIM/100FPIAM/FPI_0005.JPG |
+        | data/samples/DCIM/100FPIAM/FPI_0006.JPG |
+        | data/samples/DCIM/100FPIAM/FPI_0007.JPG |
+        And some images have the flag attribute set to "pick"
+        | asset                            | image | flag   |
+        | 3b1479d722fbe11df5677bb521e2575b |   1   | pick   |
+        | c8b07cb389edaaf736b2486361b5e593 |   1   | pick   |
+        | 8dde366bfc65efd9fabcc74728061740 |   1   | pick   |
+    When listing assets with the flag attribute set to "pick"
+    Then no exception is raised
+        And I expect 3 assets to be listed, with their id and full path
+| fullpath                                | id                               |
+| data/samples/DCIM/100FPIAM/FPI_0002.JPG | 3b1479d722fbe11df5677bb521e2575b |
+| data/samples/DCIM/100FPIAM/FPI_0005.JPG | 8dde366bfc65efd9fabcc74728061740 |
+| data/samples/DCIM/100FPIAM/FPI_0007.JPG | c8b07cb389edaaf736b2486361b5e593 |

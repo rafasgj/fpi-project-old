@@ -16,15 +16,13 @@ def _get_image_from_catalog(catalog, asset, image):
 @when('setting the flag of {image} of {asset} to {flag}')
 def when_setting_image_flag(context, asset, image, flag):
     """Set image flag to the given value."""
-    if flag.strip().lower() == 'pick':
-        f = dao.Image.Flags.PICK
-    elif flag.strip().lower() == 'reject':
-        f = dao.Image.Flags.REJECT
-    else:
-        f = dao.Image.Flags.UNFLAG
+    f = {
+        'pick': dao.Image.Flags.PICK,
+        'reject': dao.Image.Flags.REJECT
+    }.get(flag.strip(), dao.Image.Flags.UNFLAG).value
 
     context.command = 'attrib'
-    context.options = {'flag': f.value}
+    context.options = {'flag': f}
     context.assets = [asset]
     context.catalog.set_attributes(context.assets, context.options)
 
