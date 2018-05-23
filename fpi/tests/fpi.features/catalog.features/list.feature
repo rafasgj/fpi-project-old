@@ -16,7 +16,8 @@ Scenario: List assets in the catalog.
         | data/samples/DCIM/100FPIAM/FPI_0006.JPG |
         | data/samples/DCIM/100FPIAM/FPI_0007.JPG |
     When listing all assets in the catalog
-    Then I expect 7 assets to be listed, with their id and full path
+    Then no exception is raised
+        And I expect 7 assets to be listed, with their id and full path
 | fullpath                                | id                               |
 | data/samples/DCIM/100FPIAM/FPI_0001.JPG | 4613ad3fd0c246dd5bb96b33b09c2996 |
 | data/samples/DCIM/100FPIAM/FPI_0002.JPG | 3b1479d722fbe11df5677bb521e2575b |
@@ -25,7 +26,6 @@ Scenario: List assets in the catalog.
 | data/samples/DCIM/100FPIAM/FPI_0005.JPG | 8dde366bfc65efd9fabcc74728061740 |
 | data/samples/DCIM/100FPIAM/FPI_0006.JPG | d41d8cd98f00b204e9800998ecf8427e |
 | data/samples/DCIM/100FPIAM/FPI_0007.JPG | c8b07cb389edaaf736b2486361b5e593 |
-        And no exception is raised
 
 Scenario: List sessions in the catalog.
     Given the command to list assets in the catalog
@@ -42,12 +42,12 @@ Scenario: List sessions in the catalog.
         | data/samples/DCIM/100FPIAM/FPI_0006.JPG |
         | data/samples/DCIM/100FPIAM/FPI_0007.JPG |
     When listing all sessions in the catalog
-    Then I expect all the session names to be listed
+    Then no exception is raised
+        And I expect all the session names to be listed
         | session        |
         | First Session  |
         | Second Session |
         And I expect the session names to be unique
-        And no exception is raised
 
 
 Scenario: List flagged assets.
@@ -68,6 +68,31 @@ Scenario: List flagged assets.
         | c8b07cb389edaaf736b2486361b5e593 |   1   | pick   |
         | 8dde366bfc65efd9fabcc74728061740 |   1   | pick   |
     When listing assets with the flag attribute set to "pick"
+    Then no exception is raised
+        And I expect 3 assets to be listed, with their id and full path
+| fullpath                                | id                               |
+| data/samples/DCIM/100FPIAM/FPI_0002.JPG | 3b1479d722fbe11df5677bb521e2575b |
+| data/samples/DCIM/100FPIAM/FPI_0005.JPG | 8dde366bfc65efd9fabcc74728061740 |
+| data/samples/DCIM/100FPIAM/FPI_0007.JPG | c8b07cb389edaaf736b2486361b5e593 |
+
+Scenario: List labeled assets.
+    Given the command to list assets in the catalog
+        And an empty catalog named "test_catalog.fpicat"
+        And the catalog has some assets
+        | filename                                |
+        | data/samples/DCIM/100FPIAM/FPI_0001.JPG |
+        | data/samples/DCIM/100FPIAM/FPI_0002.JPG |
+        | data/samples/DCIM/100FPIAM/FPI_0003.JPG |
+        | data/samples/DCIM/100FPIAM/FPI_0004.JPG |
+        | data/samples/DCIM/100FPIAM/FPI_0005.JPG |
+        | data/samples/DCIM/100FPIAM/FPI_0006.JPG |
+        | data/samples/DCIM/100FPIAM/FPI_0007.JPG |
+        And some images have the label attribute set to "labeled"
+        | asset                            | image |
+        | 3b1479d722fbe11df5677bb521e2575b |   1   |
+        | c8b07cb389edaaf736b2486361b5e593 |   1   |
+        | 8dde366bfc65efd9fabcc74728061740 |   1   |
+    When listing assets with the label attribute set to "labeled"
     Then no exception is raised
         And I expect 3 assets to be listed, with their id and full path
 | fullpath                                | id                               |
