@@ -31,11 +31,11 @@ def when_listing_assets(context):
 @then('I expect {count} assets to be listed, with their id and full path')
 def then_compare_filenames_and_ids(context, count):
     """Compare filename/id obtained with expected ones."""
-    assert len(context.result) == 7
+    assert len(context.result) == int(count)
     for row in context.table:
-        for asset in context.result:
-            if asset.fullpath == row['fullpath']:
-                assert asset.id is row['id']
+        for image in context.result:
+            if image.asset.fullpath == row['fullpath']:
+                assert image.asset.id is row['id']
                 break
 
 
@@ -69,6 +69,18 @@ def then_session_names_are_unique(context):
         i += 1
 
 
+# Filter catalog
+def _filter_catalog(context, options):
+    try:
+        context.catalog.open()
+        context.result = context.catalog.search(options)
+        context.exception = None
+    except Exception as e:
+        context.exception = e
+
+
+# Filter by FLAG
+
 @given('some images have the flag attribute set to "{flag}"')
 def given_some_images_have_flags(context, flag):
     """Set flags of some assets."""
@@ -88,10 +100,20 @@ def when_listing_assets_with_the_flag_attribute(context, flag):
         'pick': dao.Image.Flags.PICK,
         'reject': dao.Image.Flags.REJECT
     }.get(flag.strip(), dao.Image.Flags.UNFLAG).value
-    options = {'flag': f}
-    try:
-        context.catalog.open()
-        context.result = context.catalog.search(options)
-        context.exception = None
-    except Exception as e:
-        context.exception = e
+    _filter_catalog(context, {'flag': f})
+
+
+# Filter by LABEL
+
+@given('some images have the label attribute set to "{label}"')
+def given_some_images_have_label(context, label):
+    """Set the label attribute for some images."""
+    options = {'label': label}
+    assets = [row['asset'] for row in context.table]
+    context.catalog.set_attributes(assets, options)
+
+
+@when('listing assets with the label attribute set to "{label}"')
+def step_impl(context, label):
+    """List assets with the given label."""
+    _filter_catalog(context, {'label': label})
