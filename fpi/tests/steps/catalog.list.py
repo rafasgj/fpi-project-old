@@ -94,7 +94,7 @@ def given_some_images_have_flags(context, flag):
 
 
 @when('listing assets with the flag attribute set to "{flag}"')
-def when_listing_assets_with_the_flag_attribute(context, flag):
+def when_listing_assets_based_on_flag(context, flag):
     """List assets with the given flag."""
     f = {
         'pick': dao.Image.Flags.PICK,
@@ -114,6 +114,31 @@ def given_some_images_have_label(context, label):
 
 
 @when('listing assets with the label attribute set to "{label}"')
-def step_impl(context, label):
+def when_listing_assets_based_on_label(context, label):
     """List assets with the given label."""
-    _filter_catalog(context, {'label': label})
+    _filter_catalog(context, {'label': ("==", label)})
+
+
+# Filter by RATING
+
+@given('some images have the rating attribute set to {rating}')
+def given_images_have_rating(context, rating):
+    """Set image rating to the given value."""
+    options = {'rating': int(rating.strip())}
+    assets = [row['asset'] for row in context.table]
+    context.catalog.set_attributes(assets, options)
+
+
+@when(u'listing assets with the rating attribute is "{operator}" {rating}')
+def when_listing_assets_based_on_rating(context, operator, rating):
+    """List assets based on a rating comparision."""
+    operators = {
+        "equal to": "==",
+        "different than": "!=",
+        "less or equal to": "<=",
+        "less than": "<",
+        "greater or equal to": ">=",
+        "greater than": ">="
+    }
+    query = (operators[operator], rating)
+    _filter_catalog(context, {'rating': query})
