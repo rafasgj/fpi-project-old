@@ -99,3 +99,28 @@ Scenario: List labeled assets.
 | data/samples/DCIM/100FPIAM/FPI_0002.JPG | 3b1479d722fbe11df5677bb521e2575b |
 | data/samples/DCIM/100FPIAM/FPI_0005.JPG | 8dde366bfc65efd9fabcc74728061740 |
 | data/samples/DCIM/100FPIAM/FPI_0007.JPG | c8b07cb389edaaf736b2486361b5e593 |
+
+Scenario: List rated assets.
+    Given the command to list assets in the catalog
+        And an empty catalog named "test_catalog.fpicat"
+        And the catalog has some assets
+        | filename                                |
+        | data/samples/DCIM/100FPIAM/FPI_0001.JPG |
+        | data/samples/DCIM/100FPIAM/FPI_0002.JPG |
+        | data/samples/DCIM/100FPIAM/FPI_0003.JPG |
+        | data/samples/DCIM/100FPIAM/FPI_0004.JPG |
+        | data/samples/DCIM/100FPIAM/FPI_0005.JPG |
+        | data/samples/DCIM/100FPIAM/FPI_0006.JPG |
+        | data/samples/DCIM/100FPIAM/FPI_0007.JPG |
+        And some images have the rating attribute set to 3
+        | asset                            | image |
+        | 3b1479d722fbe11df5677bb521e2575b |   1   |
+        | c8b07cb389edaaf736b2486361b5e593 |   1   |
+        | 8dde366bfc65efd9fabcc74728061740 |   1   |
+    When listing assets with the rating attribute is "equal to" 3
+    Then no exception is raised
+        And I expect 3 assets to be listed, with their id and full path
+| fullpath                                | id                               |
+| data/samples/DCIM/100FPIAM/FPI_0002.JPG | 3b1479d722fbe11df5677bb521e2575b |
+| data/samples/DCIM/100FPIAM/FPI_0005.JPG | 8dde366bfc65efd9fabcc74728061740 |
+| data/samples/DCIM/100FPIAM/FPI_0007.JPG | c8b07cb389edaaf736b2486361b5e593 |
