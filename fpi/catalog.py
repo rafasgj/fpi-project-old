@@ -260,10 +260,39 @@ class Catalog(object):
                 if options.get('recurse', False):
                     self.__ingest_dir(options)
 
-    def search(self):
+    def search(self, options=None):
         """Search for assets in the catalog."""
         self._check_catalog()
-        return self.session.query(dao.Asset).all()
+        images = self.session.query(dao.Image)
+        if options is not None:
+            filters = {
+                'flag': self._filter_set,
+                'label': self._filter_cmp,
+                'rating': self._filter_cmp
+            }
+            for field, value_op in options.items():
+                filter_fn = filters.get(field, None)
+                if filter_fn is not None:
+                    images = filter_fn(images, field, value_op)
+        return images.all()
+
+    def _filter_set(self, images, field, values):
+        if values is not None:
+            if not (isinstance(values, list) or isinstance(values, set)):
+                values = [values]
+            if len(values) > 0:
+                column = getattr(dao.Image, field)
+                images = images.filter(column.in_(values))
+        return images
+
+    def _filter_cmp(self, images, field, value_op):
+        if value_op is not None:
+            op, value = value_op
+            if isinstance(value, list) or isinstance(value, set):
+                return self._filter_set(images, field, value_op)
+            column = getattr(dao.Image, field)
+            images = images.filter(column.op(op)(value))
+        return images
 
     def sessions(self):
         """Search for assets in the catalog."""
