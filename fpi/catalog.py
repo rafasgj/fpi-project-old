@@ -2,9 +2,10 @@
 
 from sqlalchemy_utils import database_exists
 
+from sqlalchemy import create_engine, event
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy import create_engine
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.engine import Engine
 
 import datetime
 import os
@@ -22,6 +23,14 @@ import alembic.command
 import dao
 import errors
 from version import Version
+
+
+@event.listens_for(Engine, "connect")
+def set_sqlite_pragma(dbapi_connection, connection_record):
+    """Configure SQLite to respect case sensitivity in LIKE."""
+    cursor = dbapi_connection.cursor()
+    cursor.execute('pragma case_sensitive_like=ON')
+    cursor.close()
 
 
 class Catalog(object):
@@ -266,32 +275,47 @@ class Catalog(object):
         images = self.session.query(dao.Image)
         if options is not None:
             filters = {
-                'flag': self._filter_set,
-                'label': self._filter_cmp,
-                'rating': self._filter_cmp
+                'flag': (self._filter_set, dao.Image),
+                'label': (self._filter_str, dao.Image),
+                'rating': (self._filter_num, dao.Image),
+                'filename': (self._filter_str, dao.Asset)
             }
             for field, value_op in options.items():
-                filter_fn = filters.get(field, None)
+                filter_fn, table = filters.get(field, None)
                 if filter_fn is not None:
-                    images = filter_fn(images, field, value_op)
+                    if table != dao.Image:
+                        images = images.join(table)
+                    images = filter_fn(images, getattr(table, field), value_op)
         return images.all()
 
-    def _filter_set(self, images, field, values):
+    def _filter_set(self, images, column, values):
         if values is not None:
             if not (isinstance(values, list) or isinstance(values, set)):
                 values = [values]
             if len(values) > 0:
-                column = getattr(dao.Image, field)
                 images = images.filter(column.in_(values))
         return images
 
-    def _filter_cmp(self, images, field, value_op):
+    def _filter_num(self, images, column, value_op):
         if value_op is not None:
             op, value = value_op
             if isinstance(value, list) or isinstance(value, set):
-                return self._filter_set(images, field, value_op)
-            column = getattr(dao.Image, field)
+                return self._filter_set(images, column, value)
             images = images.filter(column.op(op)(value))
+        return images
+
+    def _filter_str(self, images, column, value_op):
+        if value_op is not None:
+            op, value = value_op
+            if isinstance(value, list) or isinstance(value, set):
+                return self._filter_set(images, column, value_op)
+            if op.get('partial', False):
+                value = "%%%s%%" % value
+            operator = 'ilike' if op.get('caseinsensitive', True) else 'like'
+            if op.get('not', False):
+                images = images.filter(~column.op(operator)(value))
+            else:
+                images = images.filter(column.op(operator)(value))
         return images
 
     def sessions(self):
