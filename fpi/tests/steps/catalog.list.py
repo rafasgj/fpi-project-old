@@ -116,7 +116,13 @@ def given_some_images_have_label(context, label):
 @when('listing assets with the label attribute set to "{label}"')
 def when_listing_assets_based_on_label(context, label):
     """List assets with the given label."""
-    _filter_catalog(context, {'label': ("==", label)})
+    operation = {
+        'partial': False,
+        'caseinsensitive': False,
+        'not': False
+    }
+    options = (operation, label)
+    _filter_catalog(context, {'label': options})
 
 
 # Filter by RATING
@@ -142,3 +148,17 @@ def when_listing_assets_based_on_rating(context, operator, rating):
     }
     query = (operators[operator], rating)
     _filter_catalog(context, {'rating': query})
+
+
+# Filter by FILENAME
+
+@when('listing assets with the filename matching "{filename}"')
+def when_listing_assets_based_on_filename(context, filename):
+    """List assets based on filename."""
+    operation = {
+        'partial': True,
+        'caseinsensitive': False,
+        'not': False
+    }
+    options = (operation, filename)
+    _filter_catalog(context, {'filename': options})

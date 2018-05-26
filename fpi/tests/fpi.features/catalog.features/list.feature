@@ -124,3 +124,21 @@ Scenario: List rated assets.
 | data/samples/DCIM/100FPIAM/FPI_0002.JPG | 3b1479d722fbe11df5677bb521e2575b |
 | data/samples/DCIM/100FPIAM/FPI_0005.JPG | 8dde366bfc65efd9fabcc74728061740 |
 | data/samples/DCIM/100FPIAM/FPI_0007.JPG | c8b07cb389edaaf736b2486361b5e593 |
+
+Scenario: List assets by filename.
+    Given the command to list assets in the catalog
+        And an empty catalog named "test_catalog.fpicat"
+        And the catalog has some assets
+        | filename                                |
+        | data/samples/DCIM/100FPIAM/FPI_0001.JPG |
+        | data/samples/DCIM/100FPIAM/FPI_0002.JPG |
+        | data/samples/DCIM/100FPIAM/FPI_0003.JPG |
+        | data/samples/DCIM/100FPIAM/FPI_0004.JPG |
+        | data/samples/DCIM/100FPIAM/FPI_0005.JPG |
+        | data/samples/DCIM/100FPIAM/FPI_0006.JPG |
+        | data/samples/DCIM/100FPIAM/FPI_0007.JPG |
+    When listing assets with the filename matching "FPI_0005"
+    Then no exception is raised
+        And I expect 1 assets to be listed, with their id and full path
+| fullpath                                | id                               |
+| data/samples/DCIM/100FPIAM/FPI_0005.JPG | 8dde366bfc65efd9fabcc74728061740 |
