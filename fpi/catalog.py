@@ -278,10 +278,11 @@ class Catalog(object):
                 'flag': (self._filter_set, dao.Image),
                 'label': (self._filter_str, dao.Image),
                 'rating': (self._filter_num, dao.Image),
-                'filename': (self._filter_str, dao.Asset)
+                'filename': (self._filter_str, dao.Asset),
+                'import_session': (self._filter_str, dao.Asset)
             }
             for field, value_op in options.items():
-                filter_fn, table = filters.get(field, None)
+                filter_fn, table = filters.get(field, (None, None))
                 if filter_fn is not None:
                     if table != dao.Image:
                         images = images.join(table)

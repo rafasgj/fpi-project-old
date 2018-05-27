@@ -35,8 +35,10 @@ def then_compare_filenames_and_ids(context, count):
     for row in context.table:
         for image in context.result:
             if image.asset.fullpath == row['fullpath']:
-                assert image.asset.id is row['id']
+                assert image.asset.id == row['id']
                 break
+        else:
+            raise Exception("No asset matches %s" % row['fullpath'])
 
 
 @given('the catalog has some assets ingested in a session "{session_name}"')
@@ -113,18 +115,6 @@ def given_some_images_have_label(context, label):
     context.catalog.set_attributes(assets, options)
 
 
-@when('listing assets with the label attribute set to "{label}"')
-def when_listing_assets_based_on_label(context, label):
-    """List assets with the given label."""
-    operation = {
-        'partial': False,
-        'caseinsensitive': False,
-        'not': False
-    }
-    options = (operation, label)
-    _filter_catalog(context, {'label': options})
-
-
 # Filter by RATING
 
 @given('some images have the rating attribute set to {rating}')
@@ -135,7 +125,7 @@ def given_images_have_rating(context, rating):
     context.catalog.set_attributes(assets, options)
 
 
-@when(u'listing assets with the rating attribute is "{operator}" {rating}')
+@when('listing assets with the rating attribute is "{operator}" {rating}')
 def when_listing_assets_based_on_rating(context, operator, rating):
     """List assets based on a rating comparision."""
     operators = {
@@ -150,15 +140,31 @@ def when_listing_assets_based_on_rating(context, operator, rating):
     _filter_catalog(context, {'rating': query})
 
 
-# Filter by FILENAME
+# Filter by a string field
 
-@when('listing assets with the filename matching "{filename}"')
-def when_listing_assets_based_on_filename(context, filename):
+@when('listing assets with field "{field}", matching partially "{value}"')
+def when_filter_strings_matching_partially(context, field, value):
     """List assets based on filename."""
+    assert field in ['label', 'filename', 'import_session']
     operation = {
         'partial': True,
         'caseinsensitive': False,
         'not': False
     }
-    options = (operation, filename)
-    _filter_catalog(context, {'filename': options})
+    options = (operation, value)
+    _filter_catalog(context, {field: options})
+
+
+@when('listing assets with field "{field}", matching exactly "{value}"')
+def when_filtering_strings_matching_exactly(context, field, value):
+    """List assets based on filename."""
+    def mapfield(f):
+        return "import_session" if f == "session" else f
+    assert field in ['label', 'filename', 'session']
+    operation = {
+        'partial': False,
+        'caseinsensitive': False,
+        'not': False
+    }
+    options = (operation, value)
+    _filter_catalog(context, {mapfield(field): options})
