@@ -27,7 +27,7 @@ def _main():
         if args.gui:
             start_gui()
         elif args.command is None:
-            raise Exception("No command given.")
+            raise errors.InvalidCommand("No command given.")
         else:
             cli.execute(args)
     except errors.InvalidCommand as e:
