@@ -115,7 +115,8 @@ def _init_info_opt(parser):
                      help="""Show assets that match the filename.""")
     grp.add_argument("--session", dest="session",
                      help="""Show assets ingested in the session name.""")
-    grp.add_argument("--not", dest="not", action="store_true", default=False,
+    grp.add_argument("--not", dest="negate", action="store_true",
+                     default=False,
                      help="""Invert the filter for flags, labels, filenames or
                              sessions.""")
     grp.add_argument("--partial", dest="partial", action="store_true",
@@ -156,7 +157,8 @@ def _init_attrib_opt(parser):
                      help="""Define or remove a flag attribute.""")
     grp.add_argument("-l", "--label", dest="label",
                      help="""Define a label for an asset.""")
-    grp.add_argument("-r", "--rating", dest="label", choices=range(0, 6),
+    grp.add_argument("-r", "--rating", dest="rating",
+                     choices=range(0, 6), type=int,
                      help="""Define the rating of an asset.""")
     grp.add_argument('catalog', nargs=1)
     grp.add_argument('asset_id', nargs='+')
