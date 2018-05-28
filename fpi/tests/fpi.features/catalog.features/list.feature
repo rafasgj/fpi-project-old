@@ -143,6 +143,24 @@ Scenario: List assets by filename.
         | fullpath                    | id                               |
         | /DCIM/100FPIAM/FPI_0005.JPG | 8dde366bfc65efd9fabcc74728061740 |
 
+Scenario: List assets by filename, without case sensitivity.
+    Given the command to list assets in the catalog
+        And an empty catalog named "test_catalog.fpicat"
+        And the catalog has some assets
+        | filename                                |
+        | data/samples/DCIM/100FPIAM/FPI_0001.JPG |
+        | data/samples/DCIM/100FPIAM/FPI_0002.JPG |
+        | data/samples/DCIM/100FPIAM/FPI_0003.JPG |
+        | data/samples/DCIM/100FPIAM/FPI_0004.JPG |
+        | data/samples/DCIM/100FPIAM/FPI_0005.JPG |
+        | data/samples/DCIM/100FPIAM/FPI_0006.JPG |
+        | data/samples/DCIM/100FPIAM/FPI_0007.JPG |
+    When filtering "filename", with case insensitive partial match to "fpi_0005"
+    Then no exception is raised
+        And I expect 1 assets to be listed, with their id and full path
+        | fullpath                    | id                               |
+        | /DCIM/100FPIAM/FPI_0005.JPG | 8dde366bfc65efd9fabcc74728061740 |
+
 Scenario: List assets by session name.
     Given the command to list assets in the catalog
         And an empty catalog named "test_catalog.fpicat"

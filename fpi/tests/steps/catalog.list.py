@@ -157,6 +157,18 @@ def when_filter_strings_matching_partially(context, field, value):
     _filter_catalog(context, {field: options})
 
 
+@when('filtering "{field}", with case insensitive partial match to "{value}"')
+def when_matching_partially_case_insensitive(context, field, value):
+    assert field in ['label', 'filename', 'import_session']
+    operation = {
+        'partial': True,
+        'caseinsensitive': True,
+        'not': False
+    }
+    options = (operation, value)
+    _filter_catalog(context, {field: options})
+
+
 @when('listing assets with field "{field}", matching exactly "{value}"')
 def when_filtering_strings_matching_exactly(context, field, value):
     """List assets based on filename."""
