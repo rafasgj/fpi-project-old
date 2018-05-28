@@ -101,6 +101,47 @@ def _init_info_opt(parser):
                              it is the session name. For assets, it is
                              the asset id, and it might be only the initial
                              part of the id.""")
+    grp.add_argument("-f", "--flag", dest="flag", nargs="+",
+                     choices=['pick', 'reject', 'unflag'], metavar="FLAG",
+                     help="""Filter result according to the flag attribute.
+                             FLAG can be any of 'pick', 'unflag', or
+                             'reject'.""")
+    grp.add_argument("-l", "--label", dest="label", nargs="+",
+                     help="""Show assets that match any of the given
+                             labels.""")
+    grp.add_argument("--filename", dest="filename", 
+                     help="""Show assets that match the filename.""")
+    grp.add_argument("--session", dest="session", 
+                     help="""Show assets ingested in the session name.""")
+    grp.add_argument("--not", dest="not", action="store_true", default=False,
+                     help="""Invert the filter for flags, labels, filenames or
+                             sessions.""")
+    grp.add_argument("--partial", dest="partial", action="store_true",
+                     default=False,
+                     help="""Use partial match for filters based on labels,
+                             filenames, or session names.""")
+    grp.add_argument("--exactcase", dest="exactcase", action="store_true",
+                     default=False,
+                     help="""Match case when filtering for labels,
+                             filenames, or session names.""")
+    grp.add_argument("--date", dest="datefield",
+                     metavar={"capture", "ingestion"},
+                     help="""Filter by one of the Date fields.""")
+    grp.add_argument("--start-date", dest="startdate", metavar="date",
+                     help="""Select all assets at or after this date.
+                             Requires --date.""")
+    grp.add_argument("--end-date", dest="enddate", metavar="date",
+                     help="""Select all assets at or before this date.
+                             Requires --date.""")
+    grp.add_argument("-r", "--rating", dest="rating", nargs=2,
+                     metavar=("OPERATOR", "RATING"),
+                     help="""Filter by rating. You should give the comparision
+                             operator and the rating itself. Valid operators
+                             are 'equal [to]' (==), 'different [than]' (!=),
+                             'less [than]' (<), 'greater [than]' (>),
+                             'less or equal [to]' (<=), 'greater or equal [to]'
+                             (>=).
+                          """)
     grp.add_argument('catalog', nargs=1)
 
 
