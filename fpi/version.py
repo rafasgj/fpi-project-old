@@ -13,6 +13,10 @@ class Version(object):
     DB_VERSION = {v: k for k, v in DB_REVISION.items()}
 
     @classmethod
+    def version_string(self):
+        return "f/π version {}".format(_CURRENT_VERSION)
+
+    @classmethod
     def system(self):
         """Retrive f/π current version."""
         return _CURRENT_VERSION

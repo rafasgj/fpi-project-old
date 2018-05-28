@@ -4,6 +4,7 @@
 from argparse import ArgumentParser, Action
 
 from cli import configuration
+from version import Version 
 
 
 def init():
@@ -15,11 +16,12 @@ def init():
     epilog = """
              Check the command options by issuing `fpi <command> --help`
              """
+    version = Version.version_string()
     opt_parser = ArgumentParser(description=desc, epilog=epilog)
     opt_parser.add_argument("--gui", action="store_true",
                             help="start f/π GUI version.")
     opt_parser.add_argument('-v', '--version', action="version",
-                            version="f/π version α-1",
+                            version=version,
                             help="Print f/π version.")
     _configure_option_parser(opt_parser)
     return opt_parser
