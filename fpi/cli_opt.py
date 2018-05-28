@@ -4,7 +4,7 @@
 from argparse import ArgumentParser, Action
 
 from cli import configuration
-from version import Version 
+from version import Version
 
 
 def init():

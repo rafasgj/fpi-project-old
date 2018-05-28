@@ -14,6 +14,7 @@ class Version(object):
 
     @classmethod
     def version_string(self):
+        """Retrieve the system string version."""
         return "f/π version {}".format(_CURRENT_VERSION)
 
     @classmethod
