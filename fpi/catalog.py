@@ -279,7 +279,8 @@ class Catalog(object):
                 'label': (self._filter_str, dao.Image),
                 'rating': (self._filter_num, dao.Image),
                 'filename': (self._filter_str, dao.Asset),
-                'import_session': (self._filter_str, dao.Asset)
+                'import_session': (self._filter_str, dao.Asset),
+                'capture_datetime': (self._filter_date, dao.Image),
             }
             for field, value_op in options.items():
                 filter_fn, table = filters.get(field, (None, None))
@@ -303,6 +304,16 @@ class Catalog(object):
             if isinstance(value, list) or isinstance(value, set):
                 return self._filter_set(images, column, value)
             images = images.filter(column.op(op)(value))
+        return images
+
+    def _filter_date(self, images, column, values):
+        if values is not None:
+            start = values.get('start', None)
+            end = values.get('end', None)
+            if start is not None:
+                images = images.filter(column.op(">=")(start))
+            if end is not None:
+                images = images.filter(column.op("<=")(end))
         return images
 
     def _filter_str(self, images, column, value_op):
