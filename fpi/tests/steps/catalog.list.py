@@ -3,6 +3,8 @@
 from behave import given, when, then
 import dao
 
+import datetime
+
 
 @given('the command to list assets in the catalog')
 def given_command_list(context):
@@ -168,3 +170,26 @@ def when_filtering_strings_matching_exactly(context, field, value):
     }
     options = (operation, value)
     _filter_catalog(context, {mapfield(field): options})
+
+
+# Filter by DATE
+
+@when('listing assets with "{datefield}", in the year {year}')
+def when_filtering_by_date_year(context, datefield, year):
+    """List assetas based on date."""
+    year = int(year)
+    options = {
+        'start': datetime.date(year, 1, 1),
+        'end': datetime.date(year, 12, 31)
+    }
+    _filter_catalog(context, {datefield: options})
+
+
+@when('listing assets where "{datefield}" is today')
+def step_impl(context, datefield):
+    """Filter by a date field using current date as parameter."""
+    options = {
+        'start': datetime.date.today(),
+        'end': datetime.date.today()
+    }
+    _filter_catalog(context, {datefield: options})
