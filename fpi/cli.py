@@ -62,8 +62,9 @@ def process_info_cmd(options):
             for session in cat.sessions():
                 print(session)
         else:
-            for asset in cat.search():
-                print('id: %s\tfile: @%s' % (asset.id, asset.fullpath))
+            for image in cat.search():
+                data = (image.asset.id, image.asset.fullpath)
+                print('id: %s\tfile: %s' % data)
     else:
         if options.id is None:
             msg = "Session name or Asset ID are necessary."
