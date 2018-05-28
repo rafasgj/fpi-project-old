@@ -6,8 +6,10 @@ import PIL.Image
 
 import cli
 import cli_opt
-
 import errors
+
+import sys
+import traceback
 
 
 # initialize Pillow decoders/encoders
@@ -33,9 +35,12 @@ def _main():
     except errors.InvalidCommand as e:
         print("ERROR: %s\n" % e)
         opt_parser.print_help()
-    except (Exception, errors.InexistentCatalog,
+    except (errors.InexistentCatalog,
             errors.UnexpectedCatalogVersion) as e:
         print("ERROR: %s\n" % e)
+    except Exception as e:
+        """This are code bugs, and we should never get here."""
+        traceback.print_exc(file=sys.stderr)
     else:
         exit(0)
     exit(1)
