@@ -30,12 +30,12 @@ def _main():
             raise Exception("No command given.")
         else:
             cli.execute(args)
-    except (errors.InexistentCatalog,
-            errors.UnexpectedCatalogVersion) as e:
-        print("ERROR: %s\n" % e)
-    except Exception as e:
+    except errors.InvalidCommand as e:
         print("ERROR: %s\n" % e)
         opt_parser.print_help()
+    except (Exception, errors.InexistentCatalog,
+            errors.UnexpectedCatalogVersion) as e:
+        print("ERROR: %s\n" % e)
     else:
         exit(0)
     exit(1)

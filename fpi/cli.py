@@ -2,6 +2,7 @@
 
 import catalog
 import dao
+import errors
 
 
 # Processing Options:
@@ -15,6 +16,7 @@ import dao
 #   * Attrib
 #   - flag
 #   - label
+#   - rating
 configuration = {}
 
 
@@ -33,7 +35,7 @@ def process_catalog_cmd(options):
         print("Upgrading catalog.")
         catalog.Catalog(options.upgrade).upgrade()
     else:
-        raise Exception("Invalid command option.")
+        raise errors.InvalidCommand("Invalid command option.")
 
 
 def process_ingest_cmd(options):
@@ -64,14 +66,20 @@ def process_info_cmd(options):
                 print('id: %s\tfile: @%s' % (asset.id, asset.fullpath))
     else:
         if options.id is None:
-            raise Exception("Asset ID is necessary.")
+            msg = "Session name or Asset ID are necessary."
+            raise errors.InvalidCommand(msg)
         _cmd_info_display_asset(cat, obj, options.id.strip())
 
 
 def _cmd_info_display_asset(catalog, obj, obj_id):
     result = catalog.info(obj, obj_id)
     if obj == 'session':
-        pass
+        sessionhdr = "Session Name: {session_name}\n" + \
+            "Session Start: {creation_time}"
+        assetinfo = "id: {id} file: {fullpath}"
+        print(sessionhdr.format(**result._asdict()))
+        for asset in result.assets:
+            print(assetinfo.format(**asset._asdict()))
     else:
         img = result.virtual_copies[0]
         info = {
@@ -124,6 +132,6 @@ def execute(args):
     """Execute f/π command line interface."""
     fn = commands.get(args.command, None)
     if fn is None:
-        raise Exception("Provided command is invalid.")
+        raise errors.InvalidCommand("Provided command is invalid.")
     else:
         fn(args)

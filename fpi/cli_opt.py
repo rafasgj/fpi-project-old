@@ -109,9 +109,9 @@ def _init_info_opt(parser):
     grp.add_argument("-l", "--label", dest="label", nargs="+",
                      help="""Show assets that match any of the given
                              labels.""")
-    grp.add_argument("--filename", dest="filename", 
+    grp.add_argument("--filename", dest="filename",
                      help="""Show assets that match the filename.""")
-    grp.add_argument("--session", dest="session", 
+    grp.add_argument("--session", dest="session",
                      help="""Show assets ingested in the session name.""")
     grp.add_argument("--not", dest="not", action="store_true", default=False,
                      help="""Invert the filter for flags, labels, filenames or
