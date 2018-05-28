@@ -4,6 +4,9 @@ import catalog
 import dao
 import errors
 
+import dateutil.parser
+import datetime
+
 
 # Processing Options:
 #   * Ingest
@@ -62,7 +65,8 @@ def process_info_cmd(options):
             for session in cat.sessions():
                 print(session)
         else:
-            for image in cat.search():
+            searchopt = _process_search_options(options)
+            for image in cat.search(searchopt):
                 data = (image.asset.id, image.asset.fullpath)
                 print('id: %s\tfile: %s' % data)
     else:
@@ -70,6 +74,73 @@ def process_info_cmd(options):
             msg = "Session name or Asset ID are necessary."
             raise errors.InvalidCommand(msg)
         _cmd_info_display_asset(cat, obj, options.id.strip())
+
+
+def _process_search_options(options):
+    searchopt = {}
+    stropts = {
+        'not': options.negate,
+        'partial': options.partial,
+        'caseinsensitive': not options.exactcase,
+    }
+    #
+    if options.flag:
+        searchopt['flag'] = (stropts, options.flag)
+    #
+    if options.label:
+        searchopt['label'] = (stropts, options.label)
+    if options.filename:
+        searchopt['filename'] = (stropts, options.filename)
+    if options.session:
+        searchopt['import_session'] = (stropts, options.session)
+    #
+    searchopt = _process_search_date_options(searchopt, options)
+    #
+    if options.rating:
+        op, value = options.rating
+        searchopt['rating'] = (_get_relational_operator(op), value)
+    #
+    return searchopt
+
+
+def _process_search_date_options(searchopt, options):
+    if options.datefield in ['ingest', 'capture']:
+        dateopts = {}
+        startdate, enddate = None, None
+        #
+        default = datetime.datetime(1900, 1, 1, 0, 0, 0)
+        startdate = dateutil.parser.parse(options.startdate, default=default)
+        #
+        current_year = datetime.datetime.today().year
+        default = datetime.datetime(current_year, 12, 31, 23, 59, 59)
+        enddate = dateutil.parser.parse(options.enddate, default=default)
+        #
+        dateopts['start'] = startdate
+        dateopts['end'] = enddate
+        datelabel = {
+            'ingest': 'import_date',
+            'capture': 'capture_datetime'
+        }
+        searchopt[datelabel[options.datefield]] = dateopts
+    return searchopt
+
+
+def _get_relational_operator(operator):
+    operators = {
+        "equal": "==",
+        "equal to": "==",
+        "different": "!=",
+        "different than": "!=",
+        "less or equal": "<=",
+        "less or equal to": "<=",
+        "less": "<",
+        "less than": "<",
+        "greater or equal": ">=",
+        "greater or equal to": ">=",
+        "greater": ">=",
+        "greater than": ">="
+    }
+    return operators.get(operator, operator)
 
 
 def _cmd_info_display_asset(catalog, obj, obj_id):

@@ -30,11 +30,12 @@ current Linux distro. Under macOS, it is available through
 As the project uses some Python modules that are not usually found on
 standard Python setups, so you will need to install the modules:
 
+* alembic
 * behave
 * flake8
 * flake8-docstrings
 * pygobject
-* alembic
+* python-dateutil
 * sqlalchemy
 * sqlalchemy-utils
 
