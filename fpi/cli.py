@@ -3,6 +3,7 @@
 import catalog
 import dao
 import errors
+from version import Version
 
 import dateutil.parser
 import datetime
@@ -31,12 +32,18 @@ def _open_catalog(options):
 
 def process_catalog_cmd(options):
     """Process the CATALOG command."""
-    if options.new is not None:
+    cat = catalog.Catalog(options.catalog[0])
+    if options.version:
+        revision = cat.revision
+        print("Catalog revision: %s" % revision)
+        print("Expected f/π version: %s" % Version.db_version(revision))
+        print(Version.version_string())
+    elif options.new:
         print("Creating catalog.")
-        catalog.Catalog(options.new).create()
-    elif options.upgrade is not None:
+        cat.create()
+    elif options.upgrade:
         print("Upgrading catalog.")
-        catalog.Catalog(options.upgrade).upgrade()
+        cat.upgrade()
     else:
         raise errors.InvalidCommand("Invalid command option.")
 

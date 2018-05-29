@@ -49,11 +49,11 @@ class Catalog(object):
 
     def __init__(self, catalog_name):
         """Initialize a new catalog."""
-        self._engine = None
         self._session = None
         cname, fname = self.__set_catalog_name_and_file(catalog_name)
         self._catalog_name = cname
         self._catalog_file = fname
+        self._engine = create_engine(self.__init_string)
 
     @property
     def __init_string(self):

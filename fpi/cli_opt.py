@@ -31,12 +31,16 @@ def _init_opt_grp(parser):
     """Initialize the Catalog option group."""
     opt_grp = parser.add_parser("catalog", help="Manage a catalog.")
     options = opt_grp.add_mutually_exclusive_group(required=True)
-    options.add_argument("--new", action="store", metavar="CATALOG",
+    options.add_argument("--new", action="store_true", default=False,
                          help="""creates a new f/π catalog with the given
                                  name.""")
-    options.add_argument("--upgrade", action="store", metavar="CATALOG",
+    options.add_argument("--upgrade", action="store_true", default=False,
                          help="""upgrades a f/π catalog to the latest
                                  revision.""")
+    options.add_argument("--version", action="store_true",
+                         default=True,
+                         help="""Display the f/π catalog revision.""")
+    opt_grp.add_argument('catalog', nargs=1)
 
 
 def _init_ingestion_opt(parser):
