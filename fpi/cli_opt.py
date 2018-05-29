@@ -123,7 +123,7 @@ def _init_info_opt(parser):
                      default=False,
                      help="""Use partial match for filters based on labels,
                              filenames, or session names.""")
-    grp.add_argument("--exactcase", dest="exactcase", action="store_true",
+    grp.add_argument("--casematch", dest="casematch", action="store_true",
                      default=False,
                      help="""Match case when filtering for labels,
                              filenames, or session names.""")

@@ -30,19 +30,6 @@ def when_listing_assets(context):
         context.exception = e
 
 
-@then('I expect {count} assets to be listed, with their id and full path')
-def then_compare_filenames_and_ids(context, count):
-    """Compare filename/id obtained with expected ones."""
-    assert len(context.result) == int(count)
-    for row in context.table:
-        for image in context.result:
-            if image.asset.fullpath == row['fullpath']:
-                assert image.asset.id == row['id']
-                break
-        else:
-            raise Exception("No asset matches %s" % row['fullpath'])
-
-
 @given('the catalog has some assets ingested in a session "{session_name}"')
 def given_assets_ingested_is_session(context, session_name):
     """Ensure assets were ingested in a specific session."""
@@ -150,19 +137,20 @@ def when_filter_strings_matching_partially(context, field, value):
     assert field in ['label', 'filename', 'import_session']
     operation = {
         'partial': True,
-        'caseinsensitive': False,
+        'caseinsensitive': True,
         'not': False
     }
     options = (operation, value)
     _filter_catalog(context, {field: options})
 
 
-@when('filtering "{field}", with case insensitive partial match to "{value}"')
+@when('filtering "{field}", with case sensitive partial match to "{value}"')
 def when_matching_partially_case_insensitive(context, field, value):
+    """List assets based on filename, not matching case."""
     assert field in ['label', 'filename', 'import_session']
     operation = {
         'partial': True,
-        'caseinsensitive': True,
+        'caseinsensitive': False,
         'not': False
     }
     options = (operation, value)
@@ -205,3 +193,22 @@ def step_impl(context, datefield):
         'end': datetime.date.today()
     }
     _filter_catalog(context, {datefield: options})
+
+
+@then('I expect {count} assets to be listed, with their id and full path')
+def then_compare_filenames_and_ids(context, count):
+    """Compare filename/id obtained with expected ones."""
+    assert len(context.result) == int(count)
+    for row in context.table:
+        for image in context.result:
+            if image.asset.fullpath == row['fullpath']:
+                assert image.asset.id == row['id']
+                break
+        else:
+            raise Exception("No asset matches %s" % row['fullpath'])
+
+
+@then('I expect no assets to be listed')
+def then_there_is_no_asset_in_the_result(context):
+    """Test no asset is returned."""
+    assert len(context.result) == 0

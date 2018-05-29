@@ -2,10 +2,13 @@
 
 from sqlalchemy_utils import database_exists
 
-from sqlalchemy import create_engine, event
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import IntegrityError
+
+from sqlalchemy import event
 from sqlalchemy.engine import Engine
+
 
 import datetime
 import os
@@ -16,7 +19,6 @@ from collections import namedtuple
 import logging
 from alembic.migration import MigrationContext
 
-# import argparse
 import alembic.config
 import alembic.command
 
@@ -323,11 +325,10 @@ class Catalog(object):
                 return self._filter_set(images, column, value_op)
             if op.get('partial', False):
                 value = "%%%s%%" % value
-            operator = 'ilike' if op.get('caseinsensitive', True) else 'like'
-            if op.get('not', False):
-                images = images.filter(~column.op(operator)(value))
-            else:
-                images = images.filter(column.op(operator)(value))
+            operator = column.ilike if op.get('caseinsensitive', True) \
+                else column.like
+            operator = ~operator if op.get('not', False) else operator
+            images = images.filter(operator(value))
         return images
 
     def sessions(self):

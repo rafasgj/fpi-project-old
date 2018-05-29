@@ -81,7 +81,7 @@ def _process_search_options(options):
     stropts = {
         'not': options.negate,
         'partial': options.partial,
-        'caseinsensitive': not options.exactcase,
+        'caseinsensitive': not options.casematch,
     }
     #
     if options.flag:
