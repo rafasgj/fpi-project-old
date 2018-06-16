@@ -68,6 +68,8 @@ install the packages (shown with dependencies):
   * linter-ui-default:1.6.10
     * intentions:1.1.5
     * busy-signal:1.4.3
+* behave-step
+* platformio-ide-terminal
 
 ### Microsoft's Visual Studio Code
 
