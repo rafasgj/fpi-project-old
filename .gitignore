@@ -1,7 +1,7 @@
 # testing data
-/fpi/tests/data/samples/
-/fpi/tests/data/catalog/
-/fpi/tests/data/originals/
+/tests/data/samples/
+/tests/data/catalog/
+/tests/data/originals/
 *.fpicat
 
 # macOS specific files.
