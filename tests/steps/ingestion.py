@@ -145,6 +145,7 @@ def when_ingesting_assets(context):
 def then_one_asset_is_in_the_catalog(context):
     """Check if the asset was correctly stored in the catalog."""
     assert context.session.query(Asset).count() is 1
+    # TODO: Add tests to validate asset attributes.
 
 
 @then('there are {some} assets is the catalog, with its attributes')

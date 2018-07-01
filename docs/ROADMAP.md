@@ -114,7 +114,7 @@ fpi label catalog_path --set label_name asset_id ...
 
 > Apply the label to all given assets.
 
-fpi attrib catalog_path --attribute=value ... asset_id ... 
+fpi attrib catalog_path --attribute=value ... asset_id ...
 
 > Set the value of one or more attributes of a list of asset assets
   ingested into the system.
@@ -151,6 +151,12 @@ fpi list catalog_path criteria
 This version will expand the metadata handled by the 'search' and 'info'
 commands by including EXIF, IPTC and XMP fields extracted from the
 assets.
+
+The attributes option is expanded with the following attributes:
+
+|  Attribute  | Valid values                                        |
+| :---------: | :-------------------------------------------------- |
+|  --caption  | Text.                                               |
 
 ## Version α-4
 

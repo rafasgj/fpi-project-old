@@ -1,6 +1,6 @@
 """Defines components versions."""
 
-_CURRENT_VERSION = "α-2"
+_CURRENT_VERSION = "α-3"
 
 
 class Version(object):
@@ -8,7 +8,8 @@ class Version(object):
 
     DB_REVISION = {
         "α-1": "81f865635e09",
-        "α-2": "1b68ca65442c"
+        "α-2": "1b68ca65442c",
+        "α-3": "a845b60ac452",
     }
     DB_VERSION = {v: k for k, v in DB_REVISION.items()}
 

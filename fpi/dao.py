@@ -1,6 +1,6 @@
 """Define the data objects used on the system."""
 
-from sqlalchemy import Column, ForeignKey, String, Integer, DateTime
+from sqlalchemy import Column, ForeignKey, String, Integer, DateTime, Text
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.hybrid import hybrid_property
 
@@ -125,7 +125,7 @@ class Asset(Base):
     import_time = Column(DateTime, nullable=False)
     import_session = Column(String, nullable=False)
 
-    virtual_copies = relationship("Image", backref="asset")
+    virtual_copies = relationship("Image", back_populates="asset")
 
     @hybrid_property
     def fullpath(self):
@@ -182,7 +182,8 @@ class Image(Base):
     label = Column(String, nullable=True)
     rating = Column(Integer, nullable=False, server_default='0', default=0)
 
-    # asset = relationship("Asset", back_populates="virtual_copies")
+    asset = relationship("Asset", back_populates="virtual_copies")
+    iptc = relationship("ImageIPTC", back_populates="image", uselist=False)
 
     @hybrid_property
     def pick(self):
@@ -220,7 +221,7 @@ class Image(Base):
     # The use of set_<attribute> makes it easier to implement a
     # generic set_attribute method in the Catalog.
 
-    def set_flag(self, value):
+    def set_flag(self, _, value):
         """Set flag for this object."""
         if value in Image.Flags:
             value = value.value
@@ -229,11 +230,11 @@ class Image(Base):
         if value != self.flag:
                 self.flag = value
 
-    def set_label(self, value):
+    def set_label(self, _, value):
         """Set the label attribute."""
         self.label = value
 
-    def set_rating(self, value):
+    def set_rating(self, _, value):
         """Set the label attribute."""
         rating = int(value)
         if 0 <= rating <= 5:
@@ -241,9 +242,43 @@ class Image(Base):
         else:
             raise ValueError("Rating must be in the range [0;5]")
 
+    def set_iptc(self, key, value):
+        """Set an iptc/xmp value."""
+        self.iptc.set(key, value)
+
     def __init__(self, asset, metadata):
         """Initialize a new image asset."""
         self.capture_datetime = metadata.capture_datetime
         self.width = metadata.width
         self.height = metadata.height
         self.asset = asset
+        self.iptc = ImageIPTC(metadata)
+
+
+class ImageIPTC(Base):
+    """Separate the Caption from the Image table."""
+
+    __tablename__ = "imageIPTC"
+    image_id = Column(Integer, ForeignKey('images.id'), primary_key=True)
+    caption = Column(Text, ForeignKey('assets.id'))
+
+    image = relationship("Image", back_populates="iptc", uselist=False)
+
+    def __init__(self, metadata):
+        """Initialize XMP/IPTC metadata information."""
+        self.caption = self._getCaption(metadata)
+
+    def _getCaption(self, metadata):
+        tags = ['EXIF:ImageDescription', 'XMP:Description',
+                'IPTC:Caption-Abstract']
+        for t in tags:
+            value = metadata.info.get(t)
+            if value is not None:
+                return value
+
+    def set(self, key, value):
+        """Set a key/value pair."""
+        field = key.strip().lower()
+        if hasattr(self, field) is None:
+            raise Exception("Invalid or unsupported IPTC/XMP field: %s" % key)
+        setattr(self, field, value)

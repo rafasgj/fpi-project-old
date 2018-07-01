@@ -108,6 +108,18 @@ def when_setting_rating_single_asset(context, asset_id, rating):
         context.exception = e
 
 
+@when('setting the caption of some assets.')
+def when_setting_caption(context):
+    """Add caption to some itens."""
+    try:
+        for row in context.table:
+            asset_id, image, caption = [row[i].strip()
+                                        for i in ['asset', 'image', 'caption']]
+            context.catalog.set_attributes([asset_id], {'caption': caption})
+    except Exception as e:
+        context.exception = e
+
+
 @then('the asset "{asset_id}" has the rating {rating}')
 def then_asset_has_rating(context, asset_id, rating):
     """Verify given asset has the given rating."""
@@ -115,3 +127,10 @@ def then_asset_has_rating(context, asset_id, rating):
     value = int(rating)
     assert 0 <= value <= 5
     assert asset.virtual_copies[0].rating == value
+
+
+@then('the asset "{asset_id}" has the caption "{caption}"')
+def then_image_has_caption(context, asset_id, caption):
+    """Check image caption."""
+    asset = context.catalog.info('asset', asset_id)
+    assert asset.virtual_copies[0].iptc.caption == caption
