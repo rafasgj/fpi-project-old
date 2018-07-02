@@ -264,6 +264,7 @@ class ImageIPTC(Base):
     title = Column(String, nullable=True)
     creator = Column(String, nullable=True)
     jobtitle = Column(String, nullable=True)
+    city = Column(String, nullable=True)
 
     image = relationship("Image", back_populates="iptc", uselist=False)
 
@@ -273,6 +274,7 @@ class ImageIPTC(Base):
         'title': ['XMP:Title', 'IPTC:ObjectName'],
         'creator': ['EXIF:Artist', 'XMP:Creator', 'IPTC:By-line'],
         'jobtitle': ['XMP:AuthorsPosition', 'IPTC:By-lineTitle'],
+        'city': ['XMP:City', 'IPTC:City'],
     }
 
     def __init__(self, metadata):

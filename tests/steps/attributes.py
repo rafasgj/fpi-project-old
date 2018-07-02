@@ -108,19 +108,6 @@ def when_setting_rating_single_asset(context, asset_id, rating):
         context.exception = e
 
 
-@when('setting the iptc fields of some assets')
-def when_setting_iptc_fields(context):
-    """Set iptc fields."""
-    try:
-        for row in context.table:
-            asset_id, image, field, value = \
-                [row[i].strip() for i in ['asset', 'image', 'field', 'value']]
-            field = "iptc.{}".format(field)
-            context.catalog.set_attributes([asset_id], {field: value})
-    except Exception as e:
-        context.exception = e
-
-
 @when('setting the iptc {field} of asset {asset}/{image} with value {value}')
 def when_setting_iptc_fields(context, field, asset, image, value):
     """Set iptc fields."""

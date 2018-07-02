@@ -13,6 +13,7 @@ Scenario Outline: Ingest images with IPTC fields.
     | 123b707265158269808f78573e736a6e |  1  | creator  | Creator             |
     | 123b707265158269808f78573e736a6e |  1  | title    | Another title       |
     | 123b707265158269808f78573e736a6e |  1  | caption  | The description aka caption |
+    | 123b707265158269808f78573e736a6e |  1  | city     | City (legacy) |
 
 Scenario Outline: Set various IPTC fields in an image.
     Given a catalog named "test_catalog" with some assets
@@ -27,3 +28,4 @@ Scenario Outline: Set various IPTC fields in an image.
     | 123b707265158269808f78573e736a6e |  1  | creator  | Artist             |
     | 123b707265158269808f78573e736a6e |  1  | title    | The title          |
     | 123b707265158269808f78573e736a6e |  1  | caption  | This is a caption. |
+    | 123b707265158269808f78573e736a6e |  1  | city     | Hometown |
