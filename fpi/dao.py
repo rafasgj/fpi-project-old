@@ -269,6 +269,7 @@ class ImageIPTC(Base):
     country = Column(String, nullable=True)
     copyright = Column(String, nullable=True)
     creditline = Column(String, nullable=True)
+    headline = Column(String, nullable=True)
 
     image = relationship("Image", back_populates="iptc", uselist=False)
 
@@ -282,6 +283,7 @@ class ImageIPTC(Base):
         'country': ['XMP:Country', 'IPTC:Country-PrimaryLocationName'],
         'copyright': ['EXIF:Copyright', 'XMP:Rights', 'IPTC:CopyrightNotice'],
         'creditline': ['XMP:Credit', 'IPTC:Credit'],
+        'headline': ['XMP:Headline', 'IPTC:Headline'],
     }
 
     def __init__(self, metadata):

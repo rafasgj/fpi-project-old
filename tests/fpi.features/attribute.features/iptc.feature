@@ -16,6 +16,9 @@ Examples:
 | 123b707265158269808f78573e736a6e |  1  | country    | Country (legacy)    |
 | 123b707265158269808f78573e736a6e |  1  | copyright  | © 2011, Copyright Notice |
 | 123b707265158269808f78573e736a6e |  1  | creditline | Credit Line         |
+| 123b707265158269808f78573e736a6e |  1  | headline   | The headline        |
+Examples: Development
+| asset_id                         | img | field      | value               |
 
 Scenario Outline: Set various IPTC fields in an image.
     Given a catalog named "test_catalog" with some assets
@@ -25,12 +28,15 @@ Scenario Outline: Set various IPTC fields in an image.
     Then no exception is raised
         And the asset "<asset_id>" iptc field <field> is "<value>"
 Examples:
-| asset_id                         | img | field      | value              |
-| 123b707265158269808f78573e736a6e |  1  | jobtitle   | An Artist          |
-| 123b707265158269808f78573e736a6e |  1  | creator    | Artist             |
-| 123b707265158269808f78573e736a6e |  1  | title      | Another title      |
-| 123b707265158269808f78573e736a6e |  1  | caption    | This is a caption. |
-| 123b707265158269808f78573e736a6e |  1  | city       | Hometown           |
-| 123b707265158269808f78573e736a6e |  1  | country    | Brasil             |
-| 123b707265158269808f78573e736a6e |  1  | copyright  | © 2018, f/π        |
-| 123b707265158269808f78573e736a6e |  1  | creditline | Credit, when due.  |
+| asset_id                         | img | field      | value               |
+| 123b707265158269808f78573e736a6e |  1  | jobtitle   | An Artist           |
+| 123b707265158269808f78573e736a6e |  1  | creator    | Artist              |
+| 123b707265158269808f78573e736a6e |  1  | title      | Another title       |
+| 123b707265158269808f78573e736a6e |  1  | caption    | This is a caption.  |
+| 123b707265158269808f78573e736a6e |  1  | city       | Hometown            |
+| 123b707265158269808f78573e736a6e |  1  | country    | Brasil              |
+| 123b707265158269808f78573e736a6e |  1  | copyright  | © 2018, f/π         |
+| 123b707265158269808f78573e736a6e |  1  | creditline | Credit, when due.   |
+| 123b707265158269808f78573e736a6e |  1  | headline   | What it's all about |
+Examples: Development
+| asset_id                         | img | field      | value               |
