@@ -38,7 +38,7 @@ def _init_opt_grp(parser):
                          help="""upgrades a f/π catalog to the latest
                                  revision.""")
     options.add_argument("--version", action="store_true",
-                         default=True,
+                         default=False,
                          help="""Display the f/π catalog revision.""")
     opt_grp.add_argument('catalog', nargs=1)
 
