@@ -41,6 +41,7 @@ def upgrade():
         sa.Column('headline', sa.String, nullable=True),
         sa.Column('instructions', sa.String, nullable=True),
         sa.Column('usage', sa.String, nullable=True),
+        sa.Column('event', sa.String, nullable=True),
     )
 
 

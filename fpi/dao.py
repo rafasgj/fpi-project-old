@@ -272,6 +272,7 @@ class ImageIPTC(Base):
     headline = Column(String, nullable=True)
     instructions = Column(String, nullable=True)
     usage = Column(String, nullable=True)
+    event = Column(String, nullable=True)
 
     image = relationship("Image", back_populates="iptc", uselist=False)
 
@@ -288,6 +289,7 @@ class ImageIPTC(Base):
         'headline': ['XMP:Headline', 'IPTC:Headline'],
         'instructions': ['XMP:Instructions', 'IPTC:SpecialInstructions'],
         'usage': ['XMP:UsageTerms'],
+        'event': ['XMP:Event'],
     }
 
     def __init__(self, metadata):
