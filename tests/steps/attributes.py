@@ -108,15 +108,6 @@ def when_setting_rating_single_asset(context, asset_id, rating):
         context.exception = e
 
 
-@when('setting the iptc {field} of asset {asset}/{image} with value {value}')
-def when_setting_iptc_fields(context, field, asset, image, value):
-    """Set iptc fields."""
-    try:
-        context.catalog.set_attributes([asset], {'iptc': (field, value)})
-    except Exception as e:
-        context.exception = e
-
-
 @then('the asset "{asset_id}" has the rating {rating}')
 def then_asset_has_rating(context, asset_id, rating):
     """Verify given asset has the given rating."""
@@ -124,6 +115,17 @@ def then_asset_has_rating(context, asset_id, rating):
     value = int(rating)
     assert 0 <= value <= 5
     assert asset.virtual_copies[0].rating == value
+
+
+# Tests for IPTC metadata
+
+@when('setting the iptc {field} of asset {asset}/{image} with value {value}')
+def when_setting_iptc_fields(context, field, asset, image, value):
+    """Set iptc fields."""
+    try:
+        context.catalog.set_attributes([asset], {'iptc': (field, value)})
+    except Exception as e:
+        context.exception = e
 
 
 @then('the asset "{asset_id}" iptc field {field} is "{value}"')

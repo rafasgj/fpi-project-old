@@ -35,6 +35,7 @@ def upgrade():
         sa.Column('creator', sa.String, nullable=True),
         sa.Column('jobtitle', sa.String, nullable=True),
         sa.Column('city', sa.String, nullable=True),
+        sa.Column('country', sa.String, nullable=True),
         sa.Column('copyright', sa.String, nullable=True),
     )
 

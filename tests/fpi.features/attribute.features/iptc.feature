@@ -13,6 +13,7 @@ Examples:
 | 123b707265158269808f78573e736a6e |  1  | title     | The title           |
 | 123b707265158269808f78573e736a6e |  1  | caption   | The description aka caption |
 | 123b707265158269808f78573e736a6e |  1  | city      | City (legacy)       |
+| 123b707265158269808f78573e736a6e |  1  | country   | Country (legacy)    |
 | 123b707265158269808f78573e736a6e |  1  | copyright | © 2011, Copyright Notice |
 
 Scenario Outline: Set various IPTC fields in an image.
@@ -29,4 +30,5 @@ Scenario Outline: Set various IPTC fields in an image.
     | 123b707265158269808f78573e736a6e |  1  | title     | Another title      |
     | 123b707265158269808f78573e736a6e |  1  | caption   | This is a caption. |
     | 123b707265158269808f78573e736a6e |  1  | city      | Hometown           |
+    | 123b707265158269808f78573e736a6e |  1  | country   | Brasil             |
     | 123b707265158269808f78573e736a6e |  1  | copyright | © 2018, f/π        |

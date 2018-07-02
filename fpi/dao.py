@@ -266,6 +266,7 @@ class ImageIPTC(Base):
     creator = Column(String, nullable=True)
     jobtitle = Column(String, nullable=True)
     city = Column(String, nullable=True)
+    country = Column(String, nullable=True)
     copyright = Column(String, nullable=True)
 
     image = relationship("Image", back_populates="iptc", uselist=False)
@@ -277,6 +278,7 @@ class ImageIPTC(Base):
         'creator': ['EXIF:Artist', 'XMP:Creator', 'IPTC:By-line'],
         'jobtitle': ['XMP:AuthorsPosition', 'IPTC:By-lineTitle'],
         'city': ['XMP:City', 'IPTC:City'],
+        'country': ['XMP:Country', 'IPTC:Country-PrimaryLocationName'],
         'copyright': ['EXIF:Copyright', 'XMP:Rights', 'IPTC:CopyrightNotice'],
     }
 
