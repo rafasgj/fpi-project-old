@@ -22,6 +22,7 @@ Examples:
 | 123b707265158269808f78573e736a6e |  1  | usage        | Rights Usage Termns |
 | 123b707265158269808f78573e736a6e |  1  | event        | The Event           |
 | 5776c5ce1acce6475244b0d21092689e |  1  | copyrighturl | http://www.WebStatementOfRights.org/2017.1 |
+| 123b707265158269808f78573e736a6e |  1  | sublocation  | Sublocation (legacy) |
 Examples: Development
 | asset_id                         | img | field        | value               |
 
@@ -47,5 +48,6 @@ Examples:
 | 123b707265158269808f78573e736a6e |  1  | usage        | Don't use it.       |
 | 123b707265158269808f78573e736a6e |  1  | event        | A party.            |
 | 123b707265158269808f78573e736a6e |  1  | copyrighturl | https://example.com |
+| 123b707265158269808f78573e736a6e |  1  | sublocation  | A nice place to be  |
 Examples: Development
 | asset_id                         | img | field        | value               |

@@ -274,6 +274,7 @@ class ImageIPTC(Base):
     usage = Column(String, nullable=True)
     event = Column(String, nullable=True)
     copyrighturl = Column(String, nullable=True)
+    sublocation = Column(String, nullable=True)
 
     image = relationship("Image", back_populates="iptc", uselist=False)
 
@@ -292,6 +293,7 @@ class ImageIPTC(Base):
         'usage': ['XMP:UsageTerms'],
         'event': ['XMP:Event'],
         'copyrighturl': ['XMP:WebStatement'],
+        'sublocation': ['XMP:Location', 'IPTC:Sub-location'],
     }
 
     def __init__(self, metadata):
@@ -310,5 +312,6 @@ class ImageIPTC(Base):
     def set(self, field, value):
         """Set a key/value pair."""
         if hasattr(self, field) is None:
-            raise Exception("Invalid or unsupported IPTC/XMP field: %s" % field)
+            msg = "Invalid or unsupported IPTC/XMP field: {}"
+            raise Exception(msg.format(field))
         setattr(self, field, value)

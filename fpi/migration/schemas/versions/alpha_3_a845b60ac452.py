@@ -43,6 +43,7 @@ def upgrade():
         sa.Column('usage', sa.String, nullable=True),
         sa.Column('event', sa.String, nullable=True),
         sa.Column('copyrighturl', sa.String, nullable=True),
+        sa.Column('sublocation', sa.String, nullable=True),
     )
 
 
