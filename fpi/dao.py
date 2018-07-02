@@ -260,25 +260,30 @@ class ImageIPTC(Base):
 
     __tablename__ = "imageIPTC"
     image_id = Column(Integer, ForeignKey('images.id'), primary_key=True)
-    caption = Column(Text, ForeignKey('assets.id'))
+    caption = Column(Text, nullable=True)
+    title = Column(Text, nullable=True)
 
     image = relationship("Image", back_populates="iptc", uselist=False)
 
     def __init__(self, metadata):
         """Initialize XMP/IPTC metadata information."""
-        self.caption = self._getCaption(metadata)
-
-    def _getCaption(self, metadata):
         tags = ['EXIF:ImageDescription', 'XMP:Description',
                 'IPTC:Caption-Abstract']
+        self.caption = self._get_metainfo(metadata, tags)
+        self.title = self._get_metainfo(metadata, ['XMP:Title'])
+
+    def _get_metainfo(self, metadata, tags):
         for t in tags:
             value = metadata.info.get(t)
             if value is not None:
                 return value
+        else:
+            return None
 
     def set(self, key, value):
         """Set a key/value pair."""
-        field = key.strip().lower()
+        # This seems wrong, but key is often 'iptc.<fieldname>'.
+        field = key.strip().lower().split('.')[-1]
         if hasattr(self, field) is None:
             raise Exception("Invalid or unsupported IPTC/XMP field: %s" % key)
         setattr(self, field, value)

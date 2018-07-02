@@ -108,14 +108,15 @@ def when_setting_rating_single_asset(context, asset_id, rating):
         context.exception = e
 
 
-@when('setting the caption of some assets.')
-def when_setting_caption(context):
-    """Add caption to some itens."""
+@when('setting the iptc fields of some assets')
+def when_setting_iptc_fields(context):
+    """Set iptc fields."""
     try:
         for row in context.table:
-            asset_id, image, caption = [row[i].strip()
-                                        for i in ['asset', 'image', 'caption']]
-            context.catalog.set_attributes([asset_id], {'caption': caption})
+            asset_id, image, field, value = \
+                [row[i].strip() for i in ['asset', 'image', 'field', 'value']]
+            field = "iptc.{}".format(field)
+            context.catalog.set_attributes([asset_id], {field: value})
     except Exception as e:
         context.exception = e
 
@@ -129,8 +130,10 @@ def then_asset_has_rating(context, asset_id, rating):
     assert asset.virtual_copies[0].rating == value
 
 
-@then('the asset "{asset_id}" has the caption "{caption}"')
-def then_image_has_caption(context, asset_id, caption):
-    """Check image caption."""
+@then('the asset "{asset_id}" iptc field {field} is "{value}"')
+def then_asset_has_iptc_field_with_value(context, asset_id, field, value):
+    """Check image IPTC field."""
     asset = context.catalog.info('asset', asset_id)
-    assert asset.virtual_copies[0].iptc.caption == caption
+    assert hasattr(asset.virtual_copies[0].iptc, field) is True
+    observed = getattr(asset.virtual_copies[0].iptc, field)
+    assert observed == value

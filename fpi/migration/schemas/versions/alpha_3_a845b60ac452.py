@@ -31,6 +31,7 @@ def upgrade():
                   sa.ForeignKey('images.id', ondelete='CASCADE'),
                   primary_key=True),
         sa.Column('caption', sa.Text, nullable=True),
+        sa.Column('title', sa.String, nullable=True),
     )
 
 
