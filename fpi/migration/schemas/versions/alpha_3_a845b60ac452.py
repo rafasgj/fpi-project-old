@@ -37,6 +37,7 @@ def upgrade():
         sa.Column('city', sa.String, nullable=True),
         sa.Column('country', sa.String, nullable=True),
         sa.Column('copyright', sa.String, nullable=True),
+        sa.Column('creditline', sa.String, nullable=True),
     )
 
 
