@@ -273,6 +273,7 @@ class ImageIPTC(Base):
     instructions = Column(String, nullable=True)
     usage = Column(String, nullable=True)
     event = Column(String, nullable=True)
+    copyrighturl = Column(String, nullable=True)
 
     image = relationship("Image", back_populates="iptc", uselist=False)
 
@@ -290,6 +291,7 @@ class ImageIPTC(Base):
         'instructions': ['XMP:Instructions', 'IPTC:SpecialInstructions'],
         'usage': ['XMP:UsageTerms'],
         'event': ['XMP:Event'],
+        'copyrighturl': ['XMP:WebStatement'],
     }
 
     def __init__(self, metadata):

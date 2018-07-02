@@ -4,6 +4,7 @@ Scenario Outline: Ingest images with IPTC fields.
     Given a catalog named "test_catalog" with some assets
         | filename                                |
         | data/samples/DCIM/100FPIAM/FPI_0003.JPG |
+        | data/samples/DCIM/100FPIAM/FPI_0006.JPG |
     Then no exception is raised
         And the asset "<asset_id>" iptc field <field> is "<value>"
 Examples:
@@ -20,6 +21,7 @@ Examples:
 | 123b707265158269808f78573e736a6e |  1  | instructions | Instructions        |
 | 123b707265158269808f78573e736a6e |  1  | usage        | Rights Usage Termns |
 | 123b707265158269808f78573e736a6e |  1  | event        | The Event           |
+| 5776c5ce1acce6475244b0d21092689e |  1  | copyrighturl | http://www.WebStatementOfRights.org/2017.1 |
 Examples: Development
 | asset_id                         | img | field        | value               |
 
@@ -44,5 +46,6 @@ Examples:
 | 123b707265158269808f78573e736a6e |  1  | instructions | Copy at will.       |
 | 123b707265158269808f78573e736a6e |  1  | usage        | Don't use it.       |
 | 123b707265158269808f78573e736a6e |  1  | event        | A party.            |
+| 123b707265158269808f78573e736a6e |  1  | copyrighturl | https://example.com |
 Examples: Development
 | asset_id                         | img | field        | value               |
