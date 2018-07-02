@@ -261,16 +261,22 @@ class ImageIPTC(Base):
     __tablename__ = "imageIPTC"
     image_id = Column(Integer, ForeignKey('images.id'), primary_key=True)
     caption = Column(Text, nullable=True)
-    title = Column(Text, nullable=True)
+    title = Column(String, nullable=True)
+    creator = Column(String, nullable=True)
 
     image = relationship("Image", back_populates="iptc", uselist=False)
 
+    iptc_fields = {
+        'caption': ['EXIF:ImageDescription', 'XMP:Description',
+                    'IPTC:Caption-Abstract'],
+        'title': ['XMP:Title', 'IPTC:ObjectName'],
+        'creator': ['EXIF:Artist', 'XMP:Creator', 'IPTC:By-line'],
+    }
+
     def __init__(self, metadata):
         """Initialize XMP/IPTC metadata information."""
-        tags = ['EXIF:ImageDescription', 'XMP:Description',
-                'IPTC:Caption-Abstract']
-        self.caption = self._get_metainfo(metadata, tags)
-        self.title = self._get_metainfo(metadata, ['XMP:Title'])
+        for field, tags in ImageIPTC.iptc_fields.items():
+            setattr(self, field, self._get_metainfo(metadata, tags))
 
     def _get_metainfo(self, metadata, tags):
         for t in tags:

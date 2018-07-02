@@ -32,6 +32,7 @@ def upgrade():
                   primary_key=True),
         sa.Column('caption', sa.Text, nullable=True),
         sa.Column('title', sa.String, nullable=True),
+        sa.Column('creator', sa.String, nullable=True),
     )
 
 

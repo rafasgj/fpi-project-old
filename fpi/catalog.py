@@ -374,6 +374,7 @@ class Catalog(object):
             'rating': dao.Image.set_rating,
             'iptc.caption': dao.Image.set_iptc,
             'iptc.title': dao.Image.set_iptc,
+            'iptc.creator': dao.Image.set_iptc,
         }
         try:
             for asset in assets:

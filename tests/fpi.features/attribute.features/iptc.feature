@@ -36,3 +36,20 @@ Scenario: Add a Title to an image.
     | 123b707265158269808f78573e736a6e |   1   | title | Another title |
     Then no exception is raised
         And the asset "123b707265158269808f78573e736a6e" iptc field title is "Another title"
+
+Scenario: Ingest images with Creator .
+    Given a catalog named "test_catalog" with some assets
+        | filename                                |
+        | data/samples/DCIM/100FPIAM/FPI_0003.JPG |
+    Then no exception is raised
+        And the asset "123b707265158269808f78573e736a6e" iptc field creator is "Creator"
+
+Scenario: Set Creator field in an image.
+    Given a catalog named "test_catalog" with some assets
+        | filename                                |
+        | data/samples/DCIM/100FPIAM/FPI_0003.JPG |
+        When setting the iptc fields of some assets
+        | asset                            | image | field   | value  |
+        | 123b707265158269808f78573e736a6e |   1   | creator | Artist |
+    Then no exception is raised
+        And the asset "123b707265158269808f78573e736a6e" iptc field creator is "Artist"
