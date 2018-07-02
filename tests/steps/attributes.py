@@ -121,6 +121,16 @@ def when_setting_iptc_fields(context):
         context.exception = e
 
 
+@when('setting the iptc {field} of asset {asset}/{image} with value {value}')
+def when_setting_iptc_fields(context, field, asset, image, value):
+    """Set iptc fields."""
+    try:
+        field = "iptc.{}".format(field)
+        context.catalog.set_attributes([asset], {field: value})
+    except Exception as e:
+        context.exception = e
+
+
 @then('the asset "{asset_id}" has the rating {rating}')
 def then_asset_has_rating(context, asset_id, rating):
     """Verify given asset has the given rating."""

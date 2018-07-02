@@ -1,55 +1,29 @@
 Feature: Manage IPTC attributes.
 
-Scenario: Add a Caption to an image.
-    Given a catalog named "test_catalog" with some assets
-        | filename                                |
-        | data/samples/DCIM/100FPIAM/FPI_0001.JPG |
-    #When setting the caption of some assets.
-    #| asset                            | image | caption            |
-    #| 4613ad3fd0c246dd5bb96b33b09c2996 |   1   | This is a caption. |
-    When setting the iptc fields of some assets
-    | asset                            | image | field   | value              |
-    | 4613ad3fd0c246dd5bb96b33b09c2996 |   1   | caption | This is a caption. |
-    Then no exception is raised
-        And the asset "4613ad3fd0c246dd5bb96b33b09c2996" iptc field caption is "This is a caption."
-
-Scenario: Ingest images with captions.
-    Given a catalog named "test_catalog" with some assets
-        | filename                                |
-        | data/samples/DCIM/100FPIAM/FPI_0001.JPG |
-    Then no exception is raised
-        And the asset "4613ad3fd0c246dd5bb96b33b09c2996" iptc field caption is "Resolution test chart for use with ISO Standard 12233"
-
-Scenario: Ingest images with title.
+Scenario Outline: Ingest images with IPTC fields.
     Given a catalog named "test_catalog" with some assets
         | filename                                |
         | data/samples/DCIM/100FPIAM/FPI_0003.JPG |
+    When setting the iptc <field> of asset <asset_id>/<img> with value <value>
     Then no exception is raised
-        And the asset "123b707265158269808f78573e736a6e" iptc field title is "The title"
+        And the asset "<asset_id>" iptc field <field> is "<value>"
+    Examples:
+    | asset_id                         | img | field    | value               |
+    | 123b707265158269808f78573e736a6e |  1  | jobtitle | Creator's Job Title |
+    | 123b707265158269808f78573e736a6e |  1  | creator  | Creator             |
+    | 123b707265158269808f78573e736a6e |  1  | title    | Another title       |
+    | 123b707265158269808f78573e736a6e |  1  | caption  | The description aka caption |
 
-Scenario: Add a Title to an image.
+Scenario Outline: Set various IPTC fields in an image.
     Given a catalog named "test_catalog" with some assets
         | filename                                |
         | data/samples/DCIM/100FPIAM/FPI_0003.JPG |
-    When setting the iptc fields of some assets
-    | asset                            | image | field | value         |
-    | 123b707265158269808f78573e736a6e |   1   | title | Another title |
+    When setting the iptc <field> of asset <asset_id>/<img> with value <value>
     Then no exception is raised
-        And the asset "123b707265158269808f78573e736a6e" iptc field title is "Another title"
-
-Scenario: Ingest images with Creator .
-    Given a catalog named "test_catalog" with some assets
-        | filename                                |
-        | data/samples/DCIM/100FPIAM/FPI_0003.JPG |
-    Then no exception is raised
-        And the asset "123b707265158269808f78573e736a6e" iptc field creator is "Creator"
-
-Scenario: Set Creator field in an image.
-    Given a catalog named "test_catalog" with some assets
-        | filename                                |
-        | data/samples/DCIM/100FPIAM/FPI_0003.JPG |
-        When setting the iptc fields of some assets
-        | asset                            | image | field   | value  |
-        | 123b707265158269808f78573e736a6e |   1   | creator | Artist |
-    Then no exception is raised
-        And the asset "123b707265158269808f78573e736a6e" iptc field creator is "Artist"
+        And the asset "<asset_id>" iptc field <field> is "<value>"
+    Examples:
+    | asset_id                         | img | field    | value              |
+    | 123b707265158269808f78573e736a6e |  1  | jobtitle | An Artist          |
+    | 123b707265158269808f78573e736a6e |  1  | creator  | Artist             |
+    | 123b707265158269808f78573e736a6e |  1  | title    | The title          |
+    | 123b707265158269808f78573e736a6e |  1  | caption  | This is a caption. |

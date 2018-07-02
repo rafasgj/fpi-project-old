@@ -375,6 +375,7 @@ class Catalog(object):
             'iptc.caption': dao.Image.set_iptc,
             'iptc.title': dao.Image.set_iptc,
             'iptc.creator': dao.Image.set_iptc,
+            'iptc.jobtitle': dao.Image.set_iptc,
         }
         try:
             for asset in assets:
