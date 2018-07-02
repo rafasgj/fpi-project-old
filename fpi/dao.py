@@ -264,6 +264,13 @@ class ImageIPTC(Base):
     caption = Column(Text, nullable=True)
     title = Column(String, nullable=True)
     creator = Column(String, nullable=True)
+    creatoraddress = Column(String, nullable=True)
+    creatorcity = Column(String, nullable=True)
+    creatorregion = Column(String, nullable=True)
+    creatorpostalcode = Column(String, nullable=True)
+    creatorcountry = Column(String, nullable=True)
+    creatortelephone = Column(String, nullable=True)
+    creatoremail = Column(String, nullable=True)
     jobtitle = Column(String, nullable=True)
     city = Column(String, nullable=True)
     country = Column(String, nullable=True)
@@ -283,6 +290,13 @@ class ImageIPTC(Base):
                     'IPTC:Caption-Abstract'],
         'title': ['XMP:Title', 'IPTC:ObjectName'],
         'creator': ['EXIF:Artist', 'XMP:Creator', 'IPTC:By-line'],
+        'creatoraddress': ['XMP:CreatorAddress'],
+        'creatorcity': ['XMP:CreatorCity'],
+        'creatorregion': ['XMP:CreatorRegion'],
+        'creatorpostalcode': ['XMP:CreatorPostalCode'],
+        'creatorcountry': ['XMP:CreatorCountry'],
+        'creatoremail': ['XMP:CreatorWorkEmail'],
+        'creatortelephone': ['XMP:CreatorWorkTelephone'],
         'jobtitle': ['XMP:AuthorsPosition', 'IPTC:By-lineTitle'],
         'city': ['XMP:City', 'IPTC:City'],
         'country': ['XMP:Country', 'IPTC:Country-PrimaryLocationName'],

@@ -23,8 +23,6 @@ Examples:
 | 123b707265158269808f78573e736a6e |  1  | event        | The Event           |
 | 5776c5ce1acce6475244b0d21092689e |  1  | copyrighturl | http://www.WebStatementOfRights.org/2017.1 |
 | 123b707265158269808f78573e736a6e |  1  | sublocation  | Sublocation (legacy) |
-Examples: Development
-| asset_id                         | img | field        | value               |
 
 Scenario Outline: Set various IPTC fields in an image.
     Given a catalog named "test_catalog" with some assets
@@ -49,5 +47,45 @@ Examples:
 | 123b707265158269808f78573e736a6e |  1  | event        | A party.            |
 | 123b707265158269808f78573e736a6e |  1  | copyrighturl | https://example.com |
 | 123b707265158269808f78573e736a6e |  1  | sublocation  | A nice place to be  |
-Examples: Development
-| asset_id                         | img | field        | value               |
+
+Scenario: Ingest images with Creator Identification fields.
+    Given a catalog named "test_catalog" with some assets
+        | filename                                |
+        | data/samples/DCIM/100FPIAM/FPI_0003.JPG |
+    Then no exception is raised
+        And the asset "123b707265158269808f78573e736a6e" has the complete IPTC CI fields
+        | img | field             | value                              |
+        |  1  | creator           | Creator                            |
+        |  1  | creatoraddress    | Creator's CI: Address, line 1      |
+        |  1  | creatorcity       | Creator's CI: City                 |
+        |  1  | creatorregion     | Creator's CI: State/Province       |
+        |  1  | creatorpostalcode | CREATOR'S CI: POSTCODE             |
+        |  1  | creatorcountry    | Creator's CI: Country              |
+        |  1  | creatortelephone  | Creator's CI: Phone # 1, Phone # 2 |
+        |  1  | creatoremail      | Creator's CI: Email@1, Email@2     |
+
+Scenario: Set Creator Identification fields.
+    Given a catalog named "test_catalog" with some assets
+        | filename                                |
+        | data/samples/DCIM/100FPIAM/FPI_0003.JPG |
+    When adjusting Creator's CI of asset "123b707265158269808f78573e736a6e"
+    | img | field             | value             |
+    |  1  | creator           | Rafael Jeffman    |
+    |  1  | creatoraddress    | Av. Farrapos      |
+    |  1  | creatorcity       | Porto Alegre      |
+    |  1  | creatorregion     | Rio Grande do Sul |
+    |  1  | creatorpostalcode | 90220-006         |
+    |  1  | creatorcountry    | Brasil            |
+    |  1  | creatortelephone  | +55 51 5555-1234  |
+    |  1  | creatoremail      | rafasgj@gmail.com |
+    Then no exception is raised
+        And the asset "123b707265158269808f78573e736a6e" has the complete IPTC CI fields
+        | img | field             | value             |
+        |  1  | creator           | Rafael Jeffman    |
+        |  1  | creatoraddress    | Av. Farrapos      |
+        |  1  | creatorcity       | Porto Alegre      |
+        |  1  | creatorregion     | Rio Grande do Sul |
+        |  1  | creatorpostalcode | 90220-006         |
+        |  1  | creatorcountry    | Brasil            |
+        |  1  | creatortelephone  | +55 51 5555-1234  |
+        |  1  | creatoremail      | rafasgj@gmail.com |

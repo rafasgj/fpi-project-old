@@ -135,3 +135,30 @@ def then_asset_has_iptc_field_with_value(context, asset_id, field, value):
     assert hasattr(asset.virtual_copies[0].iptc, field) is True
     observed = getattr(asset.virtual_copies[0].iptc, field)
     assert observed == value
+
+
+@when('adjusting Creator\'s CI of asset "{asset}"')
+def when_setting_creator_ci(context, asset):
+    """Set the creator CI fields."""
+    try:
+        for row in context.table:
+            field = row['field']
+            value = row['value']
+            context.catalog.set_attributes([asset], {'iptc': (field, value)})
+    except Exception as e:
+        context.exception = e
+
+
+@then('the asset "{asset_id}" has the complete IPTC CI fields')
+def then_creator_ci_is_complete(context, asset_id):
+    """Check creator CI information."""
+    asset = context.catalog.info('asset', asset_id)
+    for row in context.table:
+        field = row['field']
+        expected = row['value'].strip()
+        if not hasattr(asset.virtual_copies[0].iptc, field):
+            raise Exception("Field {} not found.".format(field))
+        observed = getattr(asset.virtual_copies[0].iptc, field)
+        if observed != expected:
+            msg = "Mismatch on field {}: [{}] != [{}]"
+            raise Exception(msg.format(field, expected, observed))
