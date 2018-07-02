@@ -39,6 +39,7 @@ def upgrade():
         sa.Column('copyright', sa.String, nullable=True),
         sa.Column('creditline', sa.String, nullable=True),
         sa.Column('headline', sa.String, nullable=True),
+        sa.Column('instructions', sa.String, nullable=True),
     )
 
 
