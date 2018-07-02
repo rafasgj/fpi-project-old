@@ -154,9 +154,33 @@ assets.
 
 The attributes option is expanded with the following attributes:
 
-|  Attribute  | Valid values                                        |
-| :---------: | :-------------------------------------------------- |
-|  --caption  | Text.                                               |
+|  Attribute      | Valid values   |
+| :-------------- | :------------- |
+|  --caption      | Text.          |
+|  --title        | Text.          |
+|  --creator      | Text.          |
+|  --identity _field_ | Text.      |
+|  --city         | Text.          |
+|  --country      | Text.          |
+|  --sublocation  | Text.          |
+|  --jobtitle     | Text.          |
+|  --headline     | Text.          |
+|  --copyright    | Text.          |
+|  --creditline   | Text.          |
+|  --instructions | Text.          |
+|  --usage        | Text.          |
+|  --copyrighturl | Text.          |
+|  --event        | Text.          |
+|  --sublocation  | Text.          |
+
+The available identity fields are:
+- address
+- city
+- region
+- country
+- zipcode
+- phone
+- email.
 
 ## Version α-4
 
