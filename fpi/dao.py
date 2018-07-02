@@ -221,7 +221,7 @@ class Image(Base):
     # The use of set_<attribute> makes it easier to implement a
     # generic set_attribute method in the Catalog.
 
-    def set_flag(self, _, value):
+    def set_flag(self, value):
         """Set flag for this object."""
         if value in Image.Flags:
             value = value.value
@@ -230,11 +230,11 @@ class Image(Base):
         if value != self.flag:
                 self.flag = value
 
-    def set_label(self, _, value):
+    def set_label(self, value):
         """Set the label attribute."""
         self.label = value
 
-    def set_rating(self, _, value):
+    def set_rating(self, value):
         """Set the label attribute."""
         rating = int(value)
         if 0 <= rating <= 5:
@@ -242,9 +242,10 @@ class Image(Base):
         else:
             raise ValueError("Rating must be in the range [0;5]")
 
-    def set_iptc(self, key, value):
+    def set_iptc(self, fieldvalue):
         """Set an iptc/xmp value."""
-        self.iptc.set(key, value)
+        field, value = fieldvalue
+        self.iptc.set(field, value)
 
     def __init__(self, asset, metadata):
         """Initialize a new image asset."""
@@ -265,6 +266,7 @@ class ImageIPTC(Base):
     creator = Column(String, nullable=True)
     jobtitle = Column(String, nullable=True)
     city = Column(String, nullable=True)
+    copyright = Column(String, nullable=True)
 
     image = relationship("Image", back_populates="iptc", uselist=False)
 
@@ -275,6 +277,7 @@ class ImageIPTC(Base):
         'creator': ['EXIF:Artist', 'XMP:Creator', 'IPTC:By-line'],
         'jobtitle': ['XMP:AuthorsPosition', 'IPTC:By-lineTitle'],
         'city': ['XMP:City', 'IPTC:City'],
+        'copyright': ['EXIF:Copyright', 'XMP:Rights', 'IPTC:CopyrightNotice'],
     }
 
     def __init__(self, metadata):
@@ -290,10 +293,8 @@ class ImageIPTC(Base):
         else:
             return None
 
-    def set(self, key, value):
+    def set(self, field, value):
         """Set a key/value pair."""
-        # This seems wrong, but key is often 'iptc.<fieldname>'.
-        field = key.strip().lower().split('.')[-1]
         if hasattr(self, field) is None:
-            raise Exception("Invalid or unsupported IPTC/XMP field: %s" % key)
+            raise Exception("Invalid or unsupported IPTC/XMP field: %s" % field)
         setattr(self, field, value)

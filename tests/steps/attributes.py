@@ -112,8 +112,7 @@ def when_setting_rating_single_asset(context, asset_id, rating):
 def when_setting_iptc_fields(context, field, asset, image, value):
     """Set iptc fields."""
     try:
-        field = "iptc.{}".format(field)
-        context.catalog.set_attributes([asset], {field: value})
+        context.catalog.set_attributes([asset], {'iptc': (field, value)})
     except Exception as e:
         context.exception = e
 

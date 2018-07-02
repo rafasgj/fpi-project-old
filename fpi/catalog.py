@@ -372,11 +372,7 @@ class Catalog(object):
             'flag': dao.Image.set_flag,
             'label': dao.Image.set_label,
             'rating': dao.Image.set_rating,
-            'iptc.caption': dao.Image.set_iptc,
-            'iptc.title': dao.Image.set_iptc,
-            'iptc.creator': dao.Image.set_iptc,
-            'iptc.jobtitle': dao.Image.set_iptc,
-            'iptc.city': dao.Image.set_iptc,
+            'iptc': dao.Image.set_iptc,
         }
         try:
             for asset in assets:
@@ -389,7 +385,7 @@ class Catalog(object):
                         fn = functions.get(attribute, None)
                         if fn is None:
                             raise Exception("Invalid attribute %s" % attribute)
-                        fn(image, attribute, value)
+                        fn(image, value)
             self.session.commit()
         except Exception as e:
             self.session.rollback()
