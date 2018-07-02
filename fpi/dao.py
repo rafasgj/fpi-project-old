@@ -271,6 +271,7 @@ class ImageIPTC(Base):
     creditline = Column(String, nullable=True)
     headline = Column(String, nullable=True)
     instructions = Column(String, nullable=True)
+    usage = Column(String, nullable=True)
 
     image = relationship("Image", back_populates="iptc", uselist=False)
 
@@ -286,6 +287,7 @@ class ImageIPTC(Base):
         'creditline': ['XMP:Credit', 'IPTC:Credit'],
         'headline': ['XMP:Headline', 'IPTC:Headline'],
         'instructions': ['XMP:Instructions', 'IPTC:SpecialInstructions'],
+        'usage': ['XMP:UsageTerms'],
     }
 
     def __init__(self, metadata):

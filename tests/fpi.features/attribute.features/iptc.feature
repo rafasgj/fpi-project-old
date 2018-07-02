@@ -18,6 +18,7 @@ Examples:
 | 123b707265158269808f78573e736a6e |  1  | creditline   | Credit Line         |
 | 123b707265158269808f78573e736a6e |  1  | headline     | The headline        |
 | 123b707265158269808f78573e736a6e |  1  | instructions | Instructions        |
+| 123b707265158269808f78573e736a6e |  1  | usage        | Rights Usage Termns |
 Examples: Development
 | asset_id                         | img | field        | value               |
 
@@ -40,5 +41,6 @@ Examples:
 | 123b707265158269808f78573e736a6e |  1  | creditline   | Credit, when due.   |
 | 123b707265158269808f78573e736a6e |  1  | headline     | What it's all about |
 | 123b707265158269808f78573e736a6e |  1  | instructions | Copy at will.       |
+| 123b707265158269808f78573e736a6e |  1  | usage        | Don't use it.       |
 Examples: Development
 | asset_id                         | img | field        | value               |
