@@ -164,6 +164,43 @@ def _init_attrib_opt(parser):
     grp.add_argument("-r", "--rating", dest="rating",
                      choices=range(0, 6), type=int,
                      help="""Define the rating of an asset.""")
+    grp.add_argument("--title",
+                     help="""Define a title for the image.""")
+    grp.add_argument("--caption",
+                     help="""Define a caption/description for the image.""")
+    grp.add_argument("--creator",
+                     help="""Define the name of the image creator.""")
+    grp.add_argument('--identity', nargs=2, action='append',
+                     metavar=('field', 'value'),
+                     help="""Set the value of a Contact Information field. The
+                             valid fields are: address, city, location, region,
+                             country, postalcode, phone and email. This option
+                             can be used as many times as needed.""")
+    grp.add_argument("--city",
+                     help="""Define the city the image was taken.""")
+    grp.add_argument("--country",
+                     help="""Define the country the image was taken.""")
+    grp.add_argument("--sublocation",
+                     help="""Define the location the image was taken.""")
+    grp.add_argument("--copyright",
+                     help="""Define the copyright notice for the image.""")
+    grp.add_argument("--creditline",
+                     help="""Define the credit line to be used for the
+                             image.""")
+    grp.add_argument("--instructions",
+                     help="""Define the copyright instructions for the
+                             image use.""")
+    grp.add_argument("--usage",
+                     help="""Define the usage permissions for the image.""")
+    grp.add_argument("--copyrighturl",
+                     help="""Define the URL that contain the copyright rules
+                             for the image.""")
+    grp.add_argument("--event",
+                     help="""Define the event the image was taken.""")
+    grp.add_argument("--jobtitle",
+                     help="""Define the creators jobtitle for the image.""")
+    grp.add_argument("--headline",
+                     help="""Define the headline for the image.""")
     grp.add_argument('catalog', nargs=1)
     grp.add_argument('asset_id', nargs='+')
 

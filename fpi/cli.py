@@ -194,7 +194,26 @@ def process_attrib_cmd(options):
     # label attribute
     add_attribute('label', options.label)
     # rating attribute
-    add_attribute('rating', int(options.rating))
+    if options.rating:
+        add_attribute('rating', int(options.rating))
+    # IPTC atttributes
+    iptc_attr = ['title', 'caption', 'creator', 'city', 'country',
+                 'sublocation', 'copyright', 'creditline', 'instructions',
+                 'usage', 'copyrighturl', 'event', 'jobtitle', 'headline']
+    for attr in iptc_attr:
+        value = getattr(options, attr)
+        if value:
+            add_attribute('iptc', (attr, value))
+    ci_attr = ['address', 'city', 'location', 'region', 'country',
+               'postalcode', 'phone', 'email']
+    if options.identity:
+        for entry in options.identity:
+            attr, value = entry
+            if attr not in ci_attr:
+                msg = "Invalid 'Identity' field: {}"
+                raise errors.InvalidCommand(msg.format(attr))
+            add_attribute('iptc', ('creator{}'.format(attr), value))
+
     # add attributes to assets.
     cat.set_attributes(assets, configuration)
 
