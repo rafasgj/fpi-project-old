@@ -64,6 +64,9 @@ class Catalog(object):
         """Query the database revision."""
         if self._engine is None:
             return ""
+        if not database_exists(self.__init_string):
+            msg = "Cannot verify revision of inexistent catalog: {}"
+            raise errors.InexistentCatalog(msg.format(self._catalog_name))
         logging.getLogger("alembic").setLevel(logging.CRITICAL)
         context = MigrationContext.configure(self._engine.connect())
         rev = context.get_current_revision()

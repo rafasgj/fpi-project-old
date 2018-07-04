@@ -25,3 +25,8 @@ Scenario: Trying to upgrade a catalog in the current version.
         And the catalog is ready for use in the current version
     When I try to updated it the current version
     Then an exception "errors.UnexpectedCatalogVersion" is raised
+
+@version
+Scenario: Try to verify the revision of a catalog that does not exist.
+    When I request the version of a catalog that does not exist.
+    Then an exception "errors.InexistentCatalog" is raised

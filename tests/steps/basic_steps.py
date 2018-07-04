@@ -80,8 +80,8 @@ def given_mount_point(context, mount_point):
 def then_expception_raised(context, exception):
     """Test if an exception is raised."""
     assert context.exception is not None
-    # if not isinstance(context.exception, eval(exception)):
-    #     raise context.exception
+    if not isinstance(context.exception, eval(exception)):
+         raise context.exception
     assert isinstance(context.exception, eval(exception)) is True
 
 
