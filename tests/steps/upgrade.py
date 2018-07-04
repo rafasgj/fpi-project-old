@@ -21,7 +21,7 @@ def assert_catalog_has_current_version(context):
     assert Version.db_revision() == util.get_catalog_revision(context)
 
 
-@when('I try to updated it the current version')
+@when('I try to update it the current version')
 def when_update_to_current_version(context):
     """Update catalog to current version."""
     try:
