@@ -1,7 +1,8 @@
 """Define the data objects used on the system."""
 
-from sqlalchemy import Column, ForeignKey, String, Integer, DateTime, Text
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, ForeignKey
+from sqlalchemy import String, Integer, DateTime, Text, Boolean
+from sqlalchemy.orm import relationship, backref
 from sqlalchemy.ext.hybrid import hybrid_property
 
 import os, os.path
@@ -16,6 +17,14 @@ from enum import Enum
 import phexif
 
 from base import Base
+
+from collections import namedtuple
+
+
+"""KeywordOptions are used to configure new keywords."""
+_kw_options = 'person private export_synonyms synonyms lang'
+KeywordOptions = namedtuple('KO', _kw_options)
+KeywordOptions.__new__.__defaults__ = (False, False, True, [], None)
 
 
 class Metadata(object):
@@ -329,3 +338,40 @@ class ImageIPTC(Base):
             msg = "Invalid or unsupported IPTC/XMP field: {}"
             raise Exception(msg.format(field))
         setattr(self, field, value)
+
+
+class Synonym(Base):
+    """Models a synonym that can be used by many keywords."""
+
+    __tablename__ = 'synonyms'
+    id = Column(Integer, primary_key=True)
+    keyword_id = Column(Integer, ForeignKey('keywords.id'), nullable=False)
+    text = Column(String, nullable=False)
+    keyword = relationship('Keyword', back_populates='synonyms',
+                           uselist=False)
+
+
+class Keyword(Base):
+    """Models an hierarchycal keyword using adjacency lists."""
+
+    __tablename__ = 'keywords'
+    id = Column(Integer, primary_key=True)
+    parent_id = Column(Integer, ForeignKey('keywords.id'))
+    text = Column(String, nullable=False, unique=True, index=True)
+    person = Column(Boolean, default=False)
+    private = Column(Boolean, default=False)
+    export_synonyms = Column(Boolean, default=True)
+    lang = Column(String, nullable=True)
+    children = relationship('Keyword',
+                            backref=backref('parent', remote_side=[id]))
+    synonyms = relationship('Synonym', back_populates='keyword')
+
+    def __init__(self, text, options=KeywordOptions(), parent=None):
+        """Initialize a new keyword object."""
+        self.text = text
+        self.lang = options.lang
+        self.person = options.person
+        self.private = options.private
+        self.export_synonyms = options.export_synonyms
+        if parent is not None:
+            parent.children.append(self)

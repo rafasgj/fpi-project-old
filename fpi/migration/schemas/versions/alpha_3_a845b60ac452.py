@@ -20,10 +20,9 @@ def upgrade():
     """
     Add support for several IPTC attributes.
     The following changes are added to the catalog:
-        imageiptc = {
-            id: integer, ForeignKey(images.id)
-            caption:Text
-        }
+        imageiptc: metadata for image information.
+        keywords: store assets keywords.
+        synonyms: store keywords synonyms.
     """
     op.create_table(
         'imageiptc',
@@ -52,7 +51,24 @@ def upgrade():
         sa.Column('copyrighturl', sa.String, nullable=True),
         sa.Column('sublocation', sa.String, nullable=True),
     )
-
+    op.create_table(
+        'keywords',
+        sa.Column('id', sa.Integer, primary_key=True),
+        sa.Column('parent_id', sa.Integer,
+                  sa.ForeignKey('keywords.id', ondelete='RESTRICT')),
+        sa.Column('text', sa.String, nullable=False),
+        sa.Column('person', sa.Boolean, default=False),
+        sa.Column('private', sa.Boolean, default=False),
+        sa.Column('export_synonyms', sa.Boolean, default=False),
+        sa.Column('lang', sa.String),
+    )
+    op.create_table(
+        'synonyms',
+        sa.Column('id', sa.Integer, primary_key=True),
+        sa.Column('keyword_id', sa.Integer,
+                  sa.ForeignKey('keywords.id', ondelete='CASCADE')),
+        sa.Column('text', sa.String, nullable=False),
+    )
 
 def downgrade():
     """Downgrade database to previous version."""

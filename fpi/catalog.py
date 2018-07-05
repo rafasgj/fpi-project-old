@@ -394,3 +394,14 @@ class Catalog(object):
             self.session.rollback()
             # TODO: Handle errors.
             raise e
+
+    def add_keywords(self, keywords, kw_opt=dao.KeywordOptions(), parent=None):
+        """Add a new keyword to database."""
+        try:
+            for kw in keywords:
+                self.session.add(dao.Keyword(kw, kw_opt))
+            self.session.commit()
+        except Exception as e:
+            self.session.rollback()
+            # TODO: Handle errors.
+            raise e
