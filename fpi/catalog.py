@@ -401,8 +401,13 @@ class Catalog(object):
             for kw in keywords:
                 parent = None
                 for k in kw.strip().split(':'):
-                    parent = dao.Keyword(k, kw_opt, parent=parent)
-                    self.session.add(parent)
+                    q = self.session.query(dao.Keyword)
+                    q = q.filter(dao.Keyword.text == k)
+                    if q.count() == 0:
+                        parent = dao.Keyword(k, kw_opt, parent=parent)
+                        self.session.add(parent)
+                    else:
+                        parent = q.one()
             self.session.commit()
         except Exception as e:
             self.session.rollback()

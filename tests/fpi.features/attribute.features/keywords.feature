@@ -47,6 +47,19 @@ Then no exception is raised
     And the keyword "level two" is not parent of "level one"
 
 Scenario: Add a keyword to an existing hierarchy.
+Given a catalog named "test_catalog.fpicat" with some assets
+    | filename                                |
+    | data/samples/DCIM/100FPIAM/FPI_0001.JPG |
+    | data/samples/DCIM/100FPIAM/FPI_0002.JPG |
+    And the keyword "level one:level two" exists
+    And the keyword "level one:level two:leaf" for language "en-US"
+When adding new keywords to the database
+Then no exception is raised
+    And the keyword "leaf" exists in the database
+    And the keyword "level two" is parent of "leaf"
+    And the keyword "leaf" is not parent of "level one"
+    And the keyword "leaf" is not parent of "level two"
+
 
 Scenario: Apply a keyword that do not exist in the database to an asset.
 

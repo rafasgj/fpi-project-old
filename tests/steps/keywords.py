@@ -19,6 +19,14 @@ def given_some_keywords(context):
     context.lang = ''
 
 
+@given('the keyword "{keyword}" exists')
+def given_a_keyword_exists(context, keyword):
+    """Keyword exists in the catalog."""
+    context.keywords = [keyword]
+    context.lang = ''
+    context.catalog.add_keywords(context.keywords)
+
+
 @when('adding new keywords to the database')
 def when_adding_new_keyword_to_the_database(context):
     """Add keywords to the catalog."""
