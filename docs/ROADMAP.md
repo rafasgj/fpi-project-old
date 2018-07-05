@@ -154,24 +154,23 @@ assets.
 
 The attributes option is expanded with the following attributes:
 
-|  Attribute      | Valid values   |
-| :-------------- | :------------- |
-|  --caption      | Text.          |
-|  --title        | Text.          |
-|  --creator      | Text.          |
-|  --identity _field_ | Text.      |
-|  --city         | Text.          |
-|  --country      | Text.          |
-|  --sublocation  | Text.          |
-|  --jobtitle     | Text.          |
-|  --headline     | Text.          |
-|  --copyright    | Text.          |
-|  --creditline   | Text.          |
-|  --instructions | Text.          |
-|  --usage        | Text.          |
-|  --copyrighturl | Text.          |
-|  --event        | Text.          |
-|  --sublocation  | Text.          |
+|  Attribute     | Valid values   |
+| :------------- | :------------- |
+| --caption      | Text.          |
+| --title        | Text.          |
+| --creator      | Text.          |
+| --identity _field_ | Text.      |
+| --city         | Text.          |
+| --country      | Text.          |
+| --sublocation  | Text.          |
+| --copyright    | Text.          |
+| --creditline   | Text.          |
+| --instructions | Text.          |
+| --usage        | Text.          |
+| --copyrighturl | Text.          |
+| --event        | Text.          |
+| --jobtitle     | Text.          |
+| --headline     | Text.          |
 
 The available identity fields are:
 - address
@@ -181,6 +180,48 @@ The available identity fields are:
 - zipcode
 - phone
 - email.
+
+### keywords
+
+This version allows attributing hierarchycal keywords to an asset. Each keyword
+may have some properties:
+- Person Keywords (implies Private Keyword)
+- Private Keyword
+- Export parent keywords
+- Export Synonyms
+
+Each keyword have a list of synonyms.
+
+Searching for keywords do not ignore private or person keywords, and also is
+performed on synonyms.
+
+fpi attrib catalog_path --keyword --create _keyword:hier_ [options]
+
+> Create a new keyword, with the given options.
+
+| Option | Meaning |
+| :-------- | :----------------------------- |
+| --person  | creates a keyword that identifies someone. This implies --private. |
+| --private | creates a keyword that will not be exported. |
+| --synonyms [s1 s2 s3 ...] | provides synonyms for the keyword. |
+| --export-synonyms | allow export of synonyms |
+| --public | removes the 'private' attribute. Invalid for person keywords. |
+| --no-person | removes the 'person' attribute, but not the 'private'. |
+| --no-synonyms | do not export synonyms. |
+| --lang *language_code* | the keyword language code. |
+
+fpi attrib catalog_path --keyword --list
+
+> List all available keywords.
+
+fpi attrib catalog_path --keyword --search _criteria_
+
+> search all keywords matching _criteria_ and its hierarchy.
+
+fpi attrib catalog_path --keyword --remove _keyword_ [--force]
+
+> Removes a single keyword from the database if it has no children. **--force**
+will force removal, even if any asset has the keyword.
 
 ## Version α-4
 
