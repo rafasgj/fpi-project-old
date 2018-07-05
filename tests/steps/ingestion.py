@@ -148,13 +148,13 @@ def then_one_asset_is_in_the_catalog(context):
     # TODO: Add tests to validate asset attributes.
 
 
-@then('there are {some} assets is the catalog, with its attributes')
+@then('there are {some:d} assets is the catalog, with its attributes')
 def then_some_assets_are_stored(context, some):
     """Check if the right number of assets were added to the catalog."""
     count = context.session.query(Asset).count()
-    if count != int(some):
+    if count != some:
         fmt = "Number of objects do not match: %d != %d."
-        msg = fmt % (count, int(some))
+        msg = fmt % (count, some)
         raise Exception(msg)
 
 
@@ -191,7 +191,7 @@ def then_check_assets_id_hash(context):
 
 # Limit ingestion time.
 
-@then('its import time is within {some} seconds from the current time')
+@then('its import time is within {some:d} seconds from the current time')
 def then_check_import_time(context, some):
     """Check if the import procedure was efficent enough."""
     query = context.session.query(Asset)
@@ -199,7 +199,7 @@ def then_check_import_time(context, some):
     asset = query.filter(Asset.filename == basename).one()
     now = datetime.datetime.now()
     assert asset.import_time <= now
-    assert (now - asset.import_time).total_seconds() < int(some.strip())
+    assert (now - asset.import_time).total_seconds() < some
 
 
 # Session tests.

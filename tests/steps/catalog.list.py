@@ -106,15 +106,15 @@ def given_some_images_have_label(context, label):
 
 # Filter by RATING
 
-@given('some images have the rating attribute set to {rating}')
+@given('some images have the rating attribute set to {rating:d}')
 def given_images_have_rating(context, rating):
     """Set image rating to the given value."""
-    options = {'rating': int(rating.strip())}
+    options = {'rating': rating}
     assets = [row['asset'] for row in context.table]
     context.catalog.set_attributes(assets, options)
 
 
-@when('listing assets with the rating attribute is "{operator}" {rating}')
+@when('listing assets where rating attribute is "{operator}" {rating:d}')
 def when_listing_assets_based_on_rating(context, operator, rating):
     """List assets based on a rating comparision."""
     operators = {
@@ -174,10 +174,10 @@ def when_filtering_strings_matching_exactly(context, field, value):
 
 # Filter by DATE
 
-@when('listing assets with "{datefield}", in the year {year}')
+@when('listing assets with "{datefield}", in the year {year:d}')
 def when_filtering_by_date_year(context, datefield, year):
     """List assetas based on date."""
-    year = int(year)
+    year = year
     options = {
         'start': datetime.date(year, 1, 1),
         'end': datetime.date(year, 12, 31)
@@ -195,10 +195,10 @@ def step_impl(context, datefield):
     _filter_catalog(context, {datefield: options})
 
 
-@then('I expect {count} assets to be listed, with their id and full path')
+@then('I expect {count:d} assets listed, with their id and full path')
 def then_compare_filenames_and_ids(context, count):
     """Compare filename/id obtained with expected ones."""
-    assert len(context.result) == int(count)
+    assert len(context.result) == count
     for row in context.table:
         for image in context.result:
             if image.asset.fullpath == row['fullpath']:
@@ -208,7 +208,7 @@ def then_compare_filenames_and_ids(context, count):
             raise Exception("No asset matches %s" % row['fullpath'])
 
 
-@then('I expect no assets to be listed')
+@then('I expect no assets listed')
 def then_there_is_no_asset_in_the_result(context):
     """Test no asset is returned."""
     assert len(context.result) == 0

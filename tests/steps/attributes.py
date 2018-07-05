@@ -108,11 +108,11 @@ def when_setting_rating_single_asset(context, asset_id, rating):
         context.exception = e
 
 
-@then('the asset "{asset_id}" has the rating {rating}')
+@then('the asset "{asset_id}" has the rating {rating:d}')
 def then_asset_has_rating(context, asset_id, rating):
     """Verify given asset has the given rating."""
     asset = context.catalog.info('asset', asset_id)
-    value = int(rating)
+    value = rating
     assert 0 <= value <= 5
     assert asset.virtual_copies[0].rating == value
 

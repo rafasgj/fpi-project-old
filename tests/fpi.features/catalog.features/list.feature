@@ -17,7 +17,7 @@ Scenario: List assets in the catalog.
         | data/samples/DCIM/100FPIAM/FPI_0007.JPG |
     When listing all assets in the catalog
     Then no exception is raised
-        And I expect 7 assets to be listed, with their id and full path
+        And I expect 7 assets listed, with their id and full path
         | fullpath                    | id                               |
         | /DCIM/100FPIAM/FPI_0001.JPG | 4613ad3fd0c246dd5bb96b33b09c2996 |
         | /DCIM/100FPIAM/FPI_0002.JPG | 3b1479d722fbe11df5677bb521e2575b |
@@ -69,7 +69,7 @@ Scenario: List flagged assets.
         | 8dde366bfc65efd9fabcc74728061740 |   1   | pick   |
     When listing assets with the flag attribute set to "pick"
     Then no exception is raised
-        And I expect 3 assets to be listed, with their id and full path
+        And I expect 3 assets listed, with their id and full path
         | fullpath                    | id                               |
         | /DCIM/100FPIAM/FPI_0002.JPG | 3b1479d722fbe11df5677bb521e2575b |
         | /DCIM/100FPIAM/FPI_0005.JPG | 8dde366bfc65efd9fabcc74728061740 |
@@ -94,7 +94,7 @@ Scenario: List labeled assets.
         | 8dde366bfc65efd9fabcc74728061740 |   1   |
     When listing assets with field "label", matching exactly "labeled"
     Then no exception is raised
-        And I expect 3 assets to be listed, with their id and full path
+        And I expect 3 assets listed, with their id and full path
         | fullpath                    | id                               |
         | /DCIM/100FPIAM/FPI_0002.JPG | 3b1479d722fbe11df5677bb521e2575b |
         | /DCIM/100FPIAM/FPI_0005.JPG | 8dde366bfc65efd9fabcc74728061740 |
@@ -117,9 +117,9 @@ Scenario: List rated assets.
         | 3b1479d722fbe11df5677bb521e2575b |   1   |
         | c8b07cb389edaaf736b2486361b5e593 |   1   |
         | 8dde366bfc65efd9fabcc74728061740 |   1   |
-    When listing assets with the rating attribute is "equal to" 3
+    When listing assets where rating attribute is "equal to" 3
     Then no exception is raised
-        And I expect 3 assets to be listed, with their id and full path
+        And I expect 3 assets listed, with their id and full path
         | fullpath                    | id                               |
         | /DCIM/100FPIAM/FPI_0002.JPG | 3b1479d722fbe11df5677bb521e2575b |
         | /DCIM/100FPIAM/FPI_0005.JPG | 8dde366bfc65efd9fabcc74728061740 |
@@ -139,7 +139,7 @@ Scenario: List assets by filename.
         | data/samples/DCIM/100FPIAM/FPI_0007.JPG |
     When listing assets with field "filename", matching partially "FPI_0005"
     Then no exception is raised
-        And I expect 1 assets to be listed, with their id and full path
+        And I expect 1 assets listed, with their id and full path
         | fullpath                    | id                               |
         | /DCIM/100FPIAM/FPI_0005.JPG | 8dde366bfc65efd9fabcc74728061740 |
 
@@ -151,7 +151,7 @@ Scenario: List assets by filename, without case sensitivity, and it fails.
         | data/samples/DCIM/100FPIAM/FPI_0001.JPG |
     When filtering "filename", with case sensitive partial match to "fpi"
     Then no exception is raised
-        And I expect no assets to be listed
+        And I expect no assets listed
 
 Scenario: List assets by session name.
     Given the command to list assets in the catalog
@@ -169,7 +169,7 @@ Scenario: List assets by session name.
         | data/samples/DCIM/100FPIAM/FPI_0007.JPG |
     When listing assets with field "session", matching exactly "Second Session"
     Then no exception is raised
-        And I expect 3 assets to be listed, with their id and full path
+        And I expect 3 assets listed, with their id and full path
         | fullpath                    | id                               |
         | /DCIM/100FPIAM/FPI_0002.JPG | 3b1479d722fbe11df5677bb521e2575b |
         | /DCIM/100FPIAM/FPI_0005.JPG | 8dde366bfc65efd9fabcc74728061740 |
@@ -189,7 +189,7 @@ Scenario: List assets by capture date.
         | data/samples/DCIM/100FPIAM/FPI_0007.JPG |
     When listing assets with "capture_datetime", in the year 2011
     Then no exception is raised
-        And I expect 4 assets to be listed, with their id and full path
+        And I expect 4 assets listed, with their id and full path
         | fullpath                    | id                               |
         | /DCIM/100FPIAM/FPI_0003.JPG | 123b707265158269808f78573e736a6e |
         | /DCIM/100FPIAM/FPI_0004.JPG | f5737b7e1d7b25662f74b885fa545b02 |
@@ -211,7 +211,7 @@ Scenario: List assets by import date.
         | data/samples/DCIM/100FPIAM/FPI_0007.JPG |
     When listing assets where "import_date" is today
     Then no exception is raised
-        And I expect 7 assets to be listed, with their id and full path
+        And I expect 7 assets listed, with their id and full path
         | fullpath                    | id                               |
         | /DCIM/100FPIAM/FPI_0001.JPG | 4613ad3fd0c246dd5bb96b33b09c2996 |
         | /DCIM/100FPIAM/FPI_0002.JPG | 3b1479d722fbe11df5677bb521e2575b |
