@@ -12,15 +12,19 @@ def given_a_keyword(context, keyword, lang):
     context.lang = lang
 
 
-@when('adding a new keyword to the database')
+@given('some keywords')
+def given_some_keywords(context):
+    """Prepare some keywords in the test context."""
+    context.keywords = ["a keyword", "another keyword", "lot's of keywords"]
+    context.lang = ''
+
+
+@when('adding new keywords to the database')
 def when_adding_new_keyword_to_the_database(context):
     """Add keywords to the catalog."""
     try:
         context.catalog.add_keywords(context.keywords)
         context.exception = None
-        query = context.catalog.session.query(dao.Keyword)
-        query = query.filter(dao.Keyword.text.in_(context.keywords))
-        context.keyword = query.all()
     except Exception as e:
         context.exception = e
 
@@ -28,40 +32,83 @@ def when_adding_new_keyword_to_the_database(context):
 @then('the keyword "{keyword}" exists in the database')
 def then_keyword_exists(context, keyword):
     """Test if the given keyword exists in the database."""
-    assert context.keyword is not None
-    assert len(context.keyword) == 1
-    observed = context.keyword[0].text
+    query = context.catalog.session.query(dao.Keyword)
+    query = query.filter(dao.Keyword.text == keyword)
+    kw = query.one_or_none()
+    assert kw is not None
+    observed = kw.text
     assert observed == keyword
 
 
-@then('is a public keyword')
+@then('each keyword is a public keyword')
 def then_keyword_is_public(context):
     """Test if keyword is to be exported."""
-    assert context.keyword is not None
-    assert len(context.keyword) == 1
-    kw = context.keyword[0]
-    assert kw.private is False
-    assert kw.person is False
+    query = context.catalog.session.query(dao.Keyword)
+    keys = sum([k.strip().split(':') for k in context.keywords], [])
+    query = query.filter(dao.Keyword.text.in_(keys))
+    keywords = query.all()
+    assert keywords is not None
+    for kw in keywords:
+        assert kw.private is False
+        assert kw.person is False
 
 
-@then('can have synonyms exported')
+@then('each keyword can have synonyms exported')
 def then_keyword_export_synonyms(context):
     """Test if keyword synonyms are to be exported."""
-    assert context.keyword is not None
-    assert context.keyword is not None
-    assert len(context.keyword) == 1
-    kw = context.keyword[0]
-    assert kw.export_synonyms is True
+    query = context.catalog.session.query(dao.Keyword)
+    keys = sum([k.strip().split(':') for k in context.keywords], [])
+    query = query.filter(dao.Keyword.text.in_(keys))
+    keywords = query.all()
+    assert keywords is not None
+    for kw in keywords:
+        assert kw.export_synonyms is True
 
 
-@then('has {count:d} synonyms')
+@then('each keyword has {count:d} synonyms')
 def then_keyword_has_no_synonyms(context, count):
     """Test if the keyword has the right number of synonyms."""
-    assert context.keyword is not None
-    assert context.keyword is not None
-    assert len(context.keyword) == 1
-    kw = context.keyword[0]
-    observed = len(kw.synonyms)
-    print("Synonyms:", kw.synonyms)
-    print("OBSERVED:", len(kw.synonyms))
-    assert observed == count
+    query = context.catalog.session.query(dao.Keyword)
+    keys = sum([k.strip().split(':') for k in context.keywords], [])
+    query = query.filter(dao.Keyword.text.in_(keys))
+    keywords = query.all()
+    assert keywords is not None
+    for kw in keywords:
+        assert len(kw.synonyms) == count
+
+
+@then('the keywords exist in the database')
+def then_keywords_exist(context):
+    """Test if all keywods were correctly added to the database."""
+    query = context.catalog.session.query(dao.Keyword)
+    keys = sum([k.strip().split(':') for k in context.keywords], [])
+    query = query.filter(dao.Keyword.text.in_(keys))
+    keywords = query.all()
+    assert keywords is not None
+    assert len(keywords) == len(context.keywords)
+    for kw in keywords:
+        assert kw.text in context.keywords
+
+
+@then('the keyword "{parent}" is parent of "{child}"')
+def then_keyword_is_parent_of_another(context, parent, child):
+    """Test keyword hierarchy."""
+    query = context.catalog.session.query(dao.Keyword)
+    parent = query.filter(dao.Keyword.text == parent.strip()).one_or_none()
+    child = query.filter(dao.Keyword.text == child.strip()).one_or_none()
+    assert parent is not None
+    assert child is not None
+    assert child.parent is not None
+    assert child.parent == parent
+
+
+@then('the keyword "{parent}" is not parent of "{child}"')
+def then_keyword_is_not_parent_of_another(context, parent, child):
+    """Test keyword hierarchy."""
+    query = context.catalog.session.query(dao.Keyword)
+    parent = query.filter(dao.Keyword.text == parent.strip()).one_or_none()
+    child = query.filter(dao.Keyword.text == child.strip()).one_or_none()
+    assert parent is not None
+    assert child is not None
+    if child.parent is not None:
+        assert child.parent != parent

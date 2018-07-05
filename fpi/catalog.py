@@ -395,11 +395,14 @@ class Catalog(object):
             # TODO: Handle errors.
             raise e
 
-    def add_keywords(self, keywords, kw_opt=dao.KeywordOptions(), parent=None):
+    def add_keywords(self, keywords, kw_opt=dao.KeywordOptions()):
         """Add a new keyword to database."""
         try:
             for kw in keywords:
-                self.session.add(dao.Keyword(kw, kw_opt))
+                parent = None
+                for k in kw.strip().split(':'):
+                    parent = dao.Keyword(k, kw_opt, parent=parent)
+                    self.session.add(parent)
             self.session.commit()
         except Exception as e:
             self.session.rollback()

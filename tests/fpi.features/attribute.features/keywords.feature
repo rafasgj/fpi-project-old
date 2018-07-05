@@ -9,16 +9,42 @@ Scenario: Add a keyword to the database.
         | data/samples/DCIM/100FPIAM/FPI_0001.JPG |
         | data/samples/DCIM/100FPIAM/FPI_0002.JPG |
         And the keyword "A Keyword" for language "en-US"
-    When adding a new keyword to the database
+    When adding new keywords to the database
     Then no exception is raised
         And the keyword "A Keyword" exists in the database
-        And is a public keyword
-        And can have synonyms exported
-        And has 0 synonyms
+        And each keyword is a public keyword
+        And each keyword can have synonyms exported
+        And each keyword has 0 synonyms
 
 Scenario: Add multiple keywords to the database.
+Given a catalog named "test_catalog.fpicat" with some assets
+    | filename                                |
+    | data/samples/DCIM/100FPIAM/FPI_0001.JPG |
+    | data/samples/DCIM/100FPIAM/FPI_0002.JPG |
+    And some keywords
+When adding new keywords to the database
+Then no exception is raised
+    And the keywords exist in the database
+    And each keyword is a public keyword
+    And each keyword can have synonyms exported
+    And each keyword has 0 synonyms
 
 Scenario: Add a keyword hierarchy to the database.
+Given a catalog named "test_catalog.fpicat" with some assets
+    | filename                                |
+    | data/samples/DCIM/100FPIAM/FPI_0001.JPG |
+    | data/samples/DCIM/100FPIAM/FPI_0002.JPG |
+    And the keyword "level one:level two:leaf" for language "en-US"
+When adding new keywords to the database
+Then no exception is raised
+    And the keyword "level one" exists in the database
+    And the keyword "level two" exists in the database
+    And the keyword "leaf" exists in the database
+    And the keyword "level one" is parent of "level two"
+    And the keyword "level two" is parent of "leaf"
+    And the keyword "leaf" is not parent of "level one"
+    And the keyword "leaf" is not parent of "level two"
+    And the keyword "level two" is not parent of "level one"
 
 Scenario: Add a keyword to an existing hierarchy.
 
