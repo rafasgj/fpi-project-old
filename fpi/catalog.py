@@ -438,3 +438,32 @@ class Catalog(object):
             self.session.rollback()
             # TODO: Handle errors.
             raise e
+
+    def remove_keyword(self, keyword):
+        """
+        Remove the keyword from the database.
+        The keyword is only removed if it is a leaf keyword and is not
+        applied to any image.
+        :param self: The catalog object.
+        :param keyword: The keyword path.
+        """
+        try:
+            q = self.session.query(dao.Keyword)
+            q = q.filter(dao.Keyword.text == keyword)
+            kw = q.one_or_none()
+            if kw is not None:
+                if len(kw.children) > 0:
+                    msg = "Keyword '{}' has children keywords."
+                    raise errors.RemoveException(msg.format(keyword))
+                if len(kw.images) > 0:
+                    msg = "Keyword '{}' was applied to images."
+                    raise errors.RemoveException(msg.format(keyword))
+                self.session.delete(kw)
+                self.session.commit()
+            else:
+                msg = "Keyword not found: {}"
+                raise errors.InexistentObject(msg.format(keyword))
+        except Exception as e:
+            self.session.rollback()
+            # TODO: Handle errors.
+            raise e

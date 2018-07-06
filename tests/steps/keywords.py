@@ -147,3 +147,45 @@ def then_asset_has_keyword(context, asset, keyword):
     asset = context.catalog.info('asset', asset)
     keywords = [k.text for k in asset.virtual_copies[0].keywords]
     assert keyword in keywords
+
+
+# REMOVE keywords
+
+@given('the keyword "{keyword}" is assigned to asset "{asset}"')
+def given_asset_has_keyword_assigned(context, keyword, asset):
+    """Assign keyword to asset."""
+    context.catalog.apply_keywords([asset], [keyword])
+
+
+@when('removing the keyword "{keyword}"')
+def when_removing_keyword(context, keyword):
+    """Remove keyword from the database."""
+    try:
+        context.catalog.remove_keyword(keyword)
+        context.exception = None
+    except Exception as e:
+        context.exception = e
+
+
+@then('the keyword "{keyword}" does not exist in the database')
+def then_keyword_does_not_exist(context, keyword):
+    """Check keyword is not in the database."""
+    query = context.catalog.session.query(dao.Keyword)
+    kw = query.filter(dao.Keyword.text == keyword.strip()).one_or_none()
+    assert kw is None
+
+
+@then('the keyword "{keyword}" has {count:d} children')
+def then_keyword_has_some_children(context, keyword, count):
+    """Count keyword children."""
+    query = context.catalog.session.query(dao.Keyword)
+    kw = query.filter(dao.Keyword.text == keyword.strip()).one_or_none()
+    assert kw is not None
+    assert len(kw.children) == 0
+
+
+@then('the asset "{asset}" has {count:d} keywords')
+def then_asset_has_some_keywords(context, asset, count):
+    """Assert asset has the right number of keywords."""
+    asset = context.catalog.info('asset', asset)
+    assert len(asset.virtual_copies[0].keywords) == count
