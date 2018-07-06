@@ -6,14 +6,13 @@ import dao
 
 
 def _get_image_from_catalog(catalog, asset, image):
-    img = int(image.strip()) - 1
     ast = catalog.info('asset', asset)
-    return None if ast is None else ast.virtual_copies[img]
+    return None if ast is None else ast.virtual_copies[image - 1]
 
 
 # Tests for FLAGS.
 
-@when('setting the flag of {image} of {asset} to {flag}')
+@when('setting the flag of {image:d} of {asset} to {flag}')
 def when_setting_image_flag(context, asset, image, flag):
     """Set image flag to the given value."""
     f = {
@@ -27,7 +26,7 @@ def when_setting_image_flag(context, asset, image, flag):
     context.catalog.set_attributes(context.assets, context.options)
 
 
-@then('the flag of {image} of {asset} to {flag} is set')
+@then('the flag of {image:d} of {asset} to {flag} is set')
 def then_flag_is_set_and_no_other_flag(context, image, asset, flag):
     """Check that a specific flag is set."""
     img = _get_image_from_catalog(context.catalog, asset, image)
@@ -119,7 +118,7 @@ def then_asset_has_rating(context, asset_id, rating):
 
 # Tests for IPTC metadata
 
-@when('setting the iptc {field} of asset {asset}/{image} with value {value}')
+@when('setting the iptc {field} of asset {asset}/{image:d} with value {value}')
 def when_setting_iptc_fields(context, field, asset, image, value):
     """Set iptc fields."""
     try:
