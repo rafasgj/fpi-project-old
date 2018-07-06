@@ -4,10 +4,7 @@ Feature: Manage Keywords database.
     So that I can apply keywords to the image easily.
 
 Scenario: Add a keyword to the database.
-    Given a catalog named "test_catalog.fpicat" with some assets
-        | filename                                |
-        | data/samples/DCIM/100FPIAM/FPI_0001.JPG |
-        | data/samples/DCIM/100FPIAM/FPI_0002.JPG |
+    Given an empty catalog named "test_catalog.fpicat"
         And the keyword "A Keyword" for language "en-US"
     When adding new keywords to the database
     Then no exception is raised
@@ -17,10 +14,7 @@ Scenario: Add a keyword to the database.
         And each keyword has 0 synonyms
 
 Scenario: Add multiple keywords to the database.
-Given a catalog named "test_catalog.fpicat" with some assets
-    | filename                                |
-    | data/samples/DCIM/100FPIAM/FPI_0001.JPG |
-    | data/samples/DCIM/100FPIAM/FPI_0002.JPG |
+Given an empty catalog named "test_catalog.fpicat"
     And some keywords
 When adding new keywords to the database
 Then no exception is raised
@@ -30,10 +24,7 @@ Then no exception is raised
     And each keyword has 0 synonyms
 
 Scenario: Add a keyword hierarchy to the database.
-Given a catalog named "test_catalog.fpicat" with some assets
-    | filename                                |
-    | data/samples/DCIM/100FPIAM/FPI_0001.JPG |
-    | data/samples/DCIM/100FPIAM/FPI_0002.JPG |
+Given an empty catalog named "test_catalog.fpicat"
     And the keyword "level one:level two:leaf" for language "en-US"
 When adding new keywords to the database
 Then no exception is raised
@@ -47,10 +38,7 @@ Then no exception is raised
     And the keyword "level two" is not parent of "level one"
 
 Scenario: Add a keyword to an existing hierarchy.
-Given a catalog named "test_catalog.fpicat" with some assets
-    | filename                                |
-    | data/samples/DCIM/100FPIAM/FPI_0001.JPG |
-    | data/samples/DCIM/100FPIAM/FPI_0002.JPG |
+Given an empty catalog named "test_catalog.fpicat"
     And the keyword "level one:level two" exists
     And the keyword "level one:level two:leaf" for language "en-US"
 When adding new keywords to the database
@@ -64,7 +52,6 @@ Scenario: Apply a keyword that do not exist in the database to an asset.
 Given a catalog named "test_catalog.fpicat" with some assets
     | filename                                |
     | data/samples/DCIM/100FPIAM/FPI_0001.JPG |
-    | data/samples/DCIM/100FPIAM/FPI_0002.JPG |
 When assigning the keyword "A Keyword" to the asset "4613ad3fd0c246dd5bb96b33b09c2996"
 Then no exception is raised
     And the keyword "A Keyword" exists in the database
@@ -74,7 +61,6 @@ Scenario: Apply a keyword that does exist in the database to an asset.
 Given a catalog named "test_catalog.fpicat" with some assets
     | filename                                |
     | data/samples/DCIM/100FPIAM/FPI_0001.JPG |
-    | data/samples/DCIM/100FPIAM/FPI_0002.JPG |
     And the keyword "A Keyword" exists in the database
 When assigning the keyword "A Keyword" to the asset "4613ad3fd0c246dd5bb96b33b09c2996"
 Then no exception is raised
@@ -84,7 +70,6 @@ Scenario: Apply a keyword hierarchy that does exist in the database to an asset.
 Given a catalog named "test_catalog.fpicat" with some assets
     | filename                                |
     | data/samples/DCIM/100FPIAM/FPI_0001.JPG |
-    | data/samples/DCIM/100FPIAM/FPI_0002.JPG |
 When assigning the keyword "level one:level two:leaf" to the asset "4613ad3fd0c246dd5bb96b33b09c2996"
 Then no exception is raised
     And the asset "4613ad3fd0c246dd5bb96b33b09c2996" has the keyword "leaf"
@@ -101,7 +86,6 @@ Scenario: Apply a keyword that does exist, but is in a hierarchy to an asset.
 Given a catalog named "test_catalog.fpicat" with some assets
     | filename                                |
     | data/samples/DCIM/100FPIAM/FPI_0001.JPG |
-    | data/samples/DCIM/100FPIAM/FPI_0002.JPG |
     And the keyword "level one:level two:leaf" exists in the database
 When assigning the keyword "level one:level two:leaf" to the asset "4613ad3fd0c246dd5bb96b33b09c2996"
 Then no exception is raised
@@ -123,6 +107,7 @@ Scenario: Modify properties of a keyword.
 Scenario: Modify a keyword.
 
 Scenario: Add a keyword that already exists in the database.
+# shuld fail with errors.DuplicateKeyword
 
 Scenario: Ingest an asset with keywords.
 
@@ -132,7 +117,7 @@ Scenario: Ingest an asset with Adobe Lightroom hierarchycal keywords.
 
 Scenario: Add a keyword with synonyms to the database.
 
-Scenario: Add synonyms to a keyword in the database.
+Scenario: Add synonyms to a keyword that exists in the database.
 
 Scenario: Search for a keyword.
 
