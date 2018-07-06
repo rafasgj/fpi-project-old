@@ -1,6 +1,6 @@
 """Define the data objects used on the system."""
 
-from sqlalchemy import Column, ForeignKey
+from sqlalchemy import Column, ForeignKey, Table
 from sqlalchemy import String, Integer, DateTime, Text, Boolean
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.ext.hybrid import hybrid_property
@@ -170,6 +170,17 @@ class Asset(Base):
         self.import_session = session_name
 
 
+_image_keywords_assciation = Table('imagekeywords', Base.metadata,
+                                   Column('image_id', Integer,
+                                          ForeignKey('images.id',
+                                                     ondelete='CASCADE'),
+                                          primary_key=True),
+                                   Column('keyword_id', Integer,
+                                          ForeignKey('keywords.id',
+                                                     ondelete='CASCADE'),
+                                          primary_key=True))
+
+
 class Image(Base):
     """Models an Image, for the DAM system."""
 
@@ -193,6 +204,7 @@ class Image(Base):
 
     asset = relationship("Asset", back_populates="virtual_copies")
     iptc = relationship("ImageIPTC", back_populates="image", uselist=False)
+    keywords = relationship("Keyword", secondary=_image_keywords_assciation)
 
     @hybrid_property
     def pick(self):
@@ -364,7 +376,9 @@ class Keyword(Base):
     lang = Column(String, nullable=True)
     children = relationship('Keyword',
                             backref=backref('parent', remote_side=[id]))
+
     synonyms = relationship('Synonym', back_populates='keyword')
+    images = relationship("Image", secondary=_image_keywords_assciation)
 
     def __init__(self, text, options=KeywordOptions(), parent=None):
         """Initialize a new keyword object."""

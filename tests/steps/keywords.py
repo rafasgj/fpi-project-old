@@ -5,6 +5,8 @@ from behave import given, when, then
 import dao
 
 
+# CREATE keywords
+
 @given('the keyword "{keyword}" for language "{lang}"')
 def given_a_keyword(context, keyword, lang):
     """Set a keyword for a specific language."""
@@ -120,3 +122,28 @@ def then_keyword_is_not_parent_of_another(context, parent, child):
     assert child is not None
     if child.parent is not None:
         assert child.parent != parent
+
+
+# ASSIGN Keywords to assets
+
+@given('the keyword "{keyword}" exists in the database')
+def given_keyword_exist_in_database(context, keyword):
+    """Keyword exists in the database"""
+    context.catalog.add_keywords([keyword])
+
+
+@when('assigning the keyword "{keyword}" to the asset "{asset}"')
+def when_assigning_keyword_to_asset(context, keyword, asset):
+    """Assign keyword to asset."""
+    try:
+        context.catalog.apply_keywords([asset], [keyword])
+    except Exception as e:
+        context.exception = e
+
+
+@then('the asset "{asset}" has the keyword "{keyword}"')
+def then_asset_has_keyword(context, asset, keyword):
+    """Check if asset has the keyword."""
+    asset = context.catalog.info('asset', asset)
+    keywords = [k.text for k in asset.virtual_copies[0].keywords]
+    assert keyword in keywords

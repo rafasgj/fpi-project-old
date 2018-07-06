@@ -395,6 +395,31 @@ class Catalog(object):
             # TODO: Handle errors.
             raise e
 
+    def _get_keyword(self, keyword):
+        k = keyword.strip().split(':')[-1]
+        q = self.session.query(dao.Keyword)
+        return q.filter(dao.Keyword.text == k).one_or_none()
+
+    def apply_keywords(self, assets, keywords):
+        """Apply the gien keywords to the provided assets."""
+        try:
+            for keyword in keywords:
+                kw = self._get_keyword(keyword)
+                if kw is None:
+                    self.add_keywords([keyword])
+                    kw = self._get_keyword(keyword)
+                for asset in assets:
+                    q = self.session.query(dao.Image)\
+                                    .filter(dao.Image.asset_id == asset)
+                    for image in q:
+                        if kw not in image.keywords:
+                            image.keywords.append(kw)
+            self.session.commit()
+        except Exception as e:
+            self.session.rollback()
+            # TODO: Handle errors.
+            raise e
+
     def add_keywords(self, keywords, kw_opt=dao.KeywordOptions()):
         """Add a new keyword to database."""
         try:

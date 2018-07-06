@@ -23,10 +23,11 @@ def upgrade():
         imageiptc: metadata for image information.
         keywords: store assets keywords.
         synonyms: store keywords synonyms.
+        imagekeywords: map images to keywords (M:N relationship)
     """
     op.create_table(
         'imageiptc',
-        sa.Column('image_id', sa.String,
+        sa.Column('image_id', sa.Integer,
                   sa.ForeignKey('images.id', ondelete='CASCADE'),
                   primary_key=True),
         sa.Column('caption', sa.Text, nullable=True),
@@ -69,6 +70,16 @@ def upgrade():
                   sa.ForeignKey('keywords.id', ondelete='CASCADE')),
         sa.Column('text', sa.String, nullable=False),
     )
+    op.create_table(
+        'imagekeywords',
+        sa.Column('image_id', sa.Integer,
+                  sa.ForeignKey('images.id', ondelete='CASCADE'),
+                  primary_key=True),
+        sa.Column('keyword_id', sa.Integer,
+                  sa.ForeignKey('keywords.id', ondelete='CASCADE'),
+                  primary_key=True),
+    )
+
 
 def downgrade():
     """Downgrade database to previous version."""
