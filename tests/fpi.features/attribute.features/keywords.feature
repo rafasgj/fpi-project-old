@@ -65,17 +65,47 @@ Given a catalog named "test_catalog.fpicat" with some assets
     | filename                                |
     | data/samples/DCIM/100FPIAM/FPI_0001.JPG |
     | data/samples/DCIM/100FPIAM/FPI_0002.JPG |
-    And the keyword "A Keyword" exists in the database
 When assigning the keyword "A Keyword" to the asset "4613ad3fd0c246dd5bb96b33b09c2996"
 Then no exception is raised
     And the keyword "A Keyword" exists in the database
     And the asset "4613ad3fd0c246dd5bb96b33b09c2996" has the keyword "A Keyword"
 
 Scenario: Apply a keyword that does exist in the database to an asset.
+Given a catalog named "test_catalog.fpicat" with some assets
+    | filename                                |
+    | data/samples/DCIM/100FPIAM/FPI_0001.JPG |
+    | data/samples/DCIM/100FPIAM/FPI_0002.JPG |
+    And the keyword "A Keyword" exists in the database
+When assigning the keyword "A Keyword" to the asset "4613ad3fd0c246dd5bb96b33b09c2996"
+Then no exception is raised
+    And the asset "4613ad3fd0c246dd5bb96b33b09c2996" has the keyword "A Keyword"
 
 Scenario: Apply a keyword hierarchy that does exist in the database to an asset.
+Given a catalog named "test_catalog.fpicat" with some assets
+    | filename                                |
+    | data/samples/DCIM/100FPIAM/FPI_0001.JPG |
+    | data/samples/DCIM/100FPIAM/FPI_0002.JPG |
+When assigning the keyword "level one:level two:leaf" to the asset "4613ad3fd0c246dd5bb96b33b09c2996"
+Then no exception is raised
+    And the asset "4613ad3fd0c246dd5bb96b33b09c2996" has the keyword "leaf"
+    And the keyword "level one" exists in the database
+    And the keyword "level two" exists in the database
+    And the keyword "leaf" exists in the database
+    And the keyword "level one" is parent of "level two"
+    And the keyword "level two" is parent of "leaf"
+    And the keyword "leaf" is not parent of "level one"
+    And the keyword "leaf" is not parent of "level two"
+    And the keyword "level two" is not parent of "level one"
 
 Scenario: Apply a keyword that does exist, but is in a hierarchy to an asset.
+Given a catalog named "test_catalog.fpicat" with some assets
+    | filename                                |
+    | data/samples/DCIM/100FPIAM/FPI_0001.JPG |
+    | data/samples/DCIM/100FPIAM/FPI_0002.JPG |
+    And the keyword "level one:level two:leaf" exists in the database
+When assigning the keyword "level one:level two:leaf" to the asset "4613ad3fd0c246dd5bb96b33b09c2996"
+Then no exception is raised
+    And the asset "4613ad3fd0c246dd5bb96b33b09c2996" has the keyword "leaf"
 
 Scenario: Remove a leaf keyword from the database.
 
