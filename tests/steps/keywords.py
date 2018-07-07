@@ -167,6 +167,16 @@ def when_removing_keyword(context, keyword):
         context.exception = e
 
 
+@when('forcing removal of the keyword "{keyword}"')
+def when_force_removal_of_keyword(context, keyword):
+    """Force removal of a keyword from the database."""
+    try:
+        context.catalog.remove_keyword(keyword, force=True)
+        context.exception = None
+    except Exception as e:
+        context.exception = e
+
+
 @then('the keyword "{keyword}" does not exist in the database')
 def then_keyword_does_not_exist(context, keyword):
     """Check keyword is not in the database."""
