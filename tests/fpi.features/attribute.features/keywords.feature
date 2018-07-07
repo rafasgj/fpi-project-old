@@ -39,7 +39,7 @@ Scenario: Add a keyword hierarchy to the database.
 
 Scenario: Add a keyword to an existing hierarchy.
     Given an empty catalog named "test_catalog.fpicat"
-        And the keyword "level one:level two" exists
+        And the keyword "level one:level two" exists in the database
         And the keyword "level one:level two:leaf" for language "en-US"
     When adding new keywords to the database
     Then no exception is raised

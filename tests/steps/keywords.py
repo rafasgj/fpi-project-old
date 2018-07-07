@@ -21,14 +21,6 @@ def given_some_keywords(context):
     context.lang = ''
 
 
-@given('the keyword "{keyword}" exists')
-def given_a_keyword_exists(context, keyword):
-    """Keyword exists in the catalog."""
-    context.keywords = [keyword]
-    context.lang = ''
-    context.catalog.add_keywords(context.keywords)
-
-
 @when('adding new keywords to the database')
 def when_adding_new_keyword_to_the_database(context):
     """Add keywords to the catalog."""
@@ -159,9 +151,9 @@ def given_asset_has_keyword_assigned(context, keyword, asset):
 
 @when('removing the keyword "{keyword}"')
 def when_removing_keyword(context, keyword):
-    """Remove keyword from the database."""
+    """Delete keyword from the database."""
     try:
-        context.catalog.remove_keyword(keyword)
+        context.catalog.delete_keyword(keyword)
         context.exception = None
     except Exception as e:
         context.exception = e
@@ -171,7 +163,7 @@ def when_removing_keyword(context, keyword):
 def when_force_removal_of_keyword(context, keyword):
     """Force removal of a keyword from the database."""
     try:
-        context.catalog.remove_keyword(keyword, force=True)
+        context.catalog.delete_keyword(keyword, force=True)
         context.exception = None
     except Exception as e:
         context.exception = e

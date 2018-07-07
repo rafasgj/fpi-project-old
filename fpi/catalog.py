@@ -439,7 +439,7 @@ class Catalog(object):
             # TODO: Handle errors.
             raise e
 
-    def remove_keyword(self, keyword, **kwargs):
+    def delete_keyword(self, keyword, **kwargs):
         """
         Remove the keyword from the database.
         The keyword is only removed if it is a leaf keyword and is not
