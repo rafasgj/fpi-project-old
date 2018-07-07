@@ -145,6 +145,15 @@ Scenario: Force removal of a keyword from the database, that was applied to asse
         And the keyword "leaf" does not exist in the database
 
 Scenario: Unassign a keyword from an image.
+    Given a catalog named "test_catalog.fpicat" with some assets
+        | filename                                |
+        | data/samples/DCIM/100FPIAM/FPI_0001.JPG |
+        And the keyword "level one:level two:leaf" exists in the database
+        And the keyword "leaf" is assigned to asset "4613ad3fd0c246dd5bb96b33b09c2996"
+    When removing keyword "leaf" from asset "4613ad3fd0c246dd5bb96b33b09c2996"
+    Then no exception is raised
+        And the asset "4613ad3fd0c246dd5bb96b33b09c2996" has 0 keywords
+        And the keyword "leaf" exists in the database
 
 Scenario: Modify properties of a keyword.
 

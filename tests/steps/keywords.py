@@ -133,6 +133,15 @@ def when_assigning_keyword_to_asset(context, keyword, asset):
         context.exception = e
 
 
+@when('removing keyword "{keyword}" from asset "{asset}"')
+def when_removing_keyword_from_asset(context, keyword, asset):
+    """Remove a keyword from an asset."""
+    try:
+        context.catalog.remove_keywords([asset], [keyword])
+    except Exception as e:
+        context.exception = e
+
+
 @then('the asset "{asset}" has the keyword "{keyword}"')
 def then_asset_has_keyword(context, asset, keyword):
     """Check if asset has the keyword."""

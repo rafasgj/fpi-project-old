@@ -400,20 +400,51 @@ class Catalog(object):
         q = self.session.query(dao.Keyword)
         return q.filter(dao.Keyword.text == k).one_or_none()
 
-    def apply_keywords(self, assets, keywords):
-        """Apply the gien keywords to the provided assets."""
-        try:
+    def _proces_keyword_and_asset(self, keywords, assets,
+                                  kw_none, img_process):
             for keyword in keywords:
                 kw = self._get_keyword(keyword)
                 if kw is None:
-                    self.add_keywords([keyword])
-                    kw = self._get_keyword(keyword)
+                    kw = kw_none(keyword)
                 for asset in assets:
                     q = self.session.query(dao.Image)\
                                     .filter(dao.Image.asset_id == asset)
                     for image in q:
-                        if kw not in image.keywords:
-                            image.keywords.append(kw)
+                        img_process(image, kw)
+
+    def apply_keywords(self, assets, keywords):
+        """Apply the gien keywords to the provided assets."""
+        def ensure_kw(keyword):
+            self.add_keywords([keyword])
+            return self._get_keyword(keyword)
+
+        def append_kw(image, kw):
+            if kw not in image.keywords:
+                image.keywords.append(kw)
+
+        try:
+            self._proces_keyword_and_asset(keywords, assets,
+                                           ensure_kw, append_kw)
+            self.session.commit()
+
+        except Exception as e:
+            self.session.rollback()
+            # TODO: Handle errors.
+            raise e
+
+    def remove_keywords(self, assets, keywords):
+        """Remove a keyword from an asset."""
+        def no_keyword(keyword):
+            msg = "Keyword does not exist in the database: {}"
+            raise errors.InexistentObject(msg.format(keyword))
+
+        def remove_keyword(image, kw):
+            if kw in image.keywords:
+                image.keywords.remove(kw)
+
+        try:
+            self._proces_keyword_and_asset(keywords, assets,
+                                           no_keyword, remove_keyword)
             self.session.commit()
         except Exception as e:
             self.session.rollback()
@@ -441,8 +472,8 @@ class Catalog(object):
 
     def delete_keyword(self, keyword, **kwargs):
         """
-        Remove the keyword from the database.
-        The keyword is only removed if it is a leaf keyword and is not
+        Delete the keyword from the database.
+        The keyword is only deleted if it is a leaf keyword and is not
         applied to any image.
         :param self: The catalog object.
         :param keyword: The keyword path.
